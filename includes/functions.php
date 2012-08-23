@@ -9,7 +9,21 @@ if( is_admin() ) {
 		add_submenu_page( 'woocommerce', __( 'Store Export', 'woo_ce' ), __( 'Store Export', 'woo_ce' ), 'manage_options', 'woo_ce', 'woo_ce_html_page' );
 
 	}
-	add_action( 'admin_menu', 'woo_ce_admin_menu' );
+	add_action( 'admin_menu', 'woo_ce_admin_menu', 11 );
+
+	function woo_ce_template_header() {
+
+		global $woo_ce; ?>
+<div class="wrap">
+	<div id="icon-tools" class="icon32"><br /></div>
+	<h2><?php echo $woo_ce['menu']; ?></h2>
+<?php
+	}
+
+	function woo_ce_template_footer() { ?>
+</div>
+<?php
+	}
 
 	function woo_ce_return_count( $dataset ) {
 
@@ -49,10 +63,9 @@ if( is_admin() ) {
 
 	function woo_ce_export_dataset( $dataset ) {
 
-		global $wpdb;
+		global $wpdb, $woo_ce, $export;
 
 		$csv = '';
-		$separator = ',';
 
 		foreach( $dataset as $datatype ) {
 
@@ -75,7 +88,7 @@ if( is_admin() ) {
 						if( $i == ( count( $columns ) - 1 ) )
 							$csv .= '"' . $columns[$i] . "\"\n";
 						else
-							$csv .= '"' . $columns[$i] . '"' . $separator;
+							$csv .= '"' . $columns[$i] . '"' . $export->delimiter;
 					}
 					$post_type = 'shop_order';
 					$orders_sql = "SELECT `ID` FROM `" . $wpdb->posts . "` WHERE `post_type` = '" . $post_type . "'";
@@ -102,13 +115,13 @@ if( is_admin() ) {
 							if( isset( $order->billing_email ) && $order->billing_email ) {
 								if( !strstr( $csv, $order->billing_email ) ) {
 									$csv .= 
-										$order->full_name . $separator . 
-										$order->first_name . $separator . 
-										$order->billing_address . $separator . 
-										$order->billing_city . $separator . 
-										$order->billing_state . $separator . 
-										$order->billing_postcode . $separator . 
-										$order->billing_phone . $separator . 
+										$order->full_name . $export->delimiter . 
+										$order->first_name . $export->delimiter . 
+										$order->billing_address . $export->delimiter . 
+										$order->billing_city . $export->delimiter . 
+										$order->billing_state . $export->delimiter . 
+										$order->billing_postcode . $export->delimiter . 
+										$order->billing_phone . $export->delimiter . 
 										$order->billing_email . 
 									"\n";
 								}
@@ -120,38 +133,46 @@ if( is_admin() ) {
 					break;
 
 				case 'products':
-					$columns = array(
-						'SKU',
-						'Product Name',
-						'Permalink',
-						'Description',
-						'Excerpt',
-						'Price',
-						'Sale Price',
-						'Weight',
-						'Weight Unit',
-						'Height',
-						'Height Unit',
-						'Width',
-						'Width Unit',
-						'Length',
-						'Length Unit',
-						'Category',
-						'Tag',
-						'Quantity',
-						'External Link',
-						'Product Status',
-						'Comment Status'
+					$export->columns = array(
+						__( 'SKU', 'woo_ce' ),
+						__( 'Product Name', 'woo_ce' ),
+						__( 'Permalink', 'woo_ce' ),
+						__( 'Description', 'woo_ce' ),
+						__( 'Excerpt', 'woo_ce' ),
+						__( 'Price', 'woo_ce' ),
+						__( 'Sale Price', 'woo_ce' ),
+						__( 'Weight', 'woo_ce' ),
+						__( 'Weight Unit', 'woo_ce' ),
+						__( 'Height', 'woo_ce' ),
+						__( 'Height Unit', 'woo_ce' ),
+						__( 'Width', 'woo_ce' ),
+						__( 'Width Unit', 'woo_ce' ),
+						__( 'Length', 'woo_ce' ),
+						__( 'Length Unit', 'woo_ce' ),
+						__( 'Category', 'woo_ce' ),
+						__( 'Tag', 'woo_ce' ),
+						__( 'Quantity', 'woo_ce' ),
+						__( 'External Link', 'woo_ce' ),
+						__( 'Product Status', 'woo_ce' ),
+						__( 'Comment Status', 'woo_ce' )
 					);
-					for( $i = 0; $i < count( $columns ); $i++ ) {
-						if( $i == ( count( $columns ) - 1 ) )
-							$csv .= '"' . $columns[$i] . "\"\n";
+
+					/* Allow Plugin/Theme authors to add support for additional Product details */
+					$export->columns = apply_filters( 'woo_ce_options_addons', $export->columns );
+
+					$size = count( $export->columns );
+					for( $i = 0; $i < $size; $i++ ) {
+						if( $i == ( $size - 1 ) )
+							$csv .= escape_csv_value( $export->columns[$i] ) . "\n";
 						else
-							$csv .= '"' . $columns[$i] . '"' . $separator;
+							$csv .= escape_csv_value( $export->columns[$i] ) . $export->delimiter;
 					}
 					$post_type = 'product';
-					$products_sql = "SELECT `ID`, `post_title` as name, `post_name` as permalink, `post_content` as description, `post_excerpt` as excerpt, `post_status` as status, `comment_status` as comments FROM `" . $wpdb->posts . "` WHERE `post_type` = '" . $post_type . "'";
-					$products = $wpdb->get_results( $products_sql );
+					$products_args = array(
+						'post_type' => $post_type,
+						'numberposts' => -1
+					);
+					$products = get_posts( $products_args );
 					if( $products ) {
 						$weight_unit = get_option( 'woocommerce_weight_unit' );
 						$dimension_unit = get_option( 'woocommerce_dimension_unit' );
@@ -163,7 +184,9 @@ if( is_admin() ) {
 							$product_data = get_post_meta( $product->ID, 'product_metadata', true );
 
 							$product->sku = get_post_meta( $product->ID, '_sku', true );
-							$product->description = woo_ce_clean_html( $product->description );
+							$product->name = $product->post_title;
+							$product->permalink = $product->post_name;
+							$product->description = woo_ce_clean_html( $product->post_content );
 							$product->excerpt = woo_ce_clean_html( $product->excerpt );
 							$product->price = get_post_meta( $product->ID, '_price', true );
 							$product->sale_price = get_post_meta( $product->ID, '_sale_price', true );
@@ -188,30 +211,37 @@ if( is_admin() ) {
 							$product->quantity = get_post_meta( $product->ID, '_stock', true );
 							$product->external_link = $product_data['external_link'];
 
-							foreach( $product as $key => $value )
-								$product->$key = '"' . woo_ce_has_value( $value ) . '"';
+							foreach( $product as $key => $value ) {
+								if( is_array( $value ) ) {
+									foreach( $value as $array_key => $array_value )
+										$value[$array_key] = escape_csv_value( $array_value );
+									$product->$key = $value;
+								} else {
+									$product->$key = escape_csv_value( $value );
+								}
+							}
 
 							$csv .= 
-								$product->sku . $separator . 
-								$product->name . $separator . 
-								$product->permalink . $separator . 
-								$product->description . $separator . 
-								$product->excerpt . $separator . 
-								$product->price . $separator . 
-								$product->sale_price . $separator . 
-								$product->weight . $separator . 
-								$product->weight_unit . $separator . 
-								$product->height . $separator . 
-								$product->height_unit . $separator . 
-								$product->width . $separator . 
-								$product->width_unit . $separator . 
-								$product->length . $separator . 
-								$product->length_unit . $separator . 
-								$product->category . $separator . 
-								$product->tag . $separator . 
-								$product->quantity . $separator . 
-								$product->external_link . $separator . 
-								$product->status . $separator . 
+								$product->sku . $export->delimiter . 
+								$product->name . $export->delimiter . 
+								$product->permalink . $export->delimiter . 
+								$product->description . $export->delimiter . 
+								$product->excerpt . $export->delimiter . 
+								$product->price . $export->delimiter . 
+								$product->sale_price . $export->delimiter . 
+								$product->weight . $export->delimiter . 
+								$product->weight_unit . $export->delimiter . 
+								$product->height . $export->delimiter . 
+								$product->height_unit . $export->delimiter . 
+								$product->width . $export->delimiter . 
+								$product->width_unit . $export->delimiter . 
+								$product->length . $export->delimiter . 
+								$product->length_unit . $export->delimiter . 
+								$product->category . $export->delimiter . 
+								$product->tag . $export->delimiter . 
+								$product->quantity . $export->delimiter . 
+								$product->external_link . $export->delimiter . 
+								$product->status . $export->delimiter . 
 								$product->comments . 
 							"\n";
 
@@ -222,7 +252,7 @@ if( is_admin() ) {
 
 			}
 
-			if( WP_DEBUG )
+			if( isset( $woo_ce['debug'] ) && $woo_ce['debug'] )
 				echo '<code>' . str_replace( "\n", '<br />', $csv ) . '</code>' . '<br />';
 			else
 				echo $csv;
@@ -231,18 +261,30 @@ if( is_admin() ) {
 
 	}
 
-	function woo_ce_get_product_categories( $product_id ) {
+	function woo_ce_get_product_categories( $product_id = null ) {
 
-		global $wpdb;
+		global $export, $wpdb;
 
-		$categories_sql = "SELECT term_taxonomy.`term_id` as term_id FROM `" . $wpdb->term_taxonomy . "` as term_taxonomy, `" . $wpdb->term_relationships . "` as term_relationships WHERE term_relationships.`term_taxonomy_id` = term_taxonomy.`term_taxonomy_id` AND term_relationships.`object_id` = " . $product_id . " AND term_taxonomy.`taxonomy` = 'product_cat'";
-		$categories = $wpdb->get_results( $categories_sql, ARRAY_A );
+		$output = '';
+		$term_taxonomy = 'product_cat';
+		$categories = wp_get_object_terms( $product_id, $term_taxonomy );
 		if( $categories ) {
-			$term_taxonomy = 'product_cat';
-			$output = '';
-			for( $i = 0; $i < count( $categories ); $i++ ) {
-				$category = get_term( $categories[$i]['term_id'], $term_taxonomy );
-				$output .= $category->name . '|';
+			$size = count( $categories );
+			for( $i = 0; $i < $size; $i++ ) {
+				if( $categories[$i]->parent == '0' ) {
+					$output .= $categories[$i]->name . $export->category_separator;
+				} else {
+					// Check if Parent -> Child
+					$parent_category = get_term( $categories[$i]->parent, $term_taxonomy );
+					// Check if Parent -> Child -> Subchild
+					if( $parent_category->parent == '0' ) {
+						$output .= $parent_category->name . '>' . $categories[$i]->name . $export->category_separator;
+					} else {
+						$root_category = get_term( $parent_category->parent, $term_taxonomy );
+						$output .= $root_category->name . '>' . $parent_category->name . '>' . $categories[$i]->name . $export->category_separator;
+					}
+					unset( $root_category, $parent_category );
+				}
 			}
 			$output = substr( $output, 0, -1 );
 		}
@@ -254,24 +296,21 @@ if( is_admin() ) {
 
 		global $wpdb;
 
-		$tags_sql = "SELECT term_taxonomy.`term_id` as term_id FROM `" . $wpdb->term_taxonomy . "` as term_taxonomy, `" . $wpdb->term_relationships . "` as term_relationships WHERE term_relationships.`term_taxonomy_id` = term_taxonomy.`term_taxonomy_id` AND term_relationships.`object_id` = " . $product_id . " AND term_taxonomy.`taxonomy` = 'product_tag'";
-		$tags = $wpdb->get_results( $tags_sql, ARRAY_A );
+		$output = '';
+		$term_taxonomy = 'product_tag';
+		$tags = wp_get_object_terms( $product_id, $term_taxonomy );
 		if( $tags ) {
-			$term_taxonomy = 'product_tag';
-			$output = '';
-			for( $i = 0; $i < count( $tags ); $i++ ) {
-				$tag = get_term( $tags[$i]['term_id'], $term_taxonomy );
-				$output .= $tag->name . '|';
-			}
+			for( $i = 0; $i < count( $tags ); $i++ )
+				$output .= $tags[$i]->name . '|';
 			$output = substr( $output, 0, -1 );
 		}
 		return $output;
 
 	}
 
-	function woo_ce_generate_csv_header() {
+	function woo_ce_generate_csv_header( $dataset = '' ) {
 
-		$filename = 'woo-export.csv';
+		$filename = 'woo-export_' . $dataset . '.csv';
 
 		header( 'Content-type: application/csv' );
 		header( 'Content-Disposition: attachment; filename=' . $filename );
@@ -280,7 +319,7 @@ if( is_admin() ) {
 
 	}
 
-	function woo_ce_has_value( $value ) {
+	function woo_ce_has_value( $value = '' ) {
 
 		switch( $value ) {
 
@@ -289,36 +328,13 @@ if( is_admin() ) {
 				break;
 
 			default:
-				$value = htmlspecialchars_decode( $value );
+				if( is_string( $value ) )
+					$value = htmlspecialchars_decode( $value );
 				break;
 
 		}
 		return $value;
 
-	}
-
-	function woo_ce_clean_html( $data ) {
-
-		$data = htmlentities( $data );
-		$data = str_replace( ',', '&#44;', $data );
-		$data = str_replace( "\n", '<br />', $data );
-
-		return $data;
-
-	}
-
-	function woo_ce_template_header() {
-
-		global $woo_ce; ?>
-<div class="wrap">
-	<div id="icon-tools" class="icon32"><br /></div>
-	<h2><?php echo $woo_ce['menu']; ?></h2>
-<?php
-	}
-
-	function woo_ce_template_footer() { ?>
-</div>
-<?php
 	}
 
 	/* End of: WordPress Administration */

@@ -3,7 +3,7 @@
 Plugin Name: WooCommerce - Exporter
 Plugin URI: http://www.visser.com.au/woocommerce/plugins/exporter/
 Description: Export store details out of WooCommerce into a CSV-formatted file.
-Version: 1.0.4
+Version: 1.0.5
 Author: Visser Labs
 Author URI: http://www.visser.com.au/about/
 License: GPL2
@@ -28,10 +28,21 @@ $woo_ce['menu'] = __( 'Store Export', 'woo_de' );
 
 if( is_admin() ) {
 
+	/* Start of: WordPress Administration */
+
 	function woo_ce_admin_init() {
 
-		if( isset( $_POST['action'] ) ) {
-			if( $_POST['action'] == 'export' ) {
+		global $woo_ce, $export;
+
+		include_once( 'includes/formatting.php' );
+
+		$action = woo_get_action();
+		switch( $action ) {
+
+			case 'export':
+				$export = new stdClass();
+				$export->delimiter = $_POST['delimiter'];
+				$export->category_separator = $_POST['category_separator'];
 				$dataset = array();
 				if( $_POST['dataset'] == 'categories' )
 					$dataset[] = 'categories';
@@ -49,11 +60,16 @@ if( is_admin() ) {
 					if( !ini_get( 'safe_mode' ) )
 						set_time_limit( $timeout );
 
-					woo_ce_generate_csv_header();
-					woo_ce_export_dataset( $dataset );
-					exit();
+					if( isset( $woo_ce['debug'] ) && $woo_ce['debug'] ) {
+						wpsc_ce_export_dataset( $dataset );
+					} else {
+						woo_ce_generate_csv_header( $_POST['dataset'] );
+						woo_ce_export_dataset( $dataset );
+						exit();
+					}
 				}
-			}
+				break;
+
 		}
 
 	}
@@ -89,10 +105,13 @@ if( is_admin() ) {
 		global $woo_ce;
 
 		$url = 'admin.php?page=woo_ce';
-		if( function_exists( 'woo_pd_init' ) )
+		if( function_exists( 'woo_pd_init' ) ) {
 			$woo_pd_url = 'admin.php?page=woo_pd';
-		else
+			$woo_pd_target = false;
+		} else {
 			$woo_pd_url = 'http://www.visser.com.au/woocommerce/plugins/product-importer-deluxe/';
+			$woo_pd_target = ' target="_blank"';
+		}
 
 		$categories = woo_ce_return_count( 'categories' );
 		$products = woo_ce_return_count( 'products' );
@@ -101,6 +120,8 @@ if( is_admin() ) {
 		include_once( 'templates/admin/woo-admin_ce-export.php' );
 
 	}
+
+	/* End of: WordPress Administration */
 
 }
 ?>

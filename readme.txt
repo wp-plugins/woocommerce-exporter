@@ -1,10 +1,11 @@
 === WooCommerce - Exporter ===
 
 Contributors: visser
+Donate link: http://www.visser.com.au/#donations
 Tags: e-commerce, woocommerce, shop, cart, ecommerce, export, csv
 Requires at least: 2.9.2
 Tested up to: 3.4.1
-Stable tag: 1.0.4
+Stable tag: 1.0.5
 
 Export store details out of WooCommerce into a CSV-formatted file.
 
@@ -38,6 +39,11 @@ If you have any problems, questions or suggestions please join the members discu
 http://www.visser.com.au/woocommerce/forums/
 
 == Changelog ==
+
+= 1.0.5 =
+* Added: Category heirachy support (up to 3 levels deep)
+* Fixed: Foreign character support
+* Changed: More efficient Tag generation
 
 = 1.0.4 =
 * Added: Duplicate e-mail address filtering

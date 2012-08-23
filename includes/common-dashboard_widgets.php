@@ -1,4 +1,12 @@
 <?php
+/*
+
+Filename: common-dashboard_widgets.php
+Description: common-dashboard_widgets.php loads commonly access Dashboard widgets across the Visser Labs suite.
+Version: 1.1
+
+*/
+
 /* Start of: WooCommerce News - by Visser Labs */
 
 if( !function_exists( 'woo_vl_dashboard_setup' ) ) {
@@ -70,9 +78,9 @@ if( !function_exists( 'woo_vm_dashboard_setup' ) ) {
 		$plugin_path = $woo_ce['abspath'];
 
 		$check = wp_remote_fopen( 'http://www.visser.com.au/?woo_vm_data' );
+		$vl_plugins = array();
 		if( $check ) {
 			$raw_plugins = explode( '<br />', $check );
-			$vl_plugins = array();
 			foreach( $raw_plugins as $raw_plugin ) {
 				$raw_plugin = explode( '@', $raw_plugin );
 				$vl_plugins[] = array(
