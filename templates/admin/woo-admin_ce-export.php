@@ -26,6 +26,16 @@
 							</td>
 						</tr>
 <?php } ?>
+<?php if( $customers ) { ?>
+						<tr>
+							<th>
+									<label for="dataset"><?php _e( 'Customers', 'woo_ce' ); ?></label>
+							</th>
+							<td>
+								<input type="radio" name="dataset" value="customers"<?php if( $customers == 0 ) { ?> disabled="disabled"<?php } ?> /> (<?php echo $customers; ?>)
+							</td>
+						</tr>
+<?php } ?>
 					</table>
 				</div>
 			</div>

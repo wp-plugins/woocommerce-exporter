@@ -4,7 +4,7 @@ Contributors: visser
 Tags: e-commerce, woocommerce, shop, cart, ecommerce, export, csv
 Requires at least: 2.9.2
 Tested up to: 3.4.1
-Stable tag: 1.0.2
+Stable tag: 1.0.4
 
 == Description ==
 
@@ -33,6 +33,12 @@ If you have any problems, questions or suggestions please join the members discu
 http://www.visser.com.au/woocommerce/forums/
 
 == Changelog ==
+
+= 1.0.4 =
+* Added: Duplicate e-mail address filtering
+
+= 1.0.3 =
+* Added: Support for Customers
 
 = 1.0.2 =
 * Changed: Migrated to WordPress Extend

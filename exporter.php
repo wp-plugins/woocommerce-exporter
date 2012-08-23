@@ -3,7 +3,7 @@
 Plugin Name: WooCommerce - Exporter
 Plugin URI: http://www.visser.com.au/woocommerce/plugins/exporter/
 Description: Export store details out of WooCommerce into a CSV-formatted file.
-Version: 1.0.1
+Version: 1.0.4
 Author: Visser Labs
 Author URI: http://www.visser.com.au/about/
 License: GPL2
@@ -37,6 +37,8 @@ if( is_admin() ) {
 					$dataset[] = 'categories';
 				if( $_POST['dataset'] == 'products' )
 					$dataset[] = 'products';
+				if( $_POST['dataset'] == 'customers' )
+					$dataset[] = 'customers';
 				if( $dataset ) {
 
 					if( isset( $_POST['timeout'] ) )
@@ -86,7 +88,7 @@ if( is_admin() ) {
 
 		global $woo_ce;
 
-		$url = 'tools.php?page=woo_ce';
+		$url = 'admin.php?page=woo_ce';
 		if( function_exists( 'woo_pd_init' ) )
 			$woo_pd_url = 'admin.php?page=woo_pd';
 		else
@@ -94,6 +96,7 @@ if( is_admin() ) {
 
 		$categories = woo_ce_return_count( 'categories' );
 		$products = woo_ce_return_count( 'products' );
+		$customers = woo_ce_return_count( 'customers' );
 
 		include_once( 'templates/admin/woo-admin_ce-export.php' );
 

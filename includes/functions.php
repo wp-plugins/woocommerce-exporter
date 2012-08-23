@@ -23,6 +23,11 @@ if( is_admin() ) {
 				$count = wp_count_posts( $post_type );
 				break;
 
+			case 'customers':
+				$post_type = 'shop_order';
+				$count = wp_count_posts( $post_type );
+				break;
+
 		}
 		if( isset( $count ) || $count_sql ) {
 			if( isset( $count ) ) {
@@ -55,6 +60,65 @@ if( is_admin() ) {
 
 			switch( $datatype ) {
 
+				case 'customers':
+					$columns = array(
+						__( 'Full Name', 'woo_ce' ),
+						__( 'First Name', 'woo_ce' ),
+						__( 'Street Address', 'woo_ce' ),
+						__( 'City', 'woo_ce' ),
+						__( 'State', 'woo_ce' ),
+						__( 'Zip Code', 'woo_ce' ),
+						__( 'Phone Number', 'woo_ce' ),
+						__( 'E-mail', 'woo_ce' )
+					);
+					for( $i = 0; $i < count( $columns ); $i++ ) {
+						if( $i == ( count( $columns ) - 1 ) )
+							$csv .= '"' . $columns[$i] . "\"\n";
+						else
+							$csv .= '"' . $columns[$i] . '"' . $separator;
+					}
+					$post_type = 'shop_order';
+					$orders_sql = "SELECT `ID` FROM `" . $wpdb->posts . "` WHERE `post_type` = '" . $post_type . "'";
+					$orders = $wpdb->get_results( $orders_sql );
+					if( $orders ) {
+						foreach( $orders as $order ) {
+							$order->first_name = get_post_meta( $order->ID, '_billing_first_name', true );
+							$order->last_name = get_post_meta( $order->ID, '_billing_last_name', true );
+							$order->full_name = $order->first_name . ' ' . $order->last_name;
+							$order->billing_address = get_post_meta( $order->ID, '_billing_address_1', true );
+							$order->billing_address_alt = get_post_meta( $order->ID, '_billing_address_2', true );
+							if( $order->billing_address_alt )
+								$order->billing_address .= ' ' . $order->billing_address_alt;
+							$order->billing_city = get_post_meta( $order->ID, '_billing_city', true );
+							$order->billing_postcode = get_post_meta( $order->ID, '_billing_postcode', true );
+							$order->billing_country = get_post_meta( $order->ID, '_billing_country', true );
+							$order->billing_state = get_post_meta( $order->ID, '_billing_state', true );
+							$order->billing_phone = get_post_meta( $order->ID, '_billing_phone', true );
+							$order->billing_email = get_post_meta( $order->ID, '_billing_email', true );
+
+							foreach( $order as $key => $value )
+								$order->$key = '"' . woo_ce_has_value( $value ) . '"';
+
+							if( isset( $order->billing_email ) && $order->billing_email ) {
+								if( !strstr( $csv, $order->billing_email ) ) {
+									$csv .= 
+										$order->full_name . $separator . 
+										$order->first_name . $separator . 
+										$order->billing_address . $separator . 
+										$order->billing_city . $separator . 
+										$order->billing_state . $separator . 
+										$order->billing_postcode . $separator . 
+										$order->billing_phone . $separator . 
+										$order->billing_email . 
+									"\n";
+								}
+							}
+
+						}
+					}
+					unset( $orders, $order );
+					break;
+
 				case 'products':
 					$columns = array(
 						'SKU',
@@ -85,7 +149,8 @@ if( is_admin() ) {
 						else
 							$csv .= '"' . $columns[$i] . '"' . $separator;
 					}
-					$products_sql = "SELECT `ID`, `post_title` as name, `post_name` as permalink, `post_content` as description, `post_excerpt` as excerpt, `post_status` as status, `comment_status` as comments FROM `" . $wpdb->posts . "` WHERE `post_type` = 'product'";
+					$post_type = 'product';
+					$products_sql = "SELECT `ID`, `post_title` as name, `post_name` as permalink, `post_content` as description, `post_excerpt` as excerpt, `post_status` as status, `comment_status` as comments FROM `" . $wpdb->posts . "` WHERE `post_type` = '" . $post_type . "'";
 					$products = $wpdb->get_results( $products_sql );
 					if( $products ) {
 						$weight_unit = get_option( 'woocommerce_weight_unit' );
@@ -152,6 +217,7 @@ if( is_admin() ) {
 
 						}
 					}
+					unset( $products, $product );
 					break;
 
 			}
