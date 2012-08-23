@@ -6,9 +6,14 @@ Requires at least: 2.9.2
 Tested up to: 3.4.1
 Stable tag: 1.0.4
 
+Export store details out of WooCommerce into a CSV-formatted file.
+
 == Description ==
 
-Export store details out of WooCommerce into a CSV-formatted file.
+Features include:
+
+* Export Products (compatible with Product Importer Deluxe)
+* Export Customers
 
 For more information visit: http://www.visser.com.au/woocommerce/
 
@@ -21,7 +26,7 @@ That's it!
 
 == Usage ==
 
-1. Open Tools > Store Export from the WordPress Administration
+1. Open WooCommerce > Store Export from the WordPress Administration
 2. Select which WooCommerce details you would like to export and click Export
 
 Done!
@@ -36,6 +41,7 @@ http://www.visser.com.au/woocommerce/forums/
 
 = 1.0.4 =
 * Added: Duplicate e-mail address filtering
+* Changed: Updated readme.txt
 
 = 1.0.3 =
 * Added: Support for Customers
