@@ -1,4 +1,4 @@
-=== WooCommerce - Exporter ===
+=== WooCommerce - Store Exporter ===
 
 Contributors: visser
 Donate link: http://www.visser.com.au/#donations
@@ -7,14 +7,15 @@ Requires at least: 2.9.2
 Tested up to: 3.4.1
 Stable tag: 1.0.5
 
-Export store details out of WooCommerce into a CSV-formatted file.
-
 == Description ==
+
+Export store details out of WooCommerce into a CSV-formatted file.
 
 Features include:
 
 * Export Products (compatible with Product Importer Deluxe)
 * Export Customers
+* Export Sales
 
 For more information visit: http://www.visser.com.au/woocommerce/
 
@@ -41,6 +42,10 @@ http://www.visser.com.au/woocommerce/forums/
 == Changelog ==
 
 = 1.0.5 =
+* Added: Tabbed viewing on the Exporter screen
+* Added: Export Sales
+* Added: Product columns
+* Added: Sales columns
 * Added: Category heirachy support (up to 3 levels deep)
 * Fixed: Foreign character support
 * Changed: More efficient Tag generation

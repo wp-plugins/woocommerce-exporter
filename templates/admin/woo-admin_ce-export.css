@@ -1,0 +1,10 @@
+.woocommerce_page_woo_ce h2 .nav-tab {
+	font-size: 16px;
+	line-height:20px;
+	padding:3px 6px 3px;
+	margin-right:0;
+}
+
+.woocommerce_page_woo_ce h2.nav-tab-wrapper {
+	padding-left:7px;
+}

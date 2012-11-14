@@ -30,6 +30,19 @@ if( is_admin() ) {
 
 	/* Start of: WordPress Administration */
 
+	function woo_ce_add_settings_link( $links, $file ) {
+
+		static $this_plugin;
+		if( !$this_plugin ) $this_plugin = plugin_basename( __FILE__ );
+		if( $file == $this_plugin ) {
+			$settings_link = '<a href="' . add_query_arg( array( 'post_type' => 'product', 'page' => 'woo_ce' ), 'edit.php' ) . '">' . __( 'Export', 'woo_ce' ) . '</a>';
+			array_unshift( $links, $settings_link );
+		}
+		return $links;
+
+	}
+	add_filter( 'plugin_action_links', 'woo_ce_add_settings_link', 10, 2 );
+
 	function woo_ce_admin_init() {
 
 		global $woo_ce, $export;
@@ -44,10 +57,18 @@ if( is_admin() ) {
 				$export->delimiter = $_POST['delimiter'];
 				$export->category_separator = $_POST['category_separator'];
 				$dataset = array();
+				if( $_POST['dataset'] == 'products' ) {
+					$dataset[] = 'products';
+					$export->fields = $_POST['product_fields'];
+				}
+				if( $_POST['dataset'] == 'sales' ) {
+					$dataset[] = 'orders';
+					$export->fields = $_POST['sale_fields'];
+				}
 				if( $_POST['dataset'] == 'categories' )
 					$dataset[] = 'categories';
-				if( $_POST['dataset'] == 'products' )
-					$dataset[] = 'products';
+				if( $_POST['dataset'] == 'tags' )
+					$dataset[] = 'tags';
 				if( $_POST['dataset'] == 'customers' )
 					$dataset[] = 'customers';
 				if( $dataset ) {
@@ -61,7 +82,7 @@ if( is_admin() ) {
 						set_time_limit( $timeout );
 
 					if( isset( $woo_ce['debug'] ) && $woo_ce['debug'] ) {
-						wpsc_ce_export_dataset( $dataset );
+						woo_ce_export_dataset( $dataset );
 					} else {
 						woo_ce_generate_csv_header( $_POST['dataset'] );
 						woo_ce_export_dataset( $dataset );
@@ -71,6 +92,7 @@ if( is_admin() ) {
 				break;
 
 		}
+		wp_enqueue_style( 'woo_ce_styles', plugins_url( '/templates/admin/woo-admin_ce-export.css', __FILE__ ) );
 
 	}
 	add_action( 'admin_init', 'woo_ce_admin_init' );
@@ -104,18 +126,18 @@ if( is_admin() ) {
 
 		global $woo_ce;
 
-		$url = 'admin.php?page=woo_ce';
+		$tab = false;
+		if( isset( $_GET['tab'] ) )
+			$tab = $_GET['tab'];
+
+		$url = add_query_arg( 'page', 'woo_ce' );
 		if( function_exists( 'woo_pd_init' ) ) {
-			$woo_pd_url = 'admin.php?page=woo_pd';
+			$woo_pd_url = add_query_arg( 'page', 'woo_pd' );
 			$woo_pd_target = false;
 		} else {
 			$woo_pd_url = 'http://www.visser.com.au/woocommerce/plugins/product-importer-deluxe/';
 			$woo_pd_target = ' target="_blank"';
 		}
-
-		$categories = woo_ce_return_count( 'categories' );
-		$products = woo_ce_return_count( 'products' );
-		$customers = woo_ce_return_count( 'customers' );
 
 		include_once( 'templates/admin/woo-admin_ce-export.php' );
 
