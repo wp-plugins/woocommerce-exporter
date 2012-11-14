@@ -49,6 +49,7 @@ http://www.visser.com.au/woocommerce/forums/
 * Added: Category heirachy support (up to 3 levels deep)
 * Fixed: Foreign character support
 * Changed: More efficient Tag generation
+* Fixed: Link error on Export within Plugin screen
 
 = 1.0.4 =
 * Added: Duplicate e-mail address filtering
