@@ -413,7 +413,7 @@ if( is_admin() ) {
 				$products[$key]->name = $product->post_title;
 				$products[$key]->permalink = $product->post_name;
 				$products[$key]->description = woo_ce_clean_html( $product->post_content );
-				$products[$key]->excerpt = woo_ce_clean_html( $product->excerpt );
+				$products[$key]->excerpt = woo_ce_clean_html( $product->post_excerpt );
 				$products[$key]->price = get_post_meta( $product->ID, '_price', true );
 				$products[$key]->sale_price = get_post_meta( $product->ID, '_sale_price', true );
 				$products[$key]->weight = get_post_meta( $product->ID, '_weight', true );
