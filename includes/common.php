@@ -4,6 +4,8 @@
 Filename: common.php
 Description: common.php loads commonly accessed functions across the Visser Labs suite.
 
+- woo_is_admin_icon_valid
+
 - woo_get_action
 
 */
@@ -11,6 +13,32 @@ Description: common.php loads commonly accessed functions across the Visser Labs
 if( is_admin() ) {
 
 	/* Start of: WordPress Administration */
+
+	if( !function_exists( 'woo_is_admin_icon_valid' ) ) {
+		function woo_is_admin_icon_valid( $icon = 'tools' ) {
+
+			switch( $icon ) {
+
+				case 'index':
+				case 'edit':
+				case 'post':
+				case 'link':
+				case 'comments':
+				case 'page':
+				case 'users':
+				case 'upload':
+				case 'tools':
+				case 'plugins':
+				case 'themes':
+				case 'profile':
+				case 'admin':
+					return $icon;
+					break;
+
+			}
+
+		}
+	}
 
 	include_once( 'common-dashboard_widgets.php' );
 

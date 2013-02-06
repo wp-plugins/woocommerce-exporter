@@ -4,8 +4,8 @@ Contributors: visser
 Donate link: http://www.visser.com.au/#donations
 Tags: e-commerce, woocommerce, shop, cart, ecommerce, export, csv
 Requires at least: 2.9.2
-Tested up to: 3.4.1
-Stable tag: 1.0.5
+Tested up to: 3.5
+Stable tag: 1.0.6
 
 == Description ==
 
@@ -16,6 +16,9 @@ Features include:
 * Export Products (compatible with Product Importer Deluxe)
 * Export Customers
 * Export Sales
+* Export Coupons
+
+(*) Compatible with Product Importer Deluxe, All in One SEO Pack, Advanced Google Product Feed and more.
 
 For more information visit: http://www.visser.com.au/woocommerce/
 
@@ -41,7 +44,13 @@ http://www.visser.com.au/woocommerce/forums/
 
 == Changelog ==
 
+= 1.0.6 =
+* Changed: Options engine
+* Changed: Moved styles to admin_enqueue_scripts
+* Added: Coupons support
+
 = 1.0.5 =
+* Fixed: Template header bug
 * Added: Tabbed viewing on the Exporter screen
 * Added: Export Sales
 * Added: Product columns

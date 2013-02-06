@@ -3,7 +3,7 @@
 Plugin Name: WooCommerce - Store Exporter
 Plugin URI: http://www.visser.com.au/woocommerce/plugins/exporter/
 Description: Export store details out of WooCommerce into a CSV-formatted file.
-Version: 1.0.5
+Version: 1.0.6
 Author: Visser Labs
 Author URI: http://www.visser.com.au/about/
 License: GPL2
@@ -23,8 +23,8 @@ $woo_ce = array(
 );
 
 $woo_ce['prefix'] = 'woo_ce';
-$woo_ce['name'] = __( 'WooCommerce Exporter', 'woo_dm' );
-$woo_ce['menu'] = __( 'Store Export', 'woo_de' );
+$woo_ce['name'] = __( 'WooCommerce Exporter', 'woo_ce' );
+$woo_ce['menu'] = __( 'Store Export', 'woo_ce' );
 
 if( is_admin() ) {
 
@@ -35,7 +35,7 @@ if( is_admin() ) {
 		static $this_plugin;
 		if( !$this_plugin ) $this_plugin = plugin_basename( __FILE__ );
 		if( $file == $this_plugin ) {
-			$settings_link = '<a href="' . add_query_arg( 'page', 'woo_ce', 'admin.php' ) . '">' . __( 'Export', 'woo_ce' ) . '</a>';
+			$settings_link = sprintf( '<a href="%s">' . __( 'Export', 'woo_ce' ) . '</a>', add_query_arg( 'page', 'woo_ce', 'admin.php' ) );
 			array_unshift( $links, $settings_link );
 		}
 		return $links;
@@ -57,20 +57,27 @@ if( is_admin() ) {
 				$export->delimiter = $_POST['delimiter'];
 				$export->category_separator = $_POST['category_separator'];
 				$dataset = array();
-				if( $_POST['dataset'] == 'products' ) {
+				$export->type = $_POST['dataset'];
+				if( $export->type == 'products' ) {
 					$dataset[] = 'products';
 					$export->fields = $_POST['product_fields'];
 				}
-				if( $_POST['dataset'] == 'sales' ) {
+				if( $export->type == 'categories' )
+					$dataset[] = 'categories';
+				if( $export->type == 'tags' )
+					$dataset[] = 'tags';
+				if( $export->type == 'sales' ) {
 					$dataset[] = 'orders';
 					$export->fields = $_POST['sale_fields'];
 				}
-				if( $_POST['dataset'] == 'categories' )
-					$dataset[] = 'categories';
-				if( $_POST['dataset'] == 'tags' )
-					$dataset[] = 'tags';
-				if( $_POST['dataset'] == 'customers' )
+				if( $export->type == 'customers' ) {
 					$dataset[] = 'customers';
+					$export->fields = $_POST['customer_fields'];
+				}
+				if( $export->type == 'coupons' ) {
+					$dataset[] = 'coupons';
+					$export->fields = $_POST['coupon_fields'];
+				}
 				if( $dataset ) {
 
 					if( isset( $_POST['timeout'] ) )
@@ -84,24 +91,37 @@ if( is_admin() ) {
 					if( isset( $woo_ce['debug'] ) && $woo_ce['debug'] ) {
 						woo_ce_export_dataset( $dataset );
 					} else {
-						woo_ce_generate_csv_header( $_POST['dataset'] );
+						woo_ce_generate_csv_header( $export->type );
 						woo_ce_export_dataset( $dataset );
+
 						exit();
 					}
 				}
 				break;
 
 		}
-		wp_enqueue_style( 'woo_ce_styles', plugins_url( '/templates/admin/woo-admin_ce-export.css', __FILE__ ) );
 
 	}
 	add_action( 'admin_init', 'woo_ce_admin_init' );
+
+	function woo_ce_enqueue_scripts( $hook ) {
+
+		/* Export */
+		$page = 'woocommerce_page_woo_ce';
+		if( $page == $hook ) {
+			wp_enqueue_style( 'woo_ce_styles', plugins_url( '/templates/admin/woo-admin_ce-export.css', __FILE__ ) );
+			wp_enqueue_script( 'woo_ce_scripts', plugins_url( '/templates/admin/woo-admin_ce-export.js', __FILE__ ), array( 'jquery' ) );
+		}
+
+	}
+	add_action( 'admin_enqueue_scripts', 'woo_ce_enqueue_scripts' );
 
 	function woo_ce_html_page() {
 
 		global $wpdb, $woo_ce;
 
 		woo_ce_template_header();
+		woo_ce_support_donate();
 		$action = woo_get_action();
 		switch( $action ) {
 
@@ -131,13 +151,6 @@ if( is_admin() ) {
 			$tab = $_GET['tab'];
 
 		$url = add_query_arg( 'page', 'woo_ce' );
-		if( function_exists( 'woo_pd_init' ) ) {
-			$woo_pd_url = add_query_arg( 'page', 'woo_pd' );
-			$woo_pd_target = false;
-		} else {
-			$woo_pd_url = 'http://www.visser.com.au/woocommerce/plugins/product-importer-deluxe/';
-			$woo_pd_target = ' target="_blank"';
-		}
 
 		include_once( 'templates/admin/woo-admin_ce-export.php' );
 
