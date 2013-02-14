@@ -9,7 +9,7 @@ if( is_admin() ) {
 		add_submenu_page( 'woocommerce', __( 'Store Export', 'woo_ce' ), __( 'Store Export', 'woo_ce' ), 'manage_options', 'woo_ce', 'woo_ce_html_page' );
 
 	}
-	add_action( 'admin_menu', 'woo_ce_admin_menu', 11 );
+	add_action( 'admin_menu', 'woo_ce_admin_menu' );
 
 	function woo_ce_template_header( $title = '', $icon = 'tools' ) {
 
@@ -41,6 +41,8 @@ if( is_admin() ) {
 			if( in_array( $woo_ce['dirname'], woo_vl_we_love_your_plugins() ) )
 				$show = false;
 		}
+		if( function_exists( 'woo_cd_admin_init' ) )
+			$show = false;
 		if( $show ) {
 			$donate_url = 'http://www.visser.com.au/#donations';
 			$rate_url = 'http://wordpress.org/support/view/plugin-reviews/' . $woo_ce['dirname'];
@@ -1017,6 +1019,15 @@ if( is_admin() ) {
 		if( !$tab )
 			$tab = 'overview';
 
+		/* Store Exporter Deluxe */
+		$woo_cd_exists = false;
+		if( !function_exists( 'woo_cd_admin_init' ) ) {
+			$woo_cd_url = 'http://www.visser.com.au/woocommerce/plugins/exporter-deluxe/';
+			$woo_cd_link = sprintf( '<a href="%s" target="_blank">' . __( 'Store Exporter Deluxe', 'woo_ce' ) . '</a>', $woo_cd_url );
+		} else {
+			$woo_cd_exists = true;
+		}
+
 		switch( $tab ) {
 
 			case 'export':
@@ -1039,6 +1050,7 @@ if( is_admin() ) {
 				break;
 
 			case 'tools':
+				/* Product Importer Deluxe */
 				if( function_exists( 'woo_pd_init' ) ) {
 					$woo_pd_url = add_query_arg( 'page', 'woo_pd' );
 					$woo_pd_target = false;

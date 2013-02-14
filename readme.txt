@@ -5,7 +5,7 @@ Donate link: http://www.visser.com.au/#donations
 Tags: e-commerce, woocommerce, shop, cart, ecommerce, export, csv
 Requires at least: 2.9.2
 Tested up to: 3.5.1
-Stable tag: 1.0.7
+Stable tag: 1.0.8
 
 == Description ==
 
@@ -13,12 +13,15 @@ Export store details out of WooCommerce into a CSV-formatted file.
 
 Features include:
 
-* Export Products (compatible with Product Importer Deluxe)
-* Export Customers
-* Export Sales
-* Export Coupons
+* Export Products (*)
+* Export Categories
+* Export Tags
+* Export Sales (**)
+* Export Coupons (**)
+* Export Customers (**)
 
 (*) Compatible with Product Importer Deluxe, All in One SEO Pack, Advanced Google Product Feed and more.
+(**) Requries the Pro upgrade to enable additional store export functionality.
 
 For more information visit: http://www.visser.com.au/woocommerce/
 
@@ -43,6 +46,9 @@ If you have any problems, questions or suggestions please join the members discu
 http://www.visser.com.au/woocommerce/forums/
 
 == Changelog ==
+
+= 1.0.8 =
+* Added: Integration with Exporter Deluxe
 
 = 1.0.7 =
 * Fixed: Excerpt/Product Short description
