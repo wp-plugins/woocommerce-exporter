@@ -23,6 +23,32 @@
 	padding:0.3em 0;
 }
 
+.woocommerce_page_woo_ce .overview-left {
+	float:left;
+	width:75%;
+}
+.woocommerce_page_woo_ce .overview-right {
+	float:left;
+	width:23%;
+}
+	.woocommerce_page_woo_ce .overview-right h3 {
+		font-size:16px;
+	}
+		.woocommerce_page_woo_ce .overview-right h3 span {
+			float:right;
+			font-size:11px;
+			font-weight:normal;
+		}
+	.woocommerce_page_woo_ce .overview-right p {
+		font-size:12px;
+		color:#333;
+		line-height:1.6em;
+	}
+	.woocommerce_page_woo_ce .overview-right ul {
+		font-size:12px;
+		line-height:1.2em;
+	}
+
 /* Support - Donate / Rate */
 
 .woocommerce_page_woo_ce .support-donate_rate {

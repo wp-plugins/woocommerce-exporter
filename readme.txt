@@ -5,7 +5,7 @@ Donate link: http://www.visser.com.au/#donations
 Tags: e-commerce, woocommerce, shop, cart, ecommerce, export, csv
 Requires at least: 2.9.2
 Tested up to: 3.5.1
-Stable tag: 1.0.8
+Stable tag: 1.0.9
 
 == Description ==
 
@@ -46,6 +46,9 @@ If you have any problems, questions or suggestions please join the members discu
 http://www.visser.com.au/woocommerce/forums/
 
 == Changelog ==
+
+= 1.0.9 =
+* Changed: Integration with Exporter Deluxe
 
 = 1.0.8 =
 * Added: Integration with Exporter Deluxe

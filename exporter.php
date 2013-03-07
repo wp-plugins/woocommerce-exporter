@@ -3,7 +3,7 @@
 Plugin Name: WooCommerce - Store Exporter
 Plugin URI: http://www.visser.com.au/woocommerce/plugins/exporter/
 Description: Export store details out of WooCommerce into a CSV-formatted file.
-Version: 1.0.8
+Version: 1.0.9
 Author: Visser Labs
 Author URI: http://www.visser.com.au/about/
 License: GPL2
@@ -129,6 +129,25 @@ if( is_admin() ) {
 			case 'export':
 				$message = __( 'Chosen WooCommerce details have been exported from your store.', 'woo_ce' );
 				$output = '<div class="updated settings-error"><p><strong>' . $message . '</strong></p></div>';
+				echo $output;
+
+				woo_ce_manage_form();
+				break;
+
+			case 'update':
+				$custom_orders = $_POST['custom_orders'];
+				if( $custom_orders ) {
+					$custom_orders = explode( "\n", trim( $custom_orders ) );
+					$size = count( $custom_orders );
+					if( $size ) {
+						for( $i = 0; $i < $size; $i++ )
+							$custom_orders[$i] = trim( $custom_orders[$i] );
+						woo_ce_update_option( 'custom_orders', $custom_orders );
+					}
+				}
+
+				$message = __( 'Custom Fields saved.', 'wpsc_rp' );
+				$output = '<div class="updated settings-error"><p>' . $message . '</p></div>';
 				echo $output;
 
 				woo_ce_manage_form();

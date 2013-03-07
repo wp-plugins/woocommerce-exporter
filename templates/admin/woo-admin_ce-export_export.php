@@ -4,30 +4,32 @@
 	<li><a href="#export-products"><?php _e( 'Export: Products', 'woo_ce' ); ?></a> |</li>
 <?php } ?>
 <?php if( $sale_fields ) { ?>
-	<li><a href="#export-sales"><?php _e( 'Export: Sales', 'woo_ce' ); ?></a> |</li>
+	<li><a href="#export-sales"><?php _e( 'Export: Orders', 'woo_ce' ); ?></a> |</li>
 <?php } ?>
 <?php if( $customer_fields ) { ?>
 	<li><a href="#export-customers"><?php _e( 'Export: Customers', 'woo_ce' ); ?></a> |</li>
 <?php } ?>
-<?php if( $coupons ) { ?>
+<?php if( $coupon_fields ) { ?>
 	<li><a href="#export-coupons"><?php _e( 'Export: Coupons', 'woo_ce' ); ?></a> |</li>
 <?php } ?>
 	<li><a href="#export-options"><?php _e( 'Export Options', 'woo_ce' ); ?></a></li>
 </ul>
 <br class="clear" />
-<h3><?php _e( 'Export Type', 'woo_ce' ); ?></h3>
+
 <!--
 <p><?php _e( 'When you click the Export button below Store Export will create a CSV file for you to save to your computer.', 'woo_ce' ); ?></p>
 <p><?php _e( 'This formatted CSV file will contain the Product details from your WooCommerce store.', 'woo_ce' ); ?></p>
 <p><?php echo sprintf( __( 'Once you\'ve saved the download file, you can use <a href="%s"%s>Product Importer Deluxe</a> to merge changes back into your store, or import store details into another WooCommerce instance.', 'woo_ce' ), $woo_pd_url, $woo_pd_target ); ?></p>
 -->
+
+<h3><?php _e( 'Export Type', 'woo_ce' ); ?></h3>
 <form method="post" onsubmit="showProgress()">
 	<div id="poststuff">
 
 		<div class="postbox" id="export-type">
 			<h3 class="hndle"><?php _e( 'Export Type', 'woo_ce' ); ?></h3>
 			<div class="inside">
-				<p class="description"><?php _e( 'Select the data type you want to export.', 'jigo_ce' ); ?></p>
+				<p class="description"><?php _e( 'Select the data type you want to export.', 'woo_ce' ); ?></p>
 				<table class="form-table">
 
 					<tr>
@@ -63,10 +65,14 @@
 					<tr>
 						<th>
 							<input type="radio" id="sales" name="dataset" value="sales"<?php echo disabled( $sales, 0 ) . checked( $dataset, 'sales' ) ?>/>
-							<label for="sales"><?php _e( 'Sales', 'woo_ce' ); ?></label>
+							<label for="sales"><?php _e( 'Orders', 'woo_ce' ); ?></label>
 						</th>
 						<td>
+<?php if( function_exists( 'woo_cd_admin_init' ) ) { ?>
 							<span class="description">(<?php echo $sales; ?>)</span>
+<?php } else { ?>
+							<span class="description">(<?php echo sprintf( __( 'available in %s', 'woo_ce' ), $woo_cd_link ); ?>)</span>
+<?php } ?>
 						</td>
 					</tr>
 
@@ -76,7 +82,11 @@
 							<label for="coupons"><?php _e( 'Coupons', 'woo_ce' ); ?></label>
 						</th>
 						<td>
+<?php if( function_exists( 'woo_cd_admin_init' ) ) { ?>
 							<span class="description">(<?php echo $coupons; ?>)</span>
+<?php } else { ?>
+							<span class="description">(<?php echo sprintf( __( 'available in %s', 'woo_ce' ), $woo_cd_link ); ?>)</span>
+<?php } ?>
 						</td>
 					</tr>
 
@@ -86,7 +96,11 @@
 							<label for="customers"><?php _e( 'Customers', 'woo_ce' ); ?></label>
 						</th>
 						<td>
+<?php if( function_exists( 'woo_cd_admin_init' ) ) { ?>
 							<span class="description">(<?php echo $customers; ?>)</span>
+<?php } else { ?>
+							<span class="description">(<?php echo sprintf( __( 'available in %s', 'woo_ce' ), $woo_cd_link ); ?>)</span>
+<?php } ?>
 						</td>
 					</tr>
 
@@ -109,7 +123,7 @@
 			<div class="inside">
 	<?php if( $products ) { ?>
 				<p class="description"><?php _e( 'Select the Product fields you would like to export.', 'woo_ce' ); ?></p>
-				<p><a href="#"><?php _e( 'Check All', 'woo_ce' ); ?></a> | <a href="#"><?php _e( 'Uncheck All', 'woo_ce' ); ?></a></p>
+				<!-- <p><a href="#"><?php _e( 'Check All', 'woo_ce' ); ?></a> | <a href="#"><?php _e( 'Uncheck All', 'woo_ce' ); ?></a></p> -->
 				<table>
 
 		<?php foreach( $product_fields as $product_field ) { ?>
@@ -139,15 +153,15 @@
 	</div>
 
 <?php if( $sale_fields ) { ?>
-	<h3><?php _e( 'Export: Sales', 'woo_ce' ); ?></h3>
+	<h3><?php _e( 'Export: Orders', 'woo_ce' ); ?></h3>
 	<div id="poststuff">
 
 		<div class="postbox" id="export-sales">
-			<h3 class="hndle"><?php _e( 'Sale Fields', 'woo_ce' ); ?></h3>
+			<h3 class="hndle"><?php _e( 'Order Fields', 'woo_ce' ); ?></h3>
 			<div class="inside">
 	<?php if( $sales ) { ?>
-				<p class="description"><?php _e( 'Select the Sale fields you would like to export.', 'woo_ce' ); ?></p>
-				<p><a href="#"><?php _e( 'Check All', 'woo_ce' ); ?></a> | <a href="#"><?php _e( 'Uncheck All', 'woo_ce' ); ?></a></p>
+				<p class="description"><?php _e( 'Select the Order fields you would like to export.', 'woo_ce' ); ?></p>
+				<!-- <p><a href="#"><?php _e( 'Check All', 'woo_ce' ); ?></a> | <a href="#"><?php _e( 'Uncheck All', 'woo_ce' ); ?></a></p> -->
 				<table>
 
 		<?php foreach( $sale_fields as $sale_field ) { ?>
@@ -161,9 +175,14 @@
 					</tr>
 
 		<?php } ?>
+
 				</table>
 				<p class="submit">
-					<input type="submit" value="<?php _e( 'Export Sales', 'woo_ce' ); ?>" class="button-primary" />
+		<?php if( function_exists( 'woo_cd_admin_init' ) ) { ?>
+					<input type="submit" value="<?php _e( 'Export Orders', 'woo_ce' ); ?>" class="button-primary" />
+		<?php } else { ?>
+					<input type="button" class="button button-disabled" value="<?php _e( 'Export Orders', 'woo_ce' ); ?>" />
+		<?php } ?>
 				</p>
 	<?php } else { ?>
 				<p><?php _e( 'No Orders have been found.', 'woo_ce' ); ?></p>
@@ -185,7 +204,7 @@
 			<div class="inside">
 	<?php if( $customers ) { ?>
 				<p class="description"><?php _e( 'Select the Customer fields you would like to export.', 'woo_ce' ); ?></p>
-				<p><a href="#"><?php _e( 'Check All', 'woo_ce' ); ?></a> | <a href="#"><?php _e( 'Uncheck All', 'woo_ce' ); ?></a></p>
+				<!-- <p><a href="#"><?php _e( 'Check All', 'woo_ce' ); ?></a> | <a href="#"><?php _e( 'Uncheck All', 'woo_ce' ); ?></a></p> -->
 				<table>
 
 		<?php foreach( $customer_fields as $customer_field ) { ?>
@@ -201,7 +220,11 @@
 		<?php } ?>
 				</table>
 				<p class="submit">
+		<?php if( function_exists( 'woo_cd_admin_init' ) ) { ?>
 					<input type="submit" value="<?php _e( 'Export Customers', 'woo_ce' ); ?>" class="button-primary" />
+		<?php } else { ?>
+					<input type="button" class="button button-disabled" value="<?php _e( 'Export Customers', 'woo_ce' ); ?>" />
+		<?php } ?>
 				</p>
 	<?php } else { ?>
 				<p><?php _e( 'No Customers have been found.', 'woo_ce' ); ?></p>
@@ -213,7 +236,7 @@
 	</div>
 
 <?php } ?>
-<?php if( $customer_fields ) { ?>
+<?php if( $coupon_fields ) { ?>
 	<h3><?php _e( 'Export: Coupons', 'woo_ce' ); ?></h3>
 	<div id="poststuff">
 
@@ -222,7 +245,7 @@
 			<div class="inside">
 	<?php if( $coupons ) { ?>
 				<p class="description"><?php _e( 'Select the Customer fields you would like to export.', 'woo_ce' ); ?></p>
-				<p><a href="#"><?php _e( 'Check All', 'woo_ce' ); ?></a> | <a href="#"><?php _e( 'Uncheck All', 'woo_ce' ); ?></a></p>
+				<!-- <p><a href="#"><?php _e( 'Check All', 'woo_ce' ); ?></a> | <a href="#"><?php _e( 'Uncheck All', 'woo_ce' ); ?></a></p> -->
 				<table>
 
 		<?php foreach( $coupon_fields as $coupon_field ) { ?>
@@ -238,7 +261,11 @@
 		<?php } ?>
 				</table>
 				<p class="submit">
+		<?php if( function_exists( 'woo_cd_admin_init' ) ) { ?>
 					<input type="submit" value="<?php _e( 'Export Coupons', 'woo_ce' ); ?>" class="button-primary" />
+		<?php } else { ?>
+					<input type="button" class="button button-disabled" value="<?php _e( 'Export Coupons', 'woo_ce' ); ?>" />
+		<?php } ?>
 				</p>
 	<?php } else { ?>
 				<p><?php _e( 'No Coupons have been found.', 'woo_ce' ); ?></p>
@@ -302,3 +329,37 @@
 	</div>
 	<input type="hidden" name="action" value="export" />
 </form>
+
+<?php if( function_exists( 'woo_cd_admin_init' ) ) { ?>
+<form method="post">
+	<h3><?php _e( 'Custom Fields', 'woo_ce' ); ?></h3>
+	<p><?php _e( 'To include additional custom Order meta in the Export Orders table above fill the Orders text box then click Save Changes.', 'woo_ce' ); ?></p>
+	<div id="poststuff">
+
+		<div class="postbox" id="export-options">
+			<h3 class="hndle"><?php _e( 'Custom Fields', 'woo_ce' ); ?></h3>
+			<div class="inside">
+				<table class="form-table">
+
+					<tr>
+						<th>
+							<label>Orders</label>
+						</th>
+						<td>
+							<textarea name="custom_orders" rows="5" cols="70"><?php echo $custom_orders; ?></textarea>
+							<p class="description"><?php _e( 'Include additional custom Order meta in your exported CSV by adding each custom Order meta to a new line above.', 'woo_cd' ); ?></p>
+						</td>
+					</tr>
+
+				</table>
+				<p class="submit">
+					<input type="submit" value="<?php _e( 'Save Changes', 'woo_ce' ); ?>" class="button-primary" />
+				</p>
+			</div>
+		</div>
+		<!-- .postbox -->
+
+	</div>
+	<input type="hidden" name="action" value="update" />
+</form>
+<?php } ?>

@@ -81,18 +81,10 @@ if( is_admin() ) {
 				break;
 
 			case 'orders':
-				$post_type = 'shop_order';
-				$count = wp_count_posts( $post_type );
-				break;
-
 			case 'coupons':
-				$post_type = 'shop_coupon';
-				$count = wp_count_posts( $post_type );
-				break;
-
 			case 'customers':
-				$post_type = 'shop_order';
-				$count_sql = $wpdb->prepare( "SELECT DISTINCT `post_author` FROM  `" . $wpdb->posts . "` WHERE `post_type` = '%s'", $post_type );
+				if( function_exists( 'woo_cd_return_count' ) )
+					$count = woo_cd_return_count( $dataset );
 				break;
 
 		}
@@ -123,11 +115,15 @@ if( is_admin() ) {
 		global $wpdb, $woo_ce, $export;
 
 		$csv = '';
+		$separator = $export->delimiter;
+
 		foreach( $dataset as $datatype ) {
 
 			$csv = null;
+
 			switch( $datatype ) {
 
+				/* Products */
 				case 'products':
 					$fields = woo_ce_get_product_fields( 'summary' );
 					$export->fields = array_intersect_assoc( $fields, $export->fields );
@@ -140,7 +136,7 @@ if( is_admin() ) {
 						if( $i == ( $size - 1 ) )
 							$csv .= escape_csv_value( $export->columns[$i] ) . "\n";
 						else
-							$csv .= escape_csv_value( $export->columns[$i] ) . $export->delimiter;
+							$csv .= escape_csv_value( $export->columns[$i] ) . $separator;
 					}
 					$products = woo_ce_get_products();
 					if( $products ) {
@@ -156,7 +152,7 @@ if( is_admin() ) {
 										$csv .= escape_csv_value( $product->$key );
 									}
 								}
-								$csv .= $export->delimiter;
+								$csv .= $separator;
 							}
 							$csv .= "\n";
 
@@ -165,6 +161,7 @@ if( is_admin() ) {
 					}
 					break;
 
+				/* Categories */
 				case 'categories':
 					$term_taxonomy = 'product_cat';
 					$args = array(
@@ -179,7 +176,7 @@ if( is_admin() ) {
 							if( $i == ( count( $columns ) - 1 ) )
 								$csv .= $columns[$i] . "\n";
 							else
-								$csv .= $columns[$i] . $export->delimiter;
+								$csv .= $columns[$i] . $separator;
 						}
 						foreach( $categories as $category ) {
 							$csv .= 
@@ -191,6 +188,7 @@ if( is_admin() ) {
 					}
 					break;
 
+				/* Tags */
 				case 'tags':
 					$term_taxonomy = 'product_tag';
 					$args = array(
@@ -205,7 +203,7 @@ if( is_admin() ) {
 							if( $i == ( count( $columns ) - 1 ) )
 								$csv .= $columns[$i] . "\n";
 							else
-								$csv .= $columns[$i] . $export->delimiter;
+								$csv .= $columns[$i] . $separator;
 						}
 						foreach( $tags as $tag ) {
 							$csv .= 
@@ -217,112 +215,13 @@ if( is_admin() ) {
 					}
 					break;
 
+				/* Orders */
 				case 'orders':
-					$fields = woo_ce_get_sale_fields( 'summary' );
-					$export->fields = array_intersect_assoc( $fields, $export->fields );
-					if( $export->fields ) {
-						foreach( $export->fields as $key => $field )
-							$export->columns[] = woo_ce_get_sale_field( $key );
-					}
-					$size = count( $export->columns );
-					for( $i = 0; $i < $size; $i++ ) {
-						if( $i == ( $size - 1 ) )
-							$csv .= '"' . $export->columns[$i] . "\"\n";
-						else
-							$csv .= '"' . $export->columns[$i] . '"' . $export->delimiter;
-					}
-					$orders = woo_ce_get_orders();
-					if( $orders ) {
-						foreach( $orders as $order ) {
-							foreach( $export->fields as $key => $field ) {
-								if( isset( $order->$key ) ) {
-									if( is_array( $value ) ) {
-										foreach( $value as $array_key => $array_value ) {
-											if( !is_array( $array_value ) )
-												$csv .= escape_csv_value( $array_value );
-										}
-									} else {
-										$csv .= escape_csv_value( $order->$key );
-									}
-								}
-								$csv .= $export->delimiter;
-							}
-							$csv .= "\n";
-						}
-						unset( $orders, $order );
-					}
-					break;
-
+				/* Coupons */
 				case 'coupons':
-					$fields = woo_ce_get_coupon_fields( 'summary' );
-					$export->fields = array_intersect_assoc( $fields, $export->fields );
-					if( $export->fields ) {
-						foreach( $export->fields as $key => $field )
-							$export->columns[] = woo_ce_get_coupon_field( $key );
-					}
-					$size = count( $export->columns );
-					for( $i = 0; $i < $size; $i++ ) {
-						if( $i == ( $size - 1 ) )
-							$csv .= escape_csv_value( $export->columns[$i] ) . "\n";
-						else
-							$csv .= escape_csv_value( $export->columns[$i] ) . $export->delimiter;
-					}
-					$coupons = woo_ce_get_coupons();
-					if( $coupons ) {
-						foreach( $coupons as $coupon ) {
-							foreach( $export->fields as $key => $field ) {
-								if( isset( $coupon->$key ) ) {
-									if( is_array( $value ) ) {
-										foreach( $value as $array_key => $array_value ) {
-											if( !is_array( $array_value ) )
-												$csv .= escape_csv_value( $array_value );
-										}
-									} else {
-										$csv .= escape_csv_value( $coupon->$key );
-									}
-								}
-								$csv .= $export->delimiter;
-							}
-							$csv .= "\n";
-						}
-						unset( $coupons, $coupon );
-					}
-					break;
-
+				/* Customers */
 				case 'customers':
-					$fields = woo_ce_get_customer_fields( 'summary' );
-					$export->fields = array_intersect_assoc( $fields, $export->fields );
-					if( $export->fields ) {
-						foreach( $export->fields as $key => $field )
-							$export->columns[] = woo_ce_get_customer_field( $key );
-					}
-					$size = count( $export->columns );
-					for( $i = 0; $i < $size; $i++ ) {
-						if( $i == ( $size - 1 ) )
-							$csv .= escape_csv_value( $export->columns[$i] ) . "\n";
-						else
-							$csv .= escape_csv_value( $export->columns[$i] ) . $export->delimiter;
-					}
-					$orders = woo_ce_get_orders( 'customers' );
-					if( $orders ) {
-						foreach( $orders as $order ) {
-							foreach( $export->fields as $key => $field ) {
-								if( isset( $order->$key ) ) {
-									if( is_array( $value ) ) {
-										foreach( $value as $array_key => $array_value ) {
-											if( !is_array( $array_value ) )
-												$csv .= escape_csv_value( $array_value );
-										}
-									} else {
-										$csv .= escape_csv_value( $order->$key );
-									}
-								}
-								$csv .= $export->delimiter;
-							}
-							$csv .= "\n";
-						}
-						unset( $orders, $order );
-					}
+					$csv = apply_filters( 'woo_ce_export_dataset', $datatype, $export );
 					break;
 
 			}
@@ -333,65 +232,6 @@ if( is_admin() ) {
 				echo $csv;
 
 		}
-
-	}
-
-	function woo_ce_get_orders( $export = 'orders' ) {
-
-		global $wpdb;
-
-		$post_type = 'shop_order';
-		$args = array(
-			'post_type' => $post_type,
-			'numberposts' => -1,
-			'post_status' => woo_ce_post_statuses()
-		);
-		$orders = get_posts( $args );
-		if( $orders ) {
-			foreach( $orders as $key => $order ) {
-				switch( $export ) {
-
-					case 'orders':
-						$orders[$key]->purchase_id = $order->ID;
-						$orders[$key]->purchase_total = get_post_meta( $order->ID, '_order_total', true );
-						$orders[$key]->payment_gateway = get_post_meta( $order->ID, '_payment_method', true );
-						$orders[$key]->shipping_method = get_post_meta( $order->ID, '_shipping_method', true );
-						$orders[$key]->purchase_date = mysql2date( 'd/m/Y', strtotime( $order->post_date ) );
-						break;
-
-					case 'customers':
-						$orders[$key]->first_name = get_post_meta( $order->ID, '_billing_first_name', true );
-						$orders[$key]->last_name = get_post_meta( $order->ID, '_billing_last_name', true );
-						$orders[$key]->full_name = $order->first_name . ' ' . $order->last_name;
-						$orders[$key]->billing_address = get_post_meta( $order->ID, '_billing_address_1', true );
-						$orders[$key]->billing_address_alt = get_post_meta( $order->ID, '_billing_address_2', true );
-						if( $order->billing_address_alt )
-							$orders[$key]->billing_address .= ' ' . $order->billing_address_alt;
-						$orders[$key]->billing_city = get_post_meta( $order->ID, '_billing_city', true );
-						$orders[$key]->billing_postcode = get_post_meta( $order->ID, '_billing_postcode', true );
-						$orders[$key]->billing_state = get_post_meta( $order->ID, '_billing_state', true );
-						$orders[$key]->billing_country = get_post_meta( $order->ID, '_billing_country', true );
-						$orders[$key]->billing_phone = get_post_meta( $order->ID, '_billing_phone', true );
-						$orders[$key]->billing_email = get_post_meta( $order->ID, '_billing_email', true );
-						break;
-
-				}
-			}
-		}
-		return $orders;
-
-	}
-
-	function woo_ce_get_coupons() {
-
-		$post_type = 'shop_coupon';
-		$args = array(
-			'post_type' => $post_type,
-			'numberposts' => -1,
-			'post_status' => woo_ce_post_statuses()
-		);
-		$coupons = get_posts( $args );
-		return $coupons;
 
 	}
 
@@ -498,11 +338,12 @@ if( is_admin() ) {
 	function woo_ce_generate_csv_header( $dataset = '' ) {
 
 		$filename = 'woo-export_' . $dataset . '.csv';
-
-		header( 'Content-type: application/csv' );
-		header( 'Content-Disposition: attachment; filename=' . $filename );
-		header( 'Pragma: no-cache' );
-		header( 'Expires: 0' );
+		if( $filename ) {
+			header( 'Content-type: application/csv' );
+			header( 'Content-Disposition: attachment; filename=' . $filename );
+			header( 'Pragma: no-cache' );
+			header( 'Expires: 0' );
+		}
 
 	}
 
@@ -716,6 +557,7 @@ if( is_admin() ) {
 	function woo_ce_get_sale_fields( $format = 'full' ) {
 
 		$fields = array();
+
 		$fields[] = array( 
 			'name' => 'purchase_id',
 			'label' => __( 'Purchase ID', 'woo_ce' ),
@@ -724,6 +566,16 @@ if( is_admin() ) {
 		$fields[] = array( 
 			'name' => 'purchase_total',
 			'label' => __( 'Purchase Total', 'woo_ce' ),
+			'default' => 1
+		);
+		$fields[] = array(
+			'name' => 'order_discount',
+			'label' => __( 'Order Discount', 'woo_ce' ),
+			'default' => 1
+		);
+		$fields[] = array(
+			'name' => 'order_shipping_tax',
+			'label' => __( 'Order Shipping Tax', 'woo_ce' ),
 			'default' => 1
 		);
 		$fields[] = array( 
@@ -739,6 +591,11 @@ if( is_admin() ) {
 		$fields[] = array( 
 			'name' => 'payment_status',
 			'label' => __( 'Payment Status', 'woo_ce' ),
+			'default' => 1
+		);
+		$fields[] = array(
+			'name' => 'order_key',
+			'label' => __( 'Order Key', 'woo_ce' ),
 			'default' => 1
 		);
 		$fields[] = array( 
@@ -1047,6 +904,10 @@ if( is_admin() ) {
 				$sale_fields = woo_ce_get_sale_fields();
 				$customer_fields = woo_ce_get_customer_fields();
 				$coupon_fields = woo_ce_get_coupon_fields();
+
+				$custom_orders = woo_ce_get_option( 'custom_orders' );
+				if( $custom_orders )
+					$custom_orders = implode( "\n", $custom_orders );
 				break;
 
 			case 'tools':
@@ -1069,4 +930,33 @@ if( is_admin() ) {
 	/* End of: WordPress Administration */
 
 }
+
+/* Start of: Common */
+function woo_ce_get_option( $option = null, $default = false ) {
+
+	global $woo_ce;
+
+	$output = '';
+	if( isset( $option ) ) {
+		$separator = '_';
+		$output = get_option( $woo_ce['prefix'] . $separator . $option, $default );
+	}
+	return $output;
+
+}
+
+function woo_ce_update_option( $option = null, $value = null ) {
+
+	global $woo_ce;
+
+	$output = false;
+	if( isset( $option ) && isset( $value ) ) {
+		$separator = '_';
+		$output = update_option( $woo_ce['prefix'] . $separator . $option, $value );
+	}
+	return $output;
+
+}
+
+/* End of: Common */
 ?>
