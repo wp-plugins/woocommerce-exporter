@@ -16,9 +16,9 @@ Features include:
 * Export Products (*)
 * Export Categories
 * Export Tags
-* Export Sales (**)
-* Export Coupons (**)
+* Export Orders (**)
 * Export Customers (**)
+* Export Coupons (**)
 
 (*) Compatible with Product Importer Deluxe, All in One SEO Pack, Advanced Google Product Feed and more.
 (**) Requries the Pro upgrade to enable additional store export functionality.
@@ -48,6 +48,9 @@ http://www.visser.com.au/woocommerce/forums/
 == Changelog ==
 
 = 1.0.9 =
+* Fixed: Export buttons not adjusting Export Dataset
+* Added: Select All options to Export
+* Added: Partial export support
 * Changed: Integration with Exporter Deluxe
 
 = 1.0.8 =
@@ -64,9 +67,9 @@ http://www.visser.com.au/woocommerce/forums/
 = 1.0.5 =
 * Fixed: Template header bug
 * Added: Tabbed viewing on the Exporter screen
-* Added: Export Sales
+* Added: Export Orders
 * Added: Product columns
-* Added: Sales columns
+* Added: Order columns
 * Added: Category heirachy support (up to 3 levels deep)
 * Fixed: Foreign character support
 * Changed: More efficient Tag generation

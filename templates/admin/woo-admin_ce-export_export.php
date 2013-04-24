@@ -3,8 +3,8 @@
 <?php if( $product_fields ) { ?>
 	<li><a href="#export-products"><?php _e( 'Export: Products', 'woo_ce' ); ?></a> |</li>
 <?php } ?>
-<?php if( $sale_fields ) { ?>
-	<li><a href="#export-sales"><?php _e( 'Export: Orders', 'woo_ce' ); ?></a> |</li>
+<?php if( $order_fields ) { ?>
+	<li><a href="#export-orders"><?php _e( 'Export: Orders', 'woo_ce' ); ?></a> |</li>
 <?php } ?>
 <?php if( $customer_fields ) { ?>
 	<li><a href="#export-customers"><?php _e( 'Export: Customers', 'woo_ce' ); ?></a> |</li>
@@ -15,13 +15,6 @@
 	<li><a href="#export-options"><?php _e( 'Export Options', 'woo_ce' ); ?></a></li>
 </ul>
 <br class="clear" />
-
-<!--
-<p><?php _e( 'When you click the Export button below Store Export will create a CSV file for you to save to your computer.', 'woo_ce' ); ?></p>
-<p><?php _e( 'This formatted CSV file will contain the Product details from your WooCommerce store.', 'woo_ce' ); ?></p>
-<p><?php echo sprintf( __( 'Once you\'ve saved the download file, you can use <a href="%s"%s>Product Importer Deluxe</a> to merge changes back into your store, or import store details into another WooCommerce instance.', 'woo_ce' ), $woo_pd_url, $woo_pd_target ); ?></p>
--->
-
 <h3><?php _e( 'Export Type', 'woo_ce' ); ?></h3>
 <form method="post" onsubmit="showProgress()">
 	<div id="poststuff">
@@ -34,7 +27,7 @@
 
 					<tr>
 						<th>
-							<input type="radio" id="products" name="dataset" value="products"<?php echo disabled( $products, 0 ) . checked( $dataset, 'products' ); ?> />
+							<input type="radio" id="products" name="dataset" value="products"<?php disabled( $products, 0 ); ?><?php checked( $dataset, 'products' ); ?> />
 							<label for="products"><?php _e( 'Products', 'woo_ce' ); ?></label>
 						</th>
 						<td>
@@ -44,7 +37,7 @@
 
 					<tr>
 						<th>
-							<input type="radio" id="categories" name="dataset" value="categories"<?php echo disabled( $categories, 0 ) . checked( $dataset, 'categories' ); ?> />
+							<input type="radio" id="categories" name="dataset" value="categories"<?php disabled( $categories, 0 ); ?><?php checked( $dataset, 'categories' ); ?> />
 							<label for="categories"><?php _e( 'Categories', 'woo_ce' ); ?></label>
 						</th>
 						<td>
@@ -54,7 +47,7 @@
 
 					<tr>
 						<th>
-							<input type="radio" id="tags" name="dataset" value="tags"<?php echo disabled( $tags, 0 ) . checked( $dataset, 'tags' ); ?> />
+							<input type="radio" id="tags" name="dataset" value="tags"<?php disabled( $tags, 0 ); ?><?php checked( $dataset, 'tags' ); ?> />
 							<label for="tags"><?php _e( 'Tags', 'woo_ce' ); ?></label>
 						</th>
 						<td>
@@ -64,42 +57,39 @@
 
 					<tr>
 						<th>
-							<input type="radio" id="sales" name="dataset" value="sales"<?php echo disabled( $sales, 0 ) . checked( $dataset, 'sales' ) ?>/>
-							<label for="sales"><?php _e( 'Orders', 'woo_ce' ); ?></label>
+							<input type="radio" id="orders" name="dataset" value="orders"<?php disabled( $orders, 0 ); ?><?php echo disabled( $woo_cd_exists, false ); ?><?php checked( $dataset, 'orders' ); ?>/>
+							<label for="orders"><?php _e( 'Orders', 'woo_ce' ); ?></label>
 						</th>
 						<td>
-<?php if( function_exists( 'woo_cd_admin_init' ) ) { ?>
-							<span class="description">(<?php echo $sales; ?>)</span>
-<?php } else { ?>
-							<span class="description">(<?php echo sprintf( __( 'available in %s', 'woo_ce' ), $woo_cd_link ); ?>)</span>
+							<span class="description">(<?php echo $orders; ?>)</span>
+<?php if( !function_exists( 'woo_cd_admin_init' ) ) { ?>
+							<span class="description"> - <?php echo sprintf( __( 'available in %s', 'woo_ce' ), $woo_cd_link ); ?></span>
 <?php } ?>
 						</td>
 					</tr>
 
 					<tr>
 						<th>
-							<input type="radio" id="coupons" name="dataset" value="coupons"<?php echo disabled( $coupons, 0 ) . checked( $dataset, 'coupons' ); ?> />
-							<label for="coupons"><?php _e( 'Coupons', 'woo_ce' ); ?></label>
-						</th>
-						<td>
-<?php if( function_exists( 'woo_cd_admin_init' ) ) { ?>
-							<span class="description">(<?php echo $coupons; ?>)</span>
-<?php } else { ?>
-							<span class="description">(<?php echo sprintf( __( 'available in %s', 'woo_ce' ), $woo_cd_link ); ?>)</span>
-<?php } ?>
-						</td>
-					</tr>
-
-					<tr>
-						<th>
-							<input type="radio" id="customers" name="dataset" value="customers"<?php echo disabled( $customers, 0 ) . checked( $dataset, 'customers' ); ?>/>
+							<input type="radio" id="customers" name="dataset" value="customers"<?php disabled( $customers, 0 ); ?><?php echo disabled( $woo_cd_exists, false ); ?><?php checked( $dataset, 'customers' ); ?>/>
 							<label for="customers"><?php _e( 'Customers', 'woo_ce' ); ?></label>
 						</th>
 						<td>
-<?php if( function_exists( 'woo_cd_admin_init' ) ) { ?>
 							<span class="description">(<?php echo $customers; ?>)</span>
-<?php } else { ?>
-							<span class="description">(<?php echo sprintf( __( 'available in %s', 'woo_ce' ), $woo_cd_link ); ?>)</span>
+<?php if( !function_exists( 'woo_cd_admin_init' ) ) { ?>
+							<span class="description"> - <?php echo sprintf( __( 'available in %s', 'woo_ce' ), $woo_cd_link ); ?></span>
+<?php } ?>
+						</td>
+					</tr>
+
+					<tr>
+						<th>
+							<input type="radio" id="coupons" name="dataset" value="coupons"<?php disabled( $coupons, 0 ); ?><?php echo disabled( $woo_cd_exists, false ); ?><?php checked( $dataset, 'coupons' ); ?> />
+							<label for="coupons"><?php _e( 'Coupons', 'woo_ce' ); ?></label>
+						</th>
+						<td>
+							<span class="description">(<?php echo $coupons; ?>)</span>
+<?php if( !function_exists( 'woo_cd_admin_init' ) ) { ?>
+							<span class="description"> - <?php echo sprintf( __( 'available in %s', 'woo_ce' ), $woo_cd_link ); ?></span>
 <?php } ?>
 						</td>
 					</tr>
@@ -123,7 +113,7 @@
 			<div class="inside">
 	<?php if( $products ) { ?>
 				<p class="description"><?php _e( 'Select the Product fields you would like to export.', 'woo_ce' ); ?></p>
-				<!-- <p><a href="#"><?php _e( 'Check All', 'woo_ce' ); ?></a> | <a href="#"><?php _e( 'Uncheck All', 'woo_ce' ); ?></a></p> -->
+				<p><a href="javascript:void(0)" id="products-checkall"><?php _e( 'Check All', 'woo_ce' ); ?></a> | <a href="javascript:void(0)" id="products-uncheckall"><?php _e( 'Uncheck All', 'woo_ce' ); ?></a></p>
 				<table>
 
 		<?php foreach( $product_fields as $product_field ) { ?>
@@ -139,7 +129,7 @@
 		<?php } ?>
 				</table>
 				<p class="submit">
-					<input type="submit" value="<?php _e( 'Export Products', 'woo_ce' ); ?> " class="button-primary" />
+					<input type="submit" id="export_products" value="<?php _e( 'Export Products', 'woo_ce' ); ?> " class="button-primary" />
 				</p>
 	<?php } else { ?>
 				<p><?php _e( 'No Products have been found.', 'woo_ce' ); ?></p>
@@ -152,34 +142,37 @@
 
 	</div>
 
-<?php if( $sale_fields ) { ?>
+<?php if( $order_fields ) { ?>
 	<h3><?php _e( 'Export: Orders', 'woo_ce' ); ?></h3>
 	<div id="poststuff">
 
-		<div class="postbox" id="export-sales">
+		<div class="postbox" id="export-orders">
 			<h3 class="hndle"><?php _e( 'Order Fields', 'woo_ce' ); ?></h3>
 			<div class="inside">
-	<?php if( $sales ) { ?>
+	<?php if( $orders ) { ?>
 				<p class="description"><?php _e( 'Select the Order fields you would like to export.', 'woo_ce' ); ?></p>
-				<!-- <p><a href="#"><?php _e( 'Check All', 'woo_ce' ); ?></a> | <a href="#"><?php _e( 'Uncheck All', 'woo_ce' ); ?></a></p> -->
+		<?php if( function_exists( 'woo_cd_admin_init' ) ) { ?>
+				<p><a href="javascript:void(0)" id="orders-checkall"><?php _e( 'Check All', 'woo_ce' ); ?></a> | <a href="javascript:void(0)" id="orders-uncheckall"><?php _e( 'Uncheck All', 'woo_ce' ); ?></a></p>
+		<?php } else { ?>
+				<p>Check All | Uncheck All</p>
+		<?php } ?>
 				<table>
 
-		<?php foreach( $sale_fields as $sale_field ) { ?>
+		<?php foreach( $order_fields as $order_field ) { ?>
 					<tr>
 						<td>
 							<label>
-								<input type="checkbox" name="sale_fields[<?php echo $sale_field['name']; ?>]" class="sale_field"<?php checked( $sale_field['default'], 1 ); ?> />
-								<?php echo $sale_field['label']; ?>
+								<input type="checkbox" name="order_fields[<?php echo $order_field['name']; ?>]" class="order_field"<?php checked( $order_field['default'], 1 ); ?><?php disabled( $woo_cd_exists, false ); ?> />
+								<?php echo $order_field['label']; ?>
 							</label>
 						</td>
 					</tr>
 
 		<?php } ?>
-
 				</table>
 				<p class="submit">
 		<?php if( function_exists( 'woo_cd_admin_init' ) ) { ?>
-					<input type="submit" value="<?php _e( 'Export Orders', 'woo_ce' ); ?>" class="button-primary" />
+					<input type="submit" id="export_orders" value="<?php _e( 'Export Orders', 'woo_ce' ); ?>" class="button-primary" />
 		<?php } else { ?>
 					<input type="button" class="button button-disabled" value="<?php _e( 'Export Orders', 'woo_ce' ); ?>" />
 		<?php } ?>
@@ -204,14 +197,18 @@
 			<div class="inside">
 	<?php if( $customers ) { ?>
 				<p class="description"><?php _e( 'Select the Customer fields you would like to export.', 'woo_ce' ); ?></p>
-				<!-- <p><a href="#"><?php _e( 'Check All', 'woo_ce' ); ?></a> | <a href="#"><?php _e( 'Uncheck All', 'woo_ce' ); ?></a></p> -->
+		<?php if( function_exists( 'woo_cd_admin_init' ) ) { ?>
+				<p><a href="javascript:void(0)" id="customers-checkall"><?php _e( 'Check All', 'woo_ce' ); ?></a> | <a href="javascript:void(0)" id="customers-uncheckall"><?php _e( 'Uncheck All', 'woo_ce' ); ?></a></p>
+		<?php } else { ?>
+				<p>Uncheck All | Check All</p>
+		<?php } ?>
 				<table>
 
 		<?php foreach( $customer_fields as $customer_field ) { ?>
 					<tr>
 						<td>
 							<label>
-								<input type="checkbox" name="customer_fields[<?php echo $customer_field['name']; ?>]" class="customer_field"<?php checked( $customer_field['default'], 1 ); ?> />
+								<input type="checkbox" name="customer_fields[<?php echo $customer_field['name']; ?>]" class="customer_field"<?php checked( $customer_field['default'], 1 ); ?><?php disabled( $woo_cd_exists, false ); ?> />
 								<?php echo $customer_field['label']; ?>
 							</label>
 						</td>
@@ -221,7 +218,7 @@
 				</table>
 				<p class="submit">
 		<?php if( function_exists( 'woo_cd_admin_init' ) ) { ?>
-					<input type="submit" value="<?php _e( 'Export Customers', 'woo_ce' ); ?>" class="button-primary" />
+					<input type="submit" id="export_customers" value="<?php _e( 'Export Customers', 'woo_ce' ); ?>" class="button-primary" />
 		<?php } else { ?>
 					<input type="button" class="button button-disabled" value="<?php _e( 'Export Customers', 'woo_ce' ); ?>" />
 		<?php } ?>
@@ -241,18 +238,22 @@
 	<div id="poststuff">
 
 		<div class="postbox" id="export-coupons">
-			<h3 class="hndle"><?php _e( 'Customer Fields', 'woo_ce' ); ?></h3>
+			<h3 class="hndle"><?php _e( 'Coupon Fields', 'woo_ce' ); ?></h3>
 			<div class="inside">
 	<?php if( $coupons ) { ?>
-				<p class="description"><?php _e( 'Select the Customer fields you would like to export.', 'woo_ce' ); ?></p>
-				<!-- <p><a href="#"><?php _e( 'Check All', 'woo_ce' ); ?></a> | <a href="#"><?php _e( 'Uncheck All', 'woo_ce' ); ?></a></p> -->
+				<p class="description"><?php _e( 'Select the Coupon fields you would like to export.', 'woo_ce' ); ?></p>
+		<?php if( function_exists( 'woo_cd_admin_init' ) ) { ?>
+				<p><a href="javascript:void(0)" id="coupons-checkall"><?php _e( 'Check All', 'woo_ce' ); ?></a> | <a href="javascript:void(0)" id="coupons-uncheckall"><?php _e( 'Uncheck All', 'woo_ce' ); ?></a></p>
+		<?php } else { ?>
+				<p>Uncheck All | Check All</p>
+		<?php } ?>
 				<table>
 
 		<?php foreach( $coupon_fields as $coupon_field ) { ?>
 					<tr>
 						<td>
 							<label>
-								<input type="checkbox" name="coupon_fields[<?php echo $coupon_field['name']; ?>]" class="coupon_field"<?php checked( $coupon_field['default'], 1 ); ?> />
+								<input type="checkbox" name="coupon_fields[<?php echo $coupon_field['name']; ?>]" class="coupon_field"<?php checked( $coupon_field['default'], 1 ); ?><?php disabled( $woo_cd_exists, false ); ?> />
 								<?php echo $coupon_field['label']; ?>
 							</label>
 						</td>
@@ -262,7 +263,7 @@
 				</table>
 				<p class="submit">
 		<?php if( function_exists( 'woo_cd_admin_init' ) ) { ?>
-					<input type="submit" value="<?php _e( 'Export Coupons', 'woo_ce' ); ?>" class="button-primary" />
+					<input type="submit" id="export_coupons" value="<?php _e( 'Export Coupons', 'woo_ce' ); ?>" class="button-primary" />
 		<?php } else { ?>
 					<input type="button" class="button button-disabled" value="<?php _e( 'Export Coupons', 'woo_ce' ); ?>" />
 		<?php } ?>
@@ -277,6 +278,7 @@
 	</div>
 
 <?php } ?>
+
 	<h3><?php _e( 'Export Options', 'woo_ce' ); ?></h3>
 	<div id="poststuff">
 
@@ -284,6 +286,8 @@
 			<h3 class="hndle"><?php _e( 'Export Options', 'woo_ce' ); ?></h3>
 			<div class="inside">
 				<table class="form-table">
+
+					<?php do_action( 'woo_ce_export_options' ); ?>
 
 					<tr>
 						<th>
@@ -302,6 +306,26 @@
 						<td>
 							<input type="text" size="3" id="category_separator" name="category_separator" value="|" size="1" class="text" />
 							<p class="description"><?php _e( 'The Product Category separator allows you to assign individual Products to multiple Product Categories/Tags/Images at a time. It is suggested to use the \'|\' (vertical pipe) character between each item. For instance: <code>Clothing|Mens|Shirts</code>.', 'woo_ce' ); ?></p>
+						</td>
+					</tr>
+
+					<tr>
+						<th>
+							<label for="limit_volume"><?php _e( 'Limit volume', 'woo_ce' ); ?></label>
+						</th>
+						<td>
+							<input type="text" size="3" id="limit_volume" name="limit_volume" value="" size="5" class="text" />
+							<p class="description"><?php _e( 'Limit volume allows for partial exporting of a dataset. This is useful when encountering timeout and/or memory errors during the default export. By default this is not used and is left empty.', 'woo_ce' ); ?></p>
+						</td>
+					</tr>
+
+					<tr>
+						<th>
+							<label for="offset"><?php _e( 'Volume offset', 'woo_ce' ); ?></label>
+						</th>
+						<td>
+							<input type="text" size="3" id="offset" name="offset" value="" size="5" class="text" />
+							<p class="description"><?php _e( 'Volume offset allows for partial exporting of a dataset, to be used in conjuction with Limit volme option above. By default this is not used and is left empty.', 'woo_ce' ); ?></p>
 						</td>
 					</tr>
 

@@ -70,21 +70,52 @@ if( is_admin() ) {
 				$count = wp_count_posts( $post_type );
 				break;
 
-			case 'tags':
-				$term_taxonomy = 'product_tag';
-				$count = wp_count_terms( $term_taxonomy );
-				break;
-
 			case 'categories':
 				$term_taxonomy = 'product_cat';
 				$count = wp_count_terms( $term_taxonomy );
 				break;
 
+			case 'tags':
+				$term_taxonomy = 'product_tag';
+				$count = wp_count_terms( $term_taxonomy );
+				break;
+
 			case 'orders':
-			case 'coupons':
+				$post_type = 'shop_order';
+				$count = wp_count_posts( $post_type );
+				break;
+
 			case 'customers':
-				if( function_exists( 'woo_cd_return_count' ) )
-					$count = woo_cd_return_count( $dataset );
+				$post_type = 'shop_order';
+				$args = array(
+					'post_type' => $post_type,
+					'numberposts' => -1,
+					'post_status' => woo_ce_post_statuses(),
+					'tax_query' => array(
+						array(
+							'taxonomy' => 'shop_order_status',
+							'field' => 'slug',
+							'terms' => array( 'completed', 'processing', 'on-hold' )
+						)
+					)
+				);
+				$orders = get_posts( $args );
+				if( $orders ) {
+					$customers = array();
+					foreach( $orders as $order ) {
+						if( $order->email = get_post_meta( $order->ID, '_billing_email', true ) ) {
+							if( !in_array( $order->email, $customers ) ) {
+								$customers[$order->ID] = $order->email;
+								$count++;
+							}
+						}
+					}
+				}
+				break;
+
+			case 'coupons':
+				$post_type = 'shop_coupon';
+				$count = wp_count_posts( $post_type );
 				break;
 
 		}
@@ -110,17 +141,17 @@ if( is_admin() ) {
 
 	}
 
-	function woo_ce_export_dataset( $dataset ) {
+	function woo_ce_export_dataset( $dataset, $args = array() ) {
 
 		global $wpdb, $woo_ce, $export;
 
 		$csv = '';
 		$separator = $export->delimiter;
+		$export->args = $args;
 
 		foreach( $dataset as $datatype ) {
 
-			$csv = null;
-
+			$csv = '';
 			switch( $datatype ) {
 
 				/* Products */
@@ -138,8 +169,13 @@ if( is_admin() ) {
 						else
 							$csv .= escape_csv_value( $export->columns[$i] ) . $separator;
 					}
-					$products = woo_ce_get_products();
+					$products = woo_ce_get_products( $export->args );
 					if( $products ) {
+						$weight_unit = get_option( 'woocommerce_weight_unit' );
+						$dimension_unit = get_option( 'woocommerce_dimension_unit' );
+						$height_unit = $dimension_unit;
+						$width_unit = $dimension_unit;
+						$length_unit = $dimension_unit;
 						foreach( $products as $product ) {
 							foreach( $export->fields as $key => $field ) {
 								if( isset( $product->$key ) ) {
@@ -235,12 +271,21 @@ if( is_admin() ) {
 
 	}
 
-	function woo_ce_get_products() {
+	/* Products */
 
+	function woo_ce_get_products( $args = array() ) {
+
+		$limit_volume = -1;
+		$offset = 0;
+		if( $args ) {
+			$limit_volume = $args['limit_volume'];
+			$offset = $args['offset'];
+		}
 		$post_type = 'product';
 		$args = array(
 			'post_type' => $post_type,
-			'numberposts' => -1,
+			'numberposts' => $limit_volume,
+			'offset' => $offset,
 			'post_status' => woo_ce_post_statuses()
 		);
 		$products = get_posts( $args );
@@ -347,34 +392,6 @@ if( is_admin() ) {
 
 	}
 
-	function woo_ce_has_value( $value = '' ) {
-
-		switch( $value ) {
-
-			case '0':
-				$value = null;
-				break;
-
-			default:
-				if( is_string( $value ) )
-					$value = htmlspecialchars_decode( $value );
-				break;
-
-		}
-		return $value;
-
-	}
-
-	if( !function_exists( 'escape_csv_value' ) ) {
-		function escape_csv_value( $value ) {
-
-			$value = str_replace( '"', '""', $value ); // First off escape all " and make them ""
-			$value = str_replace( PHP_EOL, ' ', $value );
-			return '"' . $value . '"'; // If I have new lines or commas escape them
-
-		}
-	}
-
 	function woo_ce_post_statuses() {
 
 		$output = array(
@@ -392,114 +409,114 @@ if( is_admin() ) {
 	function woo_ce_get_product_fields( $format = 'full' ) {
 
 		$fields = array();
-		$fields[] = array( 
+		$fields[] = array(
 			'name' => 'sku',
 			'label' => __( 'SKU', 'woo_ce' ),
 			'default' => 1
 		);
-		$fields[] = array( 
+		$fields[] = array(
 			'name' => 'name',
 			'label' => __( 'Product Name', 'woo_ce' ),
 			'default' => 1
 		);
-		$fields[] = array( 
+		$fields[] = array(
 			'name' => 'permalink',
 			'label' => __( 'Permalink', 'woo_ce' ),
 			'default' => 1
 		);
-		$fields[] = array( 
+		$fields[] = array(
 			'name' => 'description',
 			'label' => __( 'Description', 'woo_ce' ),
 			'default' => 1
 		);
-		$fields[] = array( 
+		$fields[] = array(
 			'name' => 'excerpt',
 			'label' => __( 'Excerpt', 'woo_ce' ),
 			'default' => 1
 		);
-		$fields[] = array( 
+		$fields[] = array(
 			'name' => 'price',
 			'label' => __( 'Price', 'woo_ce' ),
 			'default' => 1
 		);
-		$fields[] = array( 
+		$fields[] = array(
 			'name' => 'sale_price',
 			'label' => __( 'Sale Price', 'woo_ce' ),
 			'default' => 1
 		);
-		$fields[] = array( 
+		$fields[] = array(
 			'name' => 'weight',
 			'label' => __( 'Weight', 'woo_ce' ),
 			'default' => 1
 		);
-		$fields[] = array( 
+		$fields[] = array(
 			'name' => 'weight_unit',
 			'label' => __( 'Weight Unit', 'woo_ce' ),
 			'default' => 1
 		);
-		$fields[] = array( 
+		$fields[] = array(
 			'name' => 'height',
 			'label' => __( 'Height', 'woo_ce' ),
 			'default' => 1
 		);
-		$fields[] = array( 
+		$fields[] = array(
 			'name' => 'height_unit',
 			'label' => __( 'Height Unit', 'woo_ce' ),
 			'default' => 1
 		);
-		$fields[] = array( 
+		$fields[] = array(
 			'name' => 'width',
 			'label' => __( 'Width', 'woo_ce' ),
 			'default' => 1
 		);
-		$fields[] = array( 
+		$fields[] = array(
 			'name' => 'width_unit',
 			'label' => __( 'Width Unit', 'woo_ce' ),
 			'default' => 1
 		);
-		$fields[] = array( 
+		$fields[] = array(
 			'name' => 'length',
 			'label' => __( 'Length', 'woo_ce' ),
 			'default' => 1
 		);
-		$fields[] = array( 
+		$fields[] = array(
 			'name' => 'length_unit',
 			'label' => __( 'Length Unit', 'woo_ce' ),
 			'default' => 1
 		);
-		$fields[] = array( 
+		$fields[] = array(
 			'name' => 'category',
 			'label' => __( 'Category', 'woo_ce' ),
 			'default' => 1
 		);
-		$fields[] = array( 
+		$fields[] = array(
 			'name' => 'tag',
 			'label' => __( 'Tag', 'woo_ce' ),
 			'default' => 1
 		);
-		$fields[] = array( 
+		$fields[] = array(
 			'name' => 'quantity',
 			'label' => __( 'Quantity', 'woo_ce' ),
 			'default' => 1
 		);
-		$fields[] = array( 
+		$fields[] = array(
 			'name' => 'external_link',
 			'label' => __( 'External Link', 'woo_ce' ),
 			'default' => 1
 		);
-		$fields[] = array( 
+		$fields[] = array(
 			'name' => 'product_status',
 			'label' => __( 'Product Status', 'woo_ce' ),
 			'default' => 1
 		);
-		$fields[] = array( 
+		$fields[] = array(
 			'name' => 'comment_status',
 			'label' => __( 'Comment Status', 'woo_ce' ),
 			'default' => 1
 		);
 
 /*
-		$fields[] = array( 
+		$fields[] = array(
 			'name' => '',
 			'label' => __( '', 'woo_ce' ),
 			'default' => 1
@@ -554,16 +571,17 @@ if( is_admin() ) {
 
 	}
 
-	function woo_ce_get_sale_fields( $format = 'full' ) {
+	/* Orders */
+
+	function woo_ce_get_order_fields( $format = 'full' ) {
 
 		$fields = array();
-
-		$fields[] = array( 
+		$fields[] = array(
 			'name' => 'purchase_id',
 			'label' => __( 'Purchase ID', 'woo_ce' ),
 			'default' => 1
 		);
-		$fields[] = array( 
+		$fields[] = array(
 			'name' => 'purchase_total',
 			'label' => __( 'Purchase Total', 'woo_ce' ),
 			'default' => 1
@@ -578,17 +596,17 @@ if( is_admin() ) {
 			'label' => __( 'Order Shipping Tax', 'woo_ce' ),
 			'default' => 1
 		);
-		$fields[] = array( 
+		$fields[] = array(
 			'name' => 'payment_gateway',
 			'label' => __( 'Payment Gateway', 'woo_ce' ),
 			'default' => 1
 		);
-		$fields[] = array( 
+		$fields[] = array(
 			'name' => 'shipping_method',
 			'label' => __( 'Shipping Method', 'woo_ce' ),
-			'default' => 0
+			'default' => 1
 		);
-		$fields[] = array( 
+		$fields[] = array(
 			'name' => 'payment_status',
 			'label' => __( 'Payment Status', 'woo_ce' ),
 			'default' => 1
@@ -598,26 +616,34 @@ if( is_admin() ) {
 			'label' => __( 'Order Key', 'woo_ce' ),
 			'default' => 1
 		);
-		$fields[] = array( 
+		$fields[] = array(
 			'name' => 'purchase_date',
 			'label' => __( 'Purchase Date', 'woo_ce' ),
 			'default' => 1
 		);
-		$fields[] = array( 
-			'name' => 'notes',
-			'label' => __( 'Notes', 'woo_ce' ),
-			'default' => 0
+		$fields[] = array(
+			'name' => 'customer_note',
+			'label' => __( 'Customer Note', 'woo_ce' ),
+			'default' => 1
 		);
 /*
-		$fields[] = array( 
+		$fields[] = array(
+			'name' => 'order_notes',
+			'label' => __( 'Order Notes', 'woo_ce' ),
+			'default' => 1
+		);
+*/
+
+/*
+		$fields[] = array(
 			'name' => '',
 			'label' => __( '', 'woo_ce' ),
 			'default' => 1
 		);
 */
 
-		/* Allow Plugin/Theme authors to add support for additional Sale columns */
-		$fields = apply_filters( 'woo_ce_sale_fields', $fields );
+		/* Allow Plugin/Theme authors to add support for additional Order columns */
+		$fields = apply_filters( 'woo_ce_order_fields', $fields );
 
 		switch( $format ) {
 
@@ -637,11 +663,11 @@ if( is_admin() ) {
 
 	}
 
-	function woo_ce_get_sale_field( $name = null, $format = 'name' ) {
+	function woo_ce_get_order_field( $name = null, $format = 'name' ) {
 
 		$output = '';
 		if( $name ) {
-			$fields = woo_ce_get_sale_fields();
+			$fields = woo_ce_get_order_fields();
 			$size = count( $fields );
 			for( $i = 0; $i < $size; $i++ ) {
 				if( $fields[$i]['name'] == $name ) {
@@ -664,144 +690,91 @@ if( is_admin() ) {
 
 	}
 
-	function woo_ce_get_coupon_fields( $format = 'full' ) {
+	function woo_ce_format_order_date( $date ) {
 
-		$fields = array();
-		$fields[] = array( 
-			'name' => 'coupon_code',
-			'label' => __( 'Coupon Code', 'woo_ce' ),
-			'default' => 1
-		);
-		$fields[] = array( 
-			'name' => 'coupon_type',
-			'label' => __( 'Coupon Type', 'woo_ce' ),
-			'default' => 1
-		);
-		$fields[] = array( 
-			'name' => 'coupon_amount',
-			'label' => __( 'Coupon Amount', 'woo_ce' ),
-			'default' => 1
-		);
-		$fields[] = array( 
-			'name' => 'product_ids',
-			'label' => __( 'Product ID\'s', 'woo_ce' ),
-			'default' => 1
-		);
-		$fields[] = array( 
-			'name' => 'from',
-			'label' => __( 'From', 'woo_ce' ),
-			'default' => 1
-		);
-		$fields[] = array( 
-			'name' => 'to',
-			'label' => __( 'To', 'woo_ce' ),
-			'default' => 1
-		);
-		$fields[] = array( 
-			'name' => 'alone',
-			'label' => __( 'Alone', 'woo_ce' ),
-			'default' => 1
-		);
-
-		/* Allow Plugin/Theme authors to add support for additional Coupon columns */
-		$fields = apply_filters( 'woo_ce_coupon_fields', $fields );
-
-		switch( $format ) {
-
-			case 'summary':
-				$output = array();
-				$size = count( $fields );
-				for( $i = 0; $i < $size; $i++ )
-					$output[$fields[$i]['name']] = 'on';
-				return $output;
-				break;
-
-			case 'full':
-			default:
-				return $fields;
-
-		}
-
-	}
-
-	function woo_ce_get_coupon_field( $name = null, $format = 'name' ) {
-
-		$output = '';
-		if( $name ) {
-			$fields = woo_ce_get_coupon_fields();
-			$size = count( $fields );
-			for( $i = 0; $i < $size; $i++ ) {
-				if( $fields[$i]['name'] == $name ) {
-					switch( $format ) {
-
-						case 'name':
-							$output = $fields[$i]['label'];
-							break;
-
-						case 'full':
-							$output = $fields[$i];
-							break;
-
-					}
-					$i = $size;
-				}
-			}
+		$output = $date;
+		if( $date ) {
+			//$dates = explode( '/', $date );
+			//$output = $dates[2] . '-' . $dates[1] . '-' . $dates[0];
+			$output = str_replace( '/', '-', $date );
 		}
 		return $output;
 
 	}
+
+	/* Customers */
 
 	function woo_ce_get_customer_fields( $format = 'full' ) {
 
 		$fields = array();
 		$fields[] = array( 
-			'name' => 'full_name',
-			'label' => __( 'Full Name', 'woo_ce' ),
+			'name' => 'user_id',
+			'label' => __( 'User ID', 'woo_ce' ),
 			'default' => 1
 		);
 		$fields[] = array( 
-			'name' => 'first_name',
-			'label' => __( 'First Name', 'woo_ce' ),
+			'name' => 'user_name',
+			'label' => __( 'Username', 'woo_ce' ),
+			'default' => 1
+		);
+		$fields[] = array(
+			'name' => 'billing_full_name',
+			'label' => __( 'Billing: Full Name', 'woo_ce' ),
+			'default' => 1
+		);
+		$fields[] = array(
+			'name' => 'billing_first_name',
+			'label' => __( 'Billing: First Name', 'woo_ce' ),
+			'default' => 1
+		);
+		$fields[] = array(
+			'name' => 'billing_last_name',
+			'label' => __( 'Billing: Last Name', 'woo_ce' ),
 			'default' => 1
 		);
 		$fields[] = array( 
-			'name' => 'last_name',
-			'label' => __( 'Last Name', 'woo_ce' ),
+			'name' => 'billing_company',
+			'label' => __( 'Billing: Company', 'woo_ce' ),
 			'default' => 1
 		);
-		$fields[] = array( 
+		$fields[] = array(
 			'name' => 'billing_address',
-			'label' => __( 'Street Address', 'woo_ce' ),
+			'label' => __( 'Billing: Street Address', 'woo_ce' ),
 			'default' => 1
 		);
-		$fields[] = array( 
+		$fields[] = array(
 			'name' => 'billing_city',
-			'label' => __( 'City', 'woo_ce' ),
+			'label' => __( 'Billing: City', 'woo_ce' ),
 			'default' => 1
 		);
-		$fields[] = array( 
-			'name' => 'billing_state',
-			'label' => __( 'State', 'woo_ce' ),
-			'default' => 1
-		);
-		$fields[] = array( 
+		$fields[] = array(
 			'name' => 'billing_postcode',
-			'label' => __( 'ZIP Code', 'woo_ce' ),
+			'label' => __( 'Billing: ZIP Code', 'woo_ce' ),
 			'default' => 1
 		);
-		$fields[] = array( 
+		$fields[] = array(
+			'name' => 'billing_state',
+			'label' => __( 'Billing: State (prefix)', 'woo_ce' ),
+			'default' => 1
+		);
+		$fields[] = array(
+			'name' => 'billing_state_full',
+			'label' => __( 'Billing: State', 'woo_ce' ),
+			'default' => 1
+		);
+		$fields[] = array(
 			'name' => 'billing_country',
-			'label' => __( 'Country', 'woo_ce' ),
+			'label' => __( 'Billing: Country', 'woo_ce' ),
 			'default' => 1
 		);
-		$fields[] = array( 
+		$fields[] = array(
 			'name' => 'billing_phone',
-			'label' => __( 'Phone Number', 'woo_ce' ),
+			'label' => __( 'Billing: Phone Number', 'woo_ce' ),
 			'default' => 1
 		);
-		$fields[] = array( 
+		$fields[] = array(
 			'name' => 'billing_email',
-			'label' => __( 'E-mail Address', 'woo_ce' ),
+			'label' => __( 'Billing: E-mail Address', 'woo_ce' ),
 			'default' => 1
 		);
 
@@ -853,6 +826,105 @@ if( is_admin() ) {
 
 	}
 
+	/* Coupons */
+
+	function woo_ce_get_coupon_fields( $format = 'full' ) {
+
+		$fields = array();
+		$fields[] = array(
+			'name' => 'coupon_code',
+			'label' => __( 'Coupon Code', 'woo_ce' ),
+			'default' => 1
+		);
+		$fields[] = array(
+			'name' => 'coupon_type',
+			'label' => __( 'Coupon Type', 'woo_ce' ),
+			'default' => 1
+		);
+		$fields[] = array(
+			'name' => 'coupon_amount',
+			'label' => __( 'Coupon Amount', 'woo_ce' ),
+			'default' => 1
+		);
+		$fields[] = array(
+			'name' => 'product_ids',
+			'label' => __( 'Product ID\'s', 'woo_ce' ),
+			'default' => 1
+		);
+		$fields[] = array(
+			'name' => 'from',
+			'label' => __( 'From', 'woo_ce' ),
+			'default' => 1
+		);
+		$fields[] = array(
+			'name' => 'to',
+			'label' => __( 'To', 'woo_ce' ),
+			'default' => 1
+		);
+		$fields[] = array(
+			'name' => 'alone',
+			'label' => __( 'Alone', 'woo_ce' ),
+			'default' => 1
+		);
+
+/*
+		$fields[] = array(
+			'name' => '',
+			'label' => __( '', 'woo_ce' ),
+			'default' => 1
+		);
+*/
+
+		/* Allow Plugin/Theme authors to add support for additional Coupon columns */
+		$fields = apply_filters( 'woo_ce_coupon_fields', $fields );
+
+		switch( $format ) {
+
+			case 'summary':
+				$output = array();
+				$size = count( $fields );
+				for( $i = 0; $i < $size; $i++ )
+					$output[$fields[$i]['name']] = 'on';
+				return $output;
+				break;
+
+			case 'full':
+			default:
+				return $fields;
+
+		}
+
+	}
+
+	function woo_ce_get_coupon_field( $name = null, $format = 'name' ) {
+
+		$output = '';
+		if( $name ) {
+			$fields = woo_ce_get_coupon_fields();
+			$size = count( $fields );
+			for( $i = 0; $i < $size; $i++ ) {
+				if( $fields[$i]['name'] == $name ) {
+					switch( $format ) {
+
+						case 'name':
+							$output = $fields[$i]['label'];
+							break;
+
+						case 'full':
+							$output = $fields[$i];
+							break;
+
+					}
+					$i = $size;
+				}
+			}
+		}
+		return $output;
+
+	}
+
+	/* Export */
+
 	function woo_ce_admin_active_tab( $tab_name = null, $tab = null ) {
 
 		if( isset( $_GET['tab'] ) && !$tab )
@@ -888,20 +960,19 @@ if( is_admin() ) {
 		switch( $tab ) {
 
 			case 'export':
+				$dataset = 'products';
 				if( isset( $_POST['dataset'] ) )
 					$dataset = $_POST['dataset'];
-				else
-					$dataset = 'products';
 
 				$products = woo_ce_return_count( 'products' );
 				$categories = woo_ce_return_count( 'categories' );
 				$tags = woo_ce_return_count( 'tags' );
-				$sales = woo_ce_return_count( 'orders' );
+				$orders = woo_ce_return_count( 'orders' );
 				$coupons = woo_ce_return_count( 'coupons' );
 				$customers = woo_ce_return_count( 'customers' );
 
 				$product_fields = woo_ce_get_product_fields();
-				$sale_fields = woo_ce_get_sale_fields();
+				$order_fields = woo_ce_get_order_fields();
 				$customer_fields = woo_ce_get_customer_fields();
 				$coupon_fields = woo_ce_get_coupon_fields();
 
@@ -932,6 +1003,7 @@ if( is_admin() ) {
 }
 
 /* Start of: Common */
+
 function woo_ce_get_option( $option = null, $default = false ) {
 
 	global $woo_ce;

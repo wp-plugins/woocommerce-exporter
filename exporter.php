@@ -12,7 +12,7 @@ License: GPL2
 load_plugin_textdomain( 'woo_ce', null, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
 
 include_once( 'includes/functions.php' );
-
+include_once( 'includes/functions-alternatives.php' );
 include_once( 'includes/common.php' );
 
 $woo_ce = array(
@@ -43,6 +43,23 @@ if( is_admin() ) {
 	}
 	add_filter( 'plugin_action_links', 'woo_ce_add_settings_link', 10, 2 );
 
+	function woo_ce_enqueue_scripts( $hook ) {
+
+		/* Export */
+		$page = 'woocommerce_page_woo_ce';
+		if( $page == $hook ) {
+			/* Date Picker */
+			wp_enqueue_script( 'jquery-ui-datepicker', plugins_url( '/js/ui-datepicker.js', __FILE__ ), array( 'jquery', 'jquery-ui-core' ) );
+			wp_enqueue_style( 'jquery-ui-datepicker', plugins_url( '/templates/admin/jquery-ui-datepicker.css', __FILE__ ) );
+
+			/* Common */
+			wp_enqueue_style( 'woo_ce_styles', plugins_url( '/templates/admin/woo-admin_ce-export.css', __FILE__ ) );
+			wp_enqueue_script( 'woo_ce_scripts', plugins_url( '/templates/admin/woo-admin_ce-export.js', __FILE__ ), array( 'jquery' ) );
+		}
+
+	}
+	add_action( 'admin_enqueue_scripts', 'woo_ce_enqueue_scripts' );
+
 	function woo_ce_admin_init() {
 
 		global $woo_ce, $export;
@@ -56,6 +73,15 @@ if( is_admin() ) {
 				$export = new stdClass();
 				$export->delimiter = $_POST['delimiter'];
 				$export->category_separator = $_POST['category_separator'];
+				$export->limit_volume = -1;
+				if( !empty( $_POST['limit_volume'] ) )
+					$export->limit_volume = $_POST['limit_volume'];
+				$export->offset = 0;
+				if( !empty( $_POST['offset'] ) )
+					$export->offset = (int)$_POST['offset'];
+				$export->order_dates_from = '';
+				$export->order_dates_to = '';
+
 				$dataset = array();
 				$export->type = $_POST['dataset'];
 				if( $export->type == 'products' ) {
@@ -66,9 +92,11 @@ if( is_admin() ) {
 					$dataset[] = 'categories';
 				if( $export->type == 'tags' )
 					$dataset[] = 'tags';
-				if( $export->type == 'sales' ) {
+				if( $export->type == 'orders' ) {
 					$dataset[] = 'orders';
-					$export->fields = $_POST['sale_fields'];
+					$export->fields = $_POST['order_fields'];
+					$export->order_dates_from = $_POST['order_dates_from'];
+					$export->order_dates_to = $_POST['order_dates_to'];
 				}
 				if( $export->type == 'customers' ) {
 					$dataset[] = 'customers';
@@ -80,19 +108,24 @@ if( is_admin() ) {
 				}
 				if( $dataset ) {
 
+					$timeout = 600;
 					if( isset( $_POST['timeout'] ) )
 						$timeout = $_POST['timeout'];
-					else
-						$timeout = 600;
 
 					if( !ini_get( 'safe_mode' ) )
 						set_time_limit( $timeout );
 
+					$args = array(
+						'limit_volume' => $export->limit_volume,
+						'offset' => $export->offset,
+						'order_dates_from' => woo_ce_format_order_date( $export->order_dates_from ),
+						'order_dates_to' => woo_ce_format_order_date( $export->order_dates_to )
+					);
 					if( isset( $woo_ce['debug'] ) && $woo_ce['debug'] ) {
-						woo_ce_export_dataset( $dataset );
+						woo_ce_export_dataset( $dataset, $args );
 					} else {
 						woo_ce_generate_csv_header( $export->type );
-						woo_ce_export_dataset( $dataset );
+						woo_ce_export_dataset( $dataset, $args );
 
 						exit();
 					}
@@ -103,18 +136,6 @@ if( is_admin() ) {
 
 	}
 	add_action( 'admin_init', 'woo_ce_admin_init' );
-
-	function woo_ce_enqueue_scripts( $hook ) {
-
-		/* Export */
-		$page = 'woocommerce_page_woo_ce';
-		if( $page == $hook ) {
-			wp_enqueue_style( 'woo_ce_styles', plugins_url( '/templates/admin/woo-admin_ce-export.css', __FILE__ ) );
-			wp_enqueue_script( 'woo_ce_scripts', plugins_url( '/templates/admin/woo-admin_ce-export.js', __FILE__ ), array( 'jquery' ) );
-		}
-
-	}
-	add_action( 'admin_enqueue_scripts', 'woo_ce_enqueue_scripts' );
 
 	function woo_ce_html_page() {
 
@@ -146,7 +167,7 @@ if( is_admin() ) {
 					}
 				}
 
-				$message = __( 'Custom Fields saved.', 'wpsc_rp' );
+				$message = __( 'Custom Fields saved.', 'woo_ce' );
 				$output = '<div class="updated settings-error"><p>' . $message . '</p></div>';
 				echo $output;
 
