@@ -3,7 +3,7 @@
 Plugin Name: WooCommerce - Store Exporter
 Plugin URI: http://www.visser.com.au/woocommerce/plugins/exporter/
 Description: Export store details out of WooCommerce into a CSV-formatted file.
-Version: 1.0.9
+Version: 1.1.0
 Author: Visser Labs
 Author URI: http://www.visser.com.au/about/
 License: GPL2
@@ -72,13 +72,23 @@ if( is_admin() ) {
 			case 'export':
 				$export = new stdClass();
 				$export->delimiter = $_POST['delimiter'];
+				if( $export->delimiter <> woo_ce_get_option( 'delimiter' ) )
+					woo_ce_update_option( 'delimiter', $export->delimiter );
 				$export->category_separator = $_POST['category_separator'];
+				if( $export->category_separator <> woo_ce_get_option( 'category_separator' ) )
+					woo_ce_update_option( 'category_separator', $export->category_separator );
 				$export->limit_volume = -1;
-				if( !empty( $_POST['limit_volume'] ) )
+				if( !empty( $_POST['limit_volume'] ) ) {
 					$export->limit_volume = $_POST['limit_volume'];
+					if( $export->limit_volume <> woo_ce_get_option( 'limit_volume' ) )
+						woo_ce_update_option( 'limit_volume', $export->limit_volume );
+				}
 				$export->offset = 0;
-				if( !empty( $_POST['offset'] ) )
+				if( !empty( $_POST['offset'] ) ) {
 					$export->offset = (int)$_POST['offset'];
+					if( $export->offset <> woo_ce_get_option( 'offset' ) )
+						woo_ce_update_option( 'offset', $export->offset );
+				}
 				$export->order_dates_from = '';
 				$export->order_dates_to = '';
 
@@ -109,8 +119,11 @@ if( is_admin() ) {
 				if( $dataset ) {
 
 					$timeout = 600;
-					if( isset( $_POST['timeout'] ) )
+					if( isset( $_POST['timeout'] ) ) {
 						$timeout = $_POST['timeout'];
+						if( $timeout <> woo_ce_get_option( 'timeout' ) )
+							woo_ce_update_option( 'timeout', $timeout );
+					}
 
 					if( !ini_get( 'safe_mode' ) )
 						set_time_limit( $timeout );

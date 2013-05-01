@@ -5,7 +5,7 @@ Donate link: http://www.visser.com.au/#donations
 Tags: e-commerce, woocommerce, shop, cart, ecommerce, export, csv
 Requires at least: 2.9.2
 Tested up to: 3.5.1
-Stable tag: 1.0.9
+Stable tag: 1.1.0
 
 == Description ==
 
@@ -46,6 +46,13 @@ If you have any problems, questions or suggestions please join the members discu
 http://www.visser.com.au/woocommerce/forums/
 
 == Changelog ==
+
+= 1.1.0 =
+* Added: Save option for delimiter
+* Added: Save option for category separator
+* Added: Save options for limit volume
+* Added: Save options for offset
+* Added: Save options for timeout
 
 = 1.0.9 =
 * Fixed: Export buttons not adjusting Export Dataset

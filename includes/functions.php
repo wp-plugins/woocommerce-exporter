@@ -392,7 +392,7 @@ if( is_admin() ) {
 
 	}
 
-	function woo_ce_post_statuses() {
+	function woo_ce_post_statuses( $extra_statuses = array() ) {
 
 		$output = array(
 			'publish',
@@ -402,6 +402,8 @@ if( is_admin() ) {
 			'private',
 			'trash'
 		);
+		if( $extra_statuses )
+			$output = array_merge( $output, $extra_statuses );
 		return $output;
 
 	}
@@ -633,6 +635,151 @@ if( is_admin() ) {
 			'default' => 1
 		);
 */
+		$fields[] = array( 
+			'name' => 'user_id',
+			'label' => __( 'User ID', 'woo_ce' ),
+			'default' => 1
+		);
+		$fields[] = array( 
+			'name' => 'user_name',
+			'label' => __( 'Username', 'woo_ce' ),
+			'default' => 1
+		);
+		$fields[] = array( 
+			'name' => 'billing_full_name',
+			'label' => __( 'Billing: Full Name', 'woo_ce' ),
+			'default' => 1
+		);
+		$fields[] = array( 
+			'name' => 'billing_first_name',
+			'label' => __( 'Billing: First Name', 'woo_ce' ),
+			'default' => 1
+		);
+		$fields[] = array( 
+			'name' => 'billing_last_name',
+			'label' => __( 'Billing: Last Name', 'woo_ce' ),
+			'default' => 1
+		);
+		$fields[] = array( 
+			'name' => 'billing_company',
+			'label' => __( 'Billing: Company', 'woo_ce' ),
+			'default' => 1
+		);
+		$fields[] = array( 
+			'name' => 'billing_address',
+			'label' => __( 'Billing: Street Address', 'woo_ce' ),
+			'default' => 1
+		);
+		$fields[] = array( 
+			'name' => 'billing_city',
+			'label' => __( 'Billing: City', 'woo_ce' ),
+			'default' => 1
+		);
+		$fields[] = array( 
+			'name' => 'billing_postcode',
+			'label' => __( 'Billing: ZIP Code', 'woo_ce' ),
+			'default' => 1
+		);
+		$fields[] = array( 
+			'name' => 'billing_state',
+			'label' => __( 'Billing: State (prefix)', 'woo_ce' ),
+			'default' => 1
+		);
+		$fields[] = array( 
+			'name' => 'billing_state_full',
+			'label' => __( 'Billing: State', 'woo_ce' ),
+			'default' => 1
+		);
+		$fields[] = array( 
+			'name' => 'billing_country',
+			'label' => __( 'Billing: Country (prefix)', 'woo_ce' ),
+			'default' => 1
+		);
+		$fields[] = array( 
+			'name' => 'billing_country_full',
+			'label' => __( 'Billing: Country', 'woo_ce' ),
+			'default' => 1
+		);
+		$fields[] = array( 
+			'name' => 'billing_phone',
+			'label' => __( 'Billing: Phone Number', 'woo_ce' ),
+			'default' => 1
+		);
+		$fields[] = array( 
+			'name' => 'billing_email',
+			'label' => __( 'Billing: E-mail Address', 'woo_ce' ),
+			'default' => 1
+		);
+		$fields[] = array( 
+			'name' => 'shipping_full_name',
+			'label' => __( 'Shipping: Full Name', 'woo_ce' ),
+			'default' => 1
+		);
+		$fields[] = array( 
+			'name' => 'shipping_first_name',
+			'label' => __( 'Shipping: First Name', 'woo_ce' ),
+			'default' => 1
+		);
+		$fields[] = array( 
+			'name' => 'shipping_last_name',
+			'label' => __( 'Shipping: Last Name', 'woo_ce' ),
+			'default' => 1
+		);
+		$fields[] = array( 
+			'name' => 'shipping_company',
+			'label' => __( 'Shipping: Company', 'woo_ce' ),
+			'default' => 1
+		);
+		$fields[] = array( 
+			'name' => 'shipping_address',
+			'label' => __( 'Shipping: Street Address', 'woo_ce' ),
+			'default' => 1
+		);
+		$fields[] = array( 
+			'name' => 'shipping_city',
+			'label' => __( 'Shipping: City', 'woo_ce' ),
+			'default' => 1
+		);
+		$fields[] = array( 
+			'name' => 'shipping_postcode',
+			'label' => __( 'Shipping: ZIP Code', 'woo_ce' ),
+			'default' => 1
+		);
+		$fields[] = array( 
+			'name' => 'shipping_state',
+			'label' => __( 'Shipping: State (prefix)', 'woo_ce' ),
+			'default' => 1
+		);
+		$fields[] = array( 
+			'name' => 'shipping_state_full',
+			'label' => __( 'Shipping: State', 'woo_ce' ),
+			'default' => 1
+		);
+		$fields[] = array( 
+			'name' => 'shipping_country',
+			'label' => __( 'Shipping: Country (prefix)', 'woo_ce' ),
+			'default' => 1
+		);
+		$fields[] = array( 
+			'name' => 'shipping_country_full',
+			'label' => __( 'Shipping: Country', 'woo_ce' ),
+			'default' => 1
+		);
+		$fields[] = array(
+			'name' => 'order_items_sku',
+			'label' => __( 'Order Items: SKU', 'woo_ce' ),
+			'default' => 1
+		);
+		$fields[] = array(
+			'name' => 'order_items_name',
+			'label' => __( 'Order Items: Product Name', 'woo_ce' ),
+			'default' => 1
+		);
+		$fields[] = array(
+			'name' => 'order_items_quantity',
+			'label' => __( 'Order Items: Quantity', 'woo_ce' ),
+			'default' => 1
+		);
 
 /*
 		$fields[] = array(
@@ -693,11 +840,8 @@ if( is_admin() ) {
 	function woo_ce_format_order_date( $date ) {
 
 		$output = $date;
-		if( $date ) {
-			//$dates = explode( '/', $date );
-			//$output = $dates[2] . '-' . $dates[1] . '-' . $dates[0];
+		if( $date )
 			$output = str_replace( '/', '-', $date );
-		}
 		return $output;
 
 	}
@@ -775,6 +919,76 @@ if( is_admin() ) {
 		$fields[] = array(
 			'name' => 'billing_email',
 			'label' => __( 'Billing: E-mail Address', 'woo_ce' ),
+			'default' => 1
+		);
+		$fields[] = array( 
+			'name' => 'shipping_full_name',
+			'label' => __( 'Shipping: Full Name', 'woo_ce' ),
+			'default' => 1
+		);
+		$fields[] = array( 
+			'name' => 'shipping_first_name',
+			'label' => __( 'Shipping: First Name', 'woo_ce' ),
+			'default' => 1
+		);
+		$fields[] = array( 
+			'name' => 'shipping_last_name',
+			'label' => __( 'Shipping: Last Name', 'woo_ce' ),
+			'default' => 1
+		);
+		$fields[] = array( 
+			'name' => 'shipping_company',
+			'label' => __( 'Shipping: Company', 'woo_ce' ),
+			'default' => 1
+		);
+		$fields[] = array( 
+			'name' => 'shipping_address',
+			'label' => __( 'Shipping: Street Address', 'woo_ce' ),
+			'default' => 1
+		);
+		$fields[] = array( 
+			'name' => 'shipping_city',
+			'label' => __( 'Shipping: City', 'woo_ce' ),
+			'default' => 1
+		);
+		$fields[] = array( 
+			'name' => 'shipping_postcode',
+			'label' => __( 'Shipping: ZIP Code', 'woo_ce' ),
+			'default' => 1
+		);
+		$fields[] = array( 
+			'name' => 'shipping_state',
+			'label' => __( 'Shipping: State (prefix)', 'woo_ce' ),
+			'default' => 1
+		);
+		$fields[] = array( 
+			'name' => 'shipping_state_full',
+			'label' => __( 'Shipping: State', 'woo_ce' ),
+			'default' => 1
+		);
+		$fields[] = array( 
+			'name' => 'shipping_country',
+			'label' => __( 'Shipping: Country (prefix)', 'woo_ce' ),
+			'default' => 1
+		);
+		$fields[] = array( 
+			'name' => 'shipping_country_full',
+			'label' => __( 'Shipping: Country', 'woo_ce' ),
+			'default' => 1
+		);
+		$fields[] = array(
+			'name' => 'total_spent',
+			'label' => __( 'Total Spent', 'woo_ce' ),
+			'default' => 1
+		);
+		$fields[] = array(
+			'name' => 'completed_orders',
+			'label' => __( 'Completed Orders', 'woo_ce' ),
+			'default' => 1
+		);
+		$fields[] = array(
+			'name' => 'total_orders',
+			'label' => __( 'Total Orders', 'woo_ce' ),
 			'default' => 1
 		);
 
@@ -975,6 +1189,12 @@ if( is_admin() ) {
 				$order_fields = woo_ce_get_order_fields();
 				$customer_fields = woo_ce_get_customer_fields();
 				$coupon_fields = woo_ce_get_coupon_fields();
+
+				$delimiter = woo_ce_get_option( 'delimiter', ',' );
+				$category_separator = woo_ce_get_option( 'category_separator', '|' );
+				$limit_volume = woo_ce_get_option( 'limit_volume' );
+				$offset = woo_ce_get_option( 'offset' );
+				$timeout = woo_ce_get_option( 'timeout', 0 );
 
 				$custom_orders = woo_ce_get_option( 'custom_orders' );
 				if( $custom_orders )

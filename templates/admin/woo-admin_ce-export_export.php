@@ -294,7 +294,7 @@
 							<label for="delimiter"><?php _e( 'Field delimiter', 'woo_ce' ); ?></label>
 						</th>
 						<td>
-							<input type="text" size="3" id="delimiter" name="delimiter" value="," size="1" class="text" />
+							<input type="text" size="3" id="delimiter" name="delimiter" value="<?php echo $delimiter; ?>" size="1" class="text" />
 							<p class="description"><?php _e( 'The field delimiter is the character separating each cell in your CSV. This is typically the \',\' (comma) character.', 'woo_pc' ); ?></p>
 						</td>
 					</tr>
@@ -304,7 +304,7 @@
 							<label for="category_separator"><?php _e( 'Category separator', 'woo_ce' ); ?></label>
 						</th>
 						<td>
-							<input type="text" size="3" id="category_separator" name="category_separator" value="|" size="1" class="text" />
+							<input type="text" size="3" id="category_separator" name="category_separator" value="<?php echo $category_separator; ?>" size="1" class="text" />
 							<p class="description"><?php _e( 'The Product Category separator allows you to assign individual Products to multiple Product Categories/Tags/Images at a time. It is suggested to use the \'|\' (vertical pipe) character between each item. For instance: <code>Clothing|Mens|Shirts</code>.', 'woo_ce' ); ?></p>
 						</td>
 					</tr>
@@ -314,7 +314,7 @@
 							<label for="limit_volume"><?php _e( 'Limit volume', 'woo_ce' ); ?></label>
 						</th>
 						<td>
-							<input type="text" size="3" id="limit_volume" name="limit_volume" value="" size="5" class="text" />
+							<input type="text" size="3" id="limit_volume" name="limit_volume" value="<?php echo $limit_volume; ?>" size="5" class="text" />
 							<p class="description"><?php _e( 'Limit volume allows for partial exporting of a dataset. This is useful when encountering timeout and/or memory errors during the default export. By default this is not used and is left empty.', 'woo_ce' ); ?></p>
 						</td>
 					</tr>
@@ -324,7 +324,7 @@
 							<label for="offset"><?php _e( 'Volume offset', 'woo_ce' ); ?></label>
 						</th>
 						<td>
-							<input type="text" size="3" id="offset" name="offset" value="" size="5" class="text" />
+							<input type="text" size="3" id="offset" name="offset" value="<?php echo $offset; ?>" size="5" class="text" />
 							<p class="description"><?php _e( 'Volume offset allows for partial exporting of a dataset, to be used in conjuction with Limit volme option above. By default this is not used and is left empty.', 'woo_ce' ); ?></p>
 						</td>
 					</tr>
@@ -336,10 +336,10 @@
 						</th>
 						<td>
 							<select id="timeout" name="timeout">
-								<option value="600"><?php echo sprintf( __( '%s minutes', 'woo_ce' ), 10 ); ?></option>
-								<option value="1800"><?php echo sprintf( __( '%s minutes', 'woo_ce' ), 30 ); ?></option>
-								<option value="3600"><?php echo sprintf( __( '%s hour', 'woo_ce' ), 1 ); ?></option>
-								<option value="0" selected="selected"><?php _e( 'Unlimited', 'woo_ce' ); ?>&nbsp;</option>
+								<option value="600"<?php selected( $timeout, 600 ); ?>><?php echo sprintf( __( '%s minutes', 'woo_ce' ), 10 ); ?></option>
+								<option value="1800"<?php selected( $timeout, 1800 ); ?>><?php echo sprintf( __( '%s minutes', 'woo_ce' ), 30 ); ?></option>
+								<option value="3600"<?php selected( $timeout, 3600 ); ?>><?php echo sprintf( __( '%s hour', 'woo_ce' ), 1 ); ?></option>
+								<option value="0"<?php selected( $timeout, 0 ); ?>><?php _e( 'Unlimited', 'woo_ce' ); ?></option>
 							</select>
 							<p class="description"><?php _e( 'Script timeout defines how long WooCommerce Exporter is \'allowed\' to process your CSV file, once the time limit is reached the export process halts.', 'woo_ce' ); ?></p>
 						</td>
@@ -357,7 +357,7 @@
 <?php if( function_exists( 'woo_cd_admin_init' ) ) { ?>
 <form method="post">
 	<h3><?php _e( 'Custom Fields', 'woo_ce' ); ?></h3>
-	<p><?php _e( 'To include additional custom Order meta in the Export Orders table above fill the Orders text box then click Save Changes.', 'woo_ce' ); ?></p>
+	<p><?php _e( 'To include additional custom Order meta in the Export Orders table above fill the Orders text box then click Save Custom Fields.', 'woo_ce' ); ?></p>
 	<div id="poststuff">
 
 		<div class="postbox" id="export-options">
@@ -377,7 +377,7 @@
 
 				</table>
 				<p class="submit">
-					<input type="submit" value="<?php _e( 'Save Changes', 'woo_ce' ); ?>" class="button-primary" />
+					<input type="submit" value="<?php _e( 'Save Custom Fields', 'woo_ce' ); ?>" class="button-primary" />
 				</p>
 			</div>
 		</div>

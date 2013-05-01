@@ -36,18 +36,18 @@ $j(function() {
 		$j('#export-orders').find(':checkbox').attr('checked', false);
 	});
 
-	$j('#coupons-checkall').click(function () {
-		$j('#export-coupons').find(':checkbox').attr('checked', true);
-	});
-	$j('#coupons-uncheckall').click(function () {
-		$j('#export-coupons').find(':checkbox').attr('checked', false);
-	});
-
 	$j('#customers-checkall').click(function () {
 		$j('#export-customers').find(':checkbox').attr('checked', true);
 	});
 	$j('#customers-uncheckall').click(function () {
 		$j('#export-customers').find(':checkbox').attr('checked', false);
+	});
+
+	$j('#coupons-checkall').click(function () {
+		$j('#export-coupons').find(':checkbox').attr('checked', true);
+	});
+	$j('#coupons-uncheckall').click(function () {
+		$j('#export-coupons').find(':checkbox').attr('checked', false);
 	});
 
 });
