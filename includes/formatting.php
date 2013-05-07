@@ -53,4 +53,67 @@ function woo_ce_format_comment_status( $comment_status ) {
 	return $output;
 
 }
+
+function woo_ce_format_switch( $input = '', $output_format = 'answer' ) {
+
+	$input = strtolower( $input );
+	switch( $input ) {
+
+		case '1':
+		case 'yes':
+		case 'on':
+		case 'open':
+		case 'active':
+			$input = '1';
+			break;
+
+		case '0':
+		case 'no':
+		case 'off':
+		case 'closed':
+		case 'inactive':
+		default:
+			$input = '0';
+			break;
+
+	}
+	$output = '';
+	switch( $output_format ) {
+
+		case 'int':
+			$output = $input;
+			break;
+
+		case 'answer':
+			switch( $input ) {
+
+				case '1':
+					$output = __( 'Yes', 'woo_ce' );
+					break;
+
+				case '0':
+					$output = __( 'No', 'woo_ce' );
+					break;
+
+			}
+			break;
+
+		case 'boolean':
+			switch( $input ) {
+
+				case '1':
+					$output = 'on';
+					break;
+
+				case '0':
+					$output = 'off';
+					break;
+
+			}
+			break;
+
+	}
+	return $output;
+
+}
 ?>

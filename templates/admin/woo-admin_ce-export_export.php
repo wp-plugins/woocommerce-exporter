@@ -57,7 +57,7 @@
 
 					<tr>
 						<th>
-							<input type="radio" id="orders" name="dataset" value="orders"<?php disabled( $orders, 0 ); ?><?php echo disabled( $woo_cd_exists, false ); ?><?php checked( $dataset, 'orders' ); ?>/>
+							<input type="radio" id="orders" name="dataset" value="orders"<?php disabled( $orders, 0 ); ?><?php disabled( $woo_cd_exists, false ); ?><?php checked( $dataset, 'orders' ); ?>/>
 							<label for="orders"><?php _e( 'Orders', 'woo_ce' ); ?></label>
 						</th>
 						<td>
@@ -70,7 +70,7 @@
 
 					<tr>
 						<th>
-							<input type="radio" id="customers" name="dataset" value="customers"<?php disabled( $customers, 0 ); ?><?php echo disabled( $woo_cd_exists, false ); ?><?php checked( $dataset, 'customers' ); ?>/>
+							<input type="radio" id="customers" name="dataset" value="customers"<?php disabled( $customers, 0 ); ?><?php disabled( $woo_cd_exists, false ); ?><?php checked( $dataset, 'customers' ); ?>/>
 							<label for="customers"><?php _e( 'Customers', 'woo_ce' ); ?></label>
 						</th>
 						<td>
@@ -83,7 +83,7 @@
 
 					<tr>
 						<th>
-							<input type="radio" id="coupons" name="dataset" value="coupons"<?php disabled( $coupons, 0 ); ?><?php echo disabled( $woo_cd_exists, false ); ?><?php checked( $dataset, 'coupons' ); ?> />
+							<input type="radio" id="coupons" name="dataset" value="coupons"<?php disabled( $coupons, 0 ); ?><?php disabled( $woo_cd_exists, false ); ?><?php checked( $dataset, 'coupons' ); ?> />
 							<label for="coupons"><?php _e( 'Coupons', 'woo_ce' ); ?></label>
 						</th>
 						<td>
@@ -294,7 +294,7 @@
 							<label for="delimiter"><?php _e( 'Field delimiter', 'woo_ce' ); ?></label>
 						</th>
 						<td>
-							<input type="text" size="3" id="delimiter" name="delimiter" value="<?php echo $delimiter; ?>" size="1" class="text" />
+							<input type="text" size="3" id="delimiter" name="delimiter" value="<?php echo $delimiter; ?>" size="1" maxlength="1" class="text" />
 							<p class="description"><?php _e( 'The field delimiter is the character separating each cell in your CSV. This is typically the \',\' (comma) character.', 'woo_pc' ); ?></p>
 						</td>
 					</tr>

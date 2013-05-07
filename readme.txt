@@ -5,7 +5,7 @@ Donate link: http://www.visser.com.au/#donations
 Tags: e-commerce, woocommerce, shop, cart, ecommerce, export, csv
 Requires at least: 2.9.2
 Tested up to: 3.5.1
-Stable tag: 1.1.0
+Stable tag: 1.1.1
 
 == Description ==
 
@@ -46,6 +46,21 @@ If you have any problems, questions or suggestions please join the members discu
 http://www.visser.com.au/woocommerce/forums/
 
 == Changelog ==
+
+= 1.1.1 =
+* Added: Expiry Date support to Coupons
+* Added: Individual Use to Coupons
+* Added: Apply before tax to Coupons
+* Added: Exclude sale items to Coupons
+* Added: Expiry Date to Coupons
+* Added: Minimum Amount to Coupons
+* Added: Exclude Product ID's to Coupons
+* Added: Product Categories to Coupons
+* Added: Exclude Product Categories to Coupons
+* Added: Usage Limit to Coupons
+* Fixed: Customers count causing memory error
+* Added: Formatting of 'on' and 'off' values
+* Changed: Memory overrides
 
 = 1.1.0 =
 * Added: Save option for delimiter

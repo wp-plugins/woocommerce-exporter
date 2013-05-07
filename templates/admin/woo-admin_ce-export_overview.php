@@ -12,7 +12,7 @@
 			<a href="<?php echo add_query_arg( 'tab', 'export' ); ?>#export-tags"><?php _e( 'Export Tags', 'woo_ce' ); ?></a>
 		</li>
 		<li>
-			<a href="<?php echo add_query_arg( 'tab', 'export' ); ?>#export-sales"><?php _e( 'Export Orders', 'woo_ce' ); ?></a>
+			<a href="<?php echo add_query_arg( 'tab', 'export' ); ?>#export-orders"><?php _e( 'Export Orders', 'woo_ce' ); ?></a>
 <?php if( !function_exists( 'woo_cd_admin_init' ) ) { ?>
 			<span class="description">(<?php echo sprintf( __( 'available in %s', 'woo_ce' ), $woo_cd_link ); ?>)</span>
 <?php } ?>
@@ -46,10 +46,10 @@
 		<li><?php _e( 'Select export date ranges', 'woo_ce' ); ?></li>
 		<li><?php _e( 'Export Orders', 'woo_ce' ); ?></li>
 		<li><?php _e( 'Select Order fields to export', 'woo_ce' ); ?></li>
-		<li><?php _e( 'Export Coupons', 'woo_ce' ); ?></li>
-		<li><?php _e( 'Select Coupon fields to export', 'woo_ce' ); ?></li>
 		<li><?php _e( 'Export Customers', 'woo_ce' ); ?></li>
 		<li><?php _e( 'Select Customer fields to export', 'woo_ce' ); ?></li>
+		<li><?php _e( 'Export Coupons', 'woo_ce' ); ?></li>
+		<li><?php _e( 'Select Coupon fields to export', 'woo_ce' ); ?></li>
 		<li><?php _e( 'Premium Support', 'woo_ce' ); ?></li>
 	</ul>
 	<p>

@@ -87,26 +87,31 @@ if( is_admin() ) {
 
 			case 'customers':
 				$post_type = 'shop_order';
-				$args = array(
-					'post_type' => $post_type,
-					'numberposts' => -1,
-					'post_status' => woo_ce_post_statuses(),
-					'tax_query' => array(
-						array(
-							'taxonomy' => 'shop_order_status',
-							'field' => 'slug',
-							'terms' => array( 'completed', 'processing', 'on-hold' )
+				$count = wp_count_posts( $post_type );
+				if( woo_ce_count_object( $count ) > 100 ) {
+						$count = '~' . woo_ce_count_object( $count ) . ' *';
+				} else {
+					$args = array(
+						'post_type' => $post_type,
+						'numberposts' => -1,
+						'post_status' => woo_ce_post_statuses(),
+						'tax_query' => array(
+							array(
+								'taxonomy' => 'shop_order_status',
+								'field' => 'slug',
+								'terms' => array( 'completed', 'processing', 'on-hold' )
+							)
 						)
-					)
-				);
-				$orders = get_posts( $args );
-				if( $orders ) {
-					$customers = array();
-					foreach( $orders as $order ) {
-						if( $order->email = get_post_meta( $order->ID, '_billing_email', true ) ) {
-							if( !in_array( $order->email, $customers ) ) {
-								$customers[$order->ID] = $order->email;
-								$count++;
+					);
+					$orders = get_posts( $args );
+					if( $orders ) {
+						$customers = array();
+						foreach( $orders as $order ) {
+							if( $order->email = get_post_meta( $order->ID, '_billing_email', true ) ) {
+								if( !in_array( $order->email, $customers ) ) {
+									$customers[$order->ID] = $order->email;
+									$count++;
+								}
 							}
 						}
 					}
@@ -121,12 +126,7 @@ if( is_admin() ) {
 		}
 		if( isset( $count ) || $count_sql ) {
 			if( isset( $count ) ) {
-				if( is_object( $count ) ) {
-					$count_object = $count;
-					$count = 0;
-					foreach( $count_object as $key => $item )
-						$count = $item + $count;
-				}
+				$count = woo_ce_count_object( $count );
 				return $count;
 			} else {
 				if( $count_sql )
@@ -138,6 +138,20 @@ if( is_admin() ) {
 		} else {
 			return 0;
 		}
+
+	}
+
+	function woo_ce_count_object( $object = 0 ) {
+	
+		$output = '';
+		if( is_object( $object ) ) {
+			$count = 0;
+			foreach( $object as $key => $item )
+				$count = $item + $count;
+		} else {
+			$count = $object;
+		}
+		return $count;
 
 	}
 
@@ -1051,8 +1065,13 @@ if( is_admin() ) {
 			'default' => 1
 		);
 		$fields[] = array(
-			'name' => 'coupon_type',
-			'label' => __( 'Coupon Type', 'woo_ce' ),
+			'name' => 'coupon_description',
+			'label' => __( 'Coupon Description', 'woo_ce' ),
+			'default' => 1
+		);
+		$fields[] = array(
+			'name' => 'discount_type',
+			'label' => __( 'Discount Type', 'woo_ce' ),
 			'default' => 1
 		);
 		$fields[] = array(
@@ -1061,23 +1080,58 @@ if( is_admin() ) {
 			'default' => 1
 		);
 		$fields[] = array(
+			'name' => 'individual_use',
+			'label' => __( 'Individual Use', 'woo_ce' ),
+			'default' => 1
+		);
+		$fields[] = array(
+			'name' => 'apply_before_tax',
+			'label' => __( 'Apply before tax', 'woo_ce' ),
+			'default' => 1
+		);
+		$fields[] = array(
+			'name' => 'exclude_sale_items',
+			'label' => __( 'Exclude sale items', 'woo_ce' ),
+			'default' => 1
+		);
+		$fields[] = array(
+			'name' => 'minimum_amount',
+			'label' => __( 'Minimum Amount', 'woo_ce' ),
+			'default' => 1
+		);
+		$fields[] = array(
 			'name' => 'product_ids',
-			'label' => __( 'Product ID\'s', 'woo_ce' ),
+			'label' => __( 'Products', 'woo_ce' ),
 			'default' => 1
 		);
 		$fields[] = array(
-			'name' => 'from',
-			'label' => __( 'From', 'woo_ce' ),
+			'name' => 'exclude_product_ids',
+			'label' => __( 'Exclude Products', 'woo_ce' ),
 			'default' => 1
 		);
 		$fields[] = array(
-			'name' => 'to',
-			'label' => __( 'To', 'woo_ce' ),
+			'name' => 'product_categories',
+			'label' => __( 'Product Categories', 'woo_ce' ),
 			'default' => 1
 		);
 		$fields[] = array(
-			'name' => 'alone',
-			'label' => __( 'Alone', 'woo_ce' ),
+			'name' => 'exclude_product_categories',
+			'label' => __( 'Exclude Product Categories', 'woo_ce' ),
+			'default' => 1
+		);
+		$fields[] = array(
+			'name' => 'customer_email',
+			'label' => __( 'Customer e-mails', 'woo_ce' ),
+			'default' => 1
+		);
+		$fields[] = array(
+			'name' => 'usage_limit',
+			'label' => __( 'Usage Limit', 'woo_ce' ),
+			'default' => 1
+		);
+		$fields[] = array(
+			'name' => 'expiry_date',
+			'label' => __( 'Expiry Date', 'woo_ce' ),
 			'default' => 1
 		);
 
@@ -1170,6 +1224,7 @@ if( is_admin() ) {
 		} else {
 			$woo_cd_exists = true;
 		}
+		$troubleshooting_url = 'http://www.visser.com.au/documentation/store-exporter-deluxe/';
 
 		switch( $tab ) {
 
