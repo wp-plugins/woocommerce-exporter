@@ -170,13 +170,11 @@
 
 		<?php } ?>
 				</table>
+		<?php if( !function_exists( 'woo_cd_admin_init' ) ) { ?>
 				<p class="submit">
-		<?php if( function_exists( 'woo_cd_admin_init' ) ) { ?>
-					<input type="submit" id="export_orders" value="<?php _e( 'Export Orders', 'woo_ce' ); ?>" class="button-primary" />
-		<?php } else { ?>
 					<input type="button" class="button button-disabled" value="<?php _e( 'Export Orders', 'woo_ce' ); ?>" />
-		<?php } ?>
 				</p>
+		<?php } ?>
 	<?php } else { ?>
 				<p><?php _e( 'No Orders have been found.', 'woo_ce' ); ?></p>
 	<?php } ?>
@@ -184,6 +182,22 @@
 		</div>
 		<!-- .postbox -->
 
+<?php if( function_exists( 'woo_cd_admin_init' ) ) { ?>
+		<div class="postbox">
+			<h3 class="hndle"><?php _e( 'Order Options', 'woo_ce' ); ?></h3>
+			<div class="inside">
+				<?php do_action( 'woo_ce_export_order_options_before_table' ); ?>
+				<table class="form-table">
+					<?php do_action( 'woo_ce_export_order_options_table' ); ?>
+				</table>
+				<?php do_action( 'woo_ce_export_order_options_after_table' ); ?>
+				<p class="submit">
+					<input type="submit" id="export_orders" value="<?php _e( 'Export Orders', 'woo_ce' ); ?>" class="button-primary" />
+				</p>
+			</div>
+		</div>
+		<!-- .postbox -->
+<?php } ?>
 	</div>
 
 <?php } ?>

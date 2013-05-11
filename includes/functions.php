@@ -56,6 +56,15 @@ if( is_admin() ) {
 
 	}
 
+	function woo_ce_save_fields( $dataset, $fields = array() ) {
+
+		if( $dataset && $fields ) {
+			$type = $dataset[0];
+			woo_ce_update_option( $type . '_fields', $fields );
+		}
+
+	}
+
 	function woo_ce_return_count( $dataset ) {
 
 		global $wpdb;
@@ -204,8 +213,7 @@ if( is_admin() ) {
 								}
 								$csv .= $separator;
 							}
-							$csv .= "\n";
-
+							$csv = substr( $csv, 0, -1 ) . "\n";
 						}
 						unset( $products, $product );
 					}
@@ -542,6 +550,16 @@ if( is_admin() ) {
 		/* Allow Plugin/Theme authors to add support for additional Product columns */
 		$fields = apply_filters( 'woo_ce_product_fields', $fields );
 
+		$remember = woo_ce_get_option( 'products_fields' );
+		if( $remember ) {
+			$remember = maybe_unserialize( $remember );
+			$size = count( $fields );
+			for( $i = 0; $i < $size; $i++ ) {
+				if( !array_key_exists( $fields[$i]['name'], $remember ) )
+					$fields[$i]['default'] = 0;
+			}
+		}
+
 		switch( $format ) {
 
 			case 'summary':
@@ -806,6 +824,16 @@ if( is_admin() ) {
 		/* Allow Plugin/Theme authors to add support for additional Order columns */
 		$fields = apply_filters( 'woo_ce_order_fields', $fields );
 
+		$remember = woo_ce_get_option( 'orders_fields' );
+		if( $remember ) {
+			$remember = maybe_unserialize( $remember );
+			$size = count( $fields );
+			for( $i = 0; $i < $size; $i++ ) {
+				if( !array_key_exists( $fields[$i]['name'], $remember ) )
+					$fields[$i]['default'] = 0;
+			}
+		}
+
 		switch( $format ) {
 
 			case 'summary':
@@ -1009,6 +1037,16 @@ if( is_admin() ) {
 		/* Allow Plugin/Theme authors to add support for additional Customer columns */
 		$fields = apply_filters( 'woo_ce_customer_fields', $fields );
 
+		$remember = woo_ce_get_option( 'customers_fields' );
+		if( $remember ) {
+			$remember = maybe_unserialize( $remember );
+			$size = count( $fields );
+			for( $i = 0; $i < $size; $i++ ) {
+				if( !array_key_exists( $fields[$i]['name'], $remember ) )
+					$fields[$i]['default'] = 0;
+			}
+		}
+
 		switch( $format ) {
 
 			case 'summary':
@@ -1145,6 +1183,16 @@ if( is_admin() ) {
 
 		/* Allow Plugin/Theme authors to add support for additional Coupon columns */
 		$fields = apply_filters( 'woo_ce_coupon_fields', $fields );
+
+		$remember = woo_ce_get_option( 'coupons_fields' );
+		if( $remember ) {
+			$remember = maybe_unserialize( $remember );
+			$size = count( $fields );
+			for( $i = 0; $i < $size; $i++ ) {
+				if( !array_key_exists( $fields[$i]['name'], $remember ) )
+					$fields[$i]['default'] = 0;
+			}
+		}
 
 		switch( $format ) {
 
