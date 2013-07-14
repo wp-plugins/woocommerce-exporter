@@ -1,10 +1,102 @@
-var $j = jQuery.noConflict();
+function showProgress() {
+	window.scrollTo(0,0);
+	document.getElementById('progress').style.display = 'block';
+	document.getElementById('content').style.display = 'none';
+	document.getElementById('support-donate_rate').style.display = 'none';
+}
 
+var $j = jQuery.noConflict();
 $j(function() {
+
+	$j('#postform').submit(function() {
+		if( $j('#delete_temporary_csv').val() == 1 ) {
+			showProgress();
+			return false;
+		}
+	});
 
 	// Date Picker
 	$j('.datepicker').datepicker({
 		dateFormat: 'dd/mm/yy'
+	});
+
+	$j('#export-products').show();
+	$j('#export-products-filters-categories').hide();
+	if( $j('#products-filters-categories').attr('checked') ) {
+		$j('#export-products-filters-categories').show();
+	}
+	$j('#export-products-filters-status').hide();
+	if( $j('#products-filters-status').attr('checked') ) {
+		$j('#export-products-filters-status').show();
+	}
+	$j('#export-categories').hide();
+	$j('#export-tags').hide();
+	$j('#export-orders').hide();
+	$j('#export-orders-filters-status').hide();
+	if( $j('#orders-filters-status').attr('checked') ) {
+		$j('#export-orders-filters-status').show();
+	}
+	$j('#export-customers').hide();
+	$j('#export-coupons').hide();
+
+	$j('#products-filters-categories').click(function(){
+		$j('#export-products-filters-categories').toggle();
+	});
+	$j('#products-filters-status').click(function(){
+		$j('#export-products-filters-status').toggle();
+	});
+	$j('#orders-filters-status').click(function(){
+		$j('#export-orders-filters-status').toggle();
+	});
+
+	// Export types
+	$j('#products').click(function(){
+		$j('#export-products').show();
+		$j('#export-categories').hide();
+		$j('#export-tags').hide();
+		$j('#export-orders').hide();
+		$j('#export-customers').hide();
+		$j('#export-coupons').hide();
+	});
+	$j('#categories').click(function(){
+		$j('#export-products').hide();
+		$j('#export-categories').show();
+		$j('#export-tags').hide();
+		$j('#export-orders').hide();
+		$j('#export-customers').hide();
+		$j('#export-coupons').hide();
+	});
+	$j('#tags').click(function(){
+		$j('#export-products').hide();
+		$j('#export-categories').hide();
+		$j('#export-tags').show();
+		$j('#export-orders').hide();
+		$j('#export-customers').hide();
+		$j('#export-coupons').hide();
+	});
+	$j('#orders').click(function(){
+		$j('#export-products').hide();
+		$j('#export-categories').hide();
+		$j('#export-tags').hide();
+		$j('#export-orders').show();
+		$j('#export-customers').hide();
+		$j('#export-coupons').hide();
+	});
+	$j('#customers').click(function(){
+		$j('#export-products').hide();
+		$j('#export-categories').hide();
+		$j('#export-tags').hide();
+		$j('#export-orders').hide();
+		$j('#export-customers').show();
+		$j('#export-coupons').hide();
+	});
+	$j('#coupons').click(function(){
+		$j('#export-products').hide();
+		$j('#export-categories').hide();
+		$j('#export-tags').hide();
+		$j('#export-orders').hide();
+		$j('#export-customers').hide();
+		$j('#export-coupons').show();
 	});
 
 	// Export button

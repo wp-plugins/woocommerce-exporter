@@ -1,16 +1,40 @@
 <?php
-function woo_ce_clean_html( $data ) {
+function woo_ce_clean_html( $content ) {
 
 	if( function_exists( 'mb_convert_encoding' ) ) {
 		$output_encoding = 'ISO-8859-1';
-		$data = mb_convert_encoding( trim( $data ), 'UTF-8', $output_encoding );
+		$content = mb_convert_encoding( trim( $content ), 'UTF-8', $output_encoding );
 	} else {
-		$data = trim( $data );
+		$content = trim( $content );
 	}
-	$data = str_replace( ',', '&#44;', $data );
-	$data = str_replace( "\n", '<br />', $data );
+	// $content = str_replace( ',', '&#44;', $content );
+	// $content = str_replace( "\n", '<br />', $content );
 
-	return $data;
+	return $content;
+
+}
+
+function woo_ce_escape_csv_value( $value = '', $delimiter = ',', $format = 'all' ) {
+
+	$output = $value;
+	if( !empty( $output ) ) {
+		$output = str_replace( '"', '""', $output );
+		//$output = str_replace( PHP_EOL, ' ', $output );
+		$output = str_replace( PHP_EOL, "\r\n", $output );
+		switch( $format ) {
+	
+			case 'all':
+				$output = '"' . $output . '"';
+				break;
+	
+			case 'excel':
+				if( strstr( $output, $delimiter ) !== false || strstr( $output, "\r\n" ) !== false )
+					$output = '"' . $output . '"';
+				break;
+	
+		}
+	}
+	return $output;
 
 }
 
@@ -112,6 +136,18 @@ function woo_ce_format_switch( $input = '', $output_format = 'answer' ) {
 			}
 			break;
 
+	}
+	return $output;
+
+}
+
+function woo_ce_format_product_filters( $product_filters = array() ) {
+
+	$output = array();
+	if( !empty( $product_filters ) ) {
+		foreach( $product_filters as $product_filter ) {
+			$output[] = $product_filter;
+		}
 	}
 	return $output;
 

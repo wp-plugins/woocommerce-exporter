@@ -1,4 +1,5 @@
 <div class="overview-left">
+
 	<h3><a href="<?php echo add_query_arg( 'tab', 'export' ); ?>"><?php _e( 'Export', 'woo_ce' ); ?></a></h3>
 	<p><?php _e( 'Export store details out of WooCommerce into a CSV-formatted file.', 'woo_ce' ); ?></p>
 	<ul class="ul-disc">
@@ -30,6 +31,9 @@
 <?php } ?>
 		</li>
 	</ul>
+
+	<h3><a href="<?php echo add_query_arg( 'tab', 'archive' ); ?>"><?php _e( 'Archives', 'woo_ce' ); ?></a></h3>
+	<p><?php _e( 'Download copies of prior store exports.', 'woo_ce' ); ?></p>
 
 	<h3><a href="<?php echo add_query_arg( 'tab', 'tools' ); ?>"><?php _e( 'Tools', 'woo_ce' ); ?></a></h3>
 	<p><?php _e( 'Export tools for WooCommerce.', 'woo_ce' ); ?></p>

@@ -4,8 +4,8 @@ Contributors: visser
 Donate link: http://www.visser.com.au/#donations
 Tags: e-commerce, woocommerce, shop, cart, ecommerce, export, csv
 Requires at least: 2.9.2
-Tested up to: 3.5.1
-Stable tag: 1.2
+Tested up to: 3.5.2
+Stable tag: 1.2.1
 
 == Description ==
 
@@ -46,6 +46,12 @@ If you have any problems, questions or suggestions please join the members discu
 http://www.visser.com.au/woocommerce/forums/
 
 == Changelog ==
+
+= 1.2.1 =
+* Added: Support for BOM
+* Added: Escape field formatting option
+* Added: New line support
+* Added: Payment Status (number) option
 
 = 1.2 =
 * Fixed: Surplus cell separator at end of lines
