@@ -45,7 +45,7 @@
 
 					<tr>
 						<th>
-							<input type="radio" id="orders" name="dataset" value="orders"<?php disabled( $orders, 0 ); ?><?php disabled( $woo_cd_exists, false ); ?><?php checked( $dataset, 'orders' ); ?>/>
+							<input type="radio" id="orders" name="dataset" value="orders"<?php disabled( $orders, 0 ); ?><?php checked( $dataset, 'orders' ); ?>/>
 							<label for="orders"><?php _e( 'Orders', 'woo_ce' ); ?></label>
 						</th>
 						<td>
@@ -58,7 +58,7 @@
 
 					<tr>
 						<th>
-							<input type="radio" id="customers" name="dataset" value="customers"<?php disabled( $customers, 0 ); ?><?php disabled( $woo_cd_exists, false ); ?><?php checked( $dataset, 'customers' ); ?>/>
+							<input type="radio" id="customers" name="dataset" value="customers"<?php disabled( $customers, 0 ); ?><?php checked( $dataset, 'customers' ); ?>/>
 							<label for="customers"><?php _e( 'Customers', 'woo_ce' ); ?></label>
 						</th>
 						<td>
@@ -71,7 +71,7 @@
 
 					<tr>
 						<th>
-							<input type="radio" id="coupons" name="dataset" value="coupons"<?php disabled( $coupons, 0 ); ?><?php disabled( $woo_cd_exists, false ); ?><?php checked( $dataset, 'coupons' ); ?> />
+							<input type="radio" id="coupons" name="dataset" value="coupons"<?php disabled( $coupons, 0 ); ?><?php checked( $dataset, 'coupons' ); ?> />
 							<label for="coupons"><?php _e( 'Coupons', 'woo_ce' ); ?></label>
 						</th>
 						<td>
@@ -83,9 +83,11 @@
 					</tr>
 
 				</table>
+<!--
 				<p class="submit">
 					<input type="submit" value="<?php _e( 'Export', 'woo_ce' ); ?>" class="button-primary" />
 				</p>
+-->
 			</div>
 		</div>
 		<!-- .postbox -->
@@ -162,6 +164,9 @@
 			<h3 class="hndle"><?php _e( 'Category Fields', 'woo_ce' ); ?></h3>
 			<div class="inside">
 				<p><?php _e( 'This export type has no options.', 'woo_ce' ); ?></p>
+				<p class="submit">
+					<input type="submit" id="export_categories" value="<?php _e( 'Export Categories', 'woo_ce' ); ?> " class="button-primary" />
+				</p>
 			</div>
 		</div>
 		<!-- .postbox -->
@@ -170,6 +175,9 @@
 			<h3 class="hndle"><?php _e( 'Tag Fields', 'woo_ce' ); ?></h3>
 			<div class="inside">
 				<p><?php _e( 'This export type has no options.', 'woo_ce' ); ?></p>
+				<p class="submit">
+					<input type="submit" id="export_tags" value="<?php _e( 'Export Tags', 'woo_ce' ); ?> " class="button-primary" />
+				</p>
 			</div>
 		</div>
 		<!-- .postbox -->
@@ -228,10 +236,6 @@
 					</table>
 
 					<?php do_action( 'woo_ce_export_order_options_after_table' ); ?>
-
-					<p class="submit">
-						<input type="submit" id="export_orders" value="<?php _e( 'Export Orders', 'woo_ce' ); ?>" class="button-primary" />
-					</p>
 
 				</div>
 				<!-- .inside -->

@@ -94,6 +94,23 @@ if( is_admin() ) {
 
 	}
 
+	function woo_ce_orders_filter_by_date() {
+
+		ob_start(); ?>
+<tr>
+	<th>
+		<label for="delimiter"><?php _e( 'Order Dates', 'woo_ce' ); ?></label>
+	</th>
+	<td>
+		<input type="text" size="10" maxlength="10" id="order_dates_from" name="order_dates_from" value="-" class="text" disabled="disabled" /> to <input type="text" size="10" maxlength="10" id="order_dates_to" name="order_dates_to" value="-" class="text" disabled="disabled" />
+		<p class="description"><?php _e( 'Filter the dates of Orders to be included in the export. Default is the date of the first order to today.', 'woo_ce' ); ?></p>
+	</td>
+</tr>
+<?php
+		ob_end_flush();
+
+	}
+
 	function woo_ce_add_post_mime_type( $post_mime_types = array() ) {
 
 		$post_mime_types['text/csv'] = array( __( 'Store Exports', 'woo_ce' ), __( 'Manage Store Exports', 'woo_ce' ), _n_noop( 'Store Export <span class="count">(%s)</span>', 'Store Exports <span class="count">(%s)</span>' ) );
@@ -229,8 +246,6 @@ if( is_admin() ) {
 				$post_type = 'shop_coupon';
 				$count = wp_count_posts( $post_type );
 				break;
-
-			/* 3rd Party */
 
 		}
 		if( isset( $count ) || $count_sql ) {

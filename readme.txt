@@ -5,7 +5,7 @@ Donate link: http://www.visser.com.au/#donations
 Tags: e-commerce, woocommerce, shop, cart, ecommerce, export, csv
 Requires at least: 2.9.2
 Tested up to: 3.5.2
-Stable tag: 1.2.1
+Stable tag: 1.2.2
 
 == Description ==
 
@@ -45,7 +45,18 @@ If you have any problems, questions or suggestions please join the members discu
 
 http://www.visser.com.au/woocommerce/forums/
 
+== Screenshots ==
+
+1. Select the data type you wish to export, default is Products.
+2. Select the data fields to be included in the export, selections are remembered for next export.
+3. Filter the exported data by date, status, customer and more.
+4. A range of global export options are included.
+
 == Changelog ==
+
+= 1.2.2 =
+* Changed: Free version can see Order, Coupon and Customer export options
+* Added: Plugin screenshots
 
 = 1.2.1 =
 * Added: Support for BOM
