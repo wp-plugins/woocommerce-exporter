@@ -3,7 +3,7 @@
 Plugin Name: WooCommerce - Store Exporter
 Plugin URI: http://www.visser.com.au/woocommerce/plugins/exporter/
 Description: Export store details out of WooCommerce into a CSV-formatted file.
-Version: 1.2.2
+Version: 1.2.4
 Author: Visser Labs
 Author URI: http://www.visser.com.au/about/
 License: GPL2
@@ -101,14 +101,23 @@ if( is_admin() ) {
 					if( $export->offset <> woo_ce_get_option( 'offset' ) )
 						woo_ce_update_option( 'offset', $export->offset );
 				}
+				$export->delete_temporary_csv = 0;
 				if( !empty( $_POST['delete_temporary_csv'] ) ) {
 					$export->delete_temporary_csv = (int)$_POST['delete_temporary_csv'];
 					if( $export->limit_volume <> woo_ce_get_option( 'delete_csv' ) )
 						woo_ce_update_option( 'delete_csv', $export->delete_temporary_csv );
 				}
 				$export->encoding = $_POST['encoding'];
+				$export->order_dates_filter = false;
 				$export->order_dates_from = '';
 				$export->order_dates_to = '';
+				$export->order_status = false;
+				$export->fields = false;
+				$export->product_categories = false;
+				$export->product_tags = false;
+				$export->product_status = false;
+				$export->order_customer = false;
+				$export->order_items = 'combined';
 
 				$dataset = array();
 				$export->type = $_POST['dataset'];
@@ -116,9 +125,14 @@ if( is_admin() ) {
 
 					case 'products':
 						$dataset[] = 'products';
-						$export->fields = $_POST['product_fields'];
-						$export->product_categories = woo_ce_format_product_filters( $_POST['product_filter_categories'] );
-						$export->product_status = woo_ce_format_product_filters( $_POST['product_filter_status'] );
+						if( isset( $_POST['product_fields'] ) )
+							$export->fields = $_POST['product_fields'];
+						if( isset( $_POST['product_filter_categories'] ) )
+							$export->product_categories = woo_ce_format_product_filters( $_POST['product_filter_categories'] );
+						if( isset( $_POST['product_filter_tags'] ) )
+							$export->product_tags = woo_ce_format_product_filters( $_POST['product_filter_tags'] );
+						if( isset( $_POST['product_filter_status'] ) )
+							$export->product_status = woo_ce_format_product_filters( $_POST['product_filter_status'] );
 						break;
 
 					case 'categories':
@@ -132,10 +146,24 @@ if( is_admin() ) {
 					case 'orders':
 						$dataset[] = 'orders';
 						$export->fields = $_POST['order_fields'];
-						$export->order_status = woo_ce_format_product_filters( $_POST['order_filter_status'] );
+						if( isset( $_POST['order_filter_status'] ) )
+							$export->order_status = woo_ce_format_product_filters( $_POST['order_filter_status'] );
+						if( isset( $_POST['order_dates_filter'] ) )
+							$export->order_dates_filter = $_POST['order_dates_filter'];
 						$export->order_dates_from = $_POST['order_dates_from'];
 						$export->order_dates_to = $_POST['order_dates_to'];
-						$export->order_customer = $_POST['order_customer'];
+						if( isset( $_POST['order_customer'] ) )
+							$export->order_customer = $_POST['order_customer'];
+						if( isset( $_POST['order_items'] ) ) {
+							$export->order_items = $_POST['order_items'];
+							if( $export->order_items <> woo_ce_get_option( 'order_items_formatting' ) )
+								woo_ce_update_option( 'order_items_formatting', $export->order_items );
+						}
+						if( isset( $_POST['max_order_items'] ) ) {
+							$export->max_order_items = (int)$_POST['max_order_items'];
+							if( $export->max_order_items <> woo_ce_get_option( 'max_order_items' ) )
+								woo_ce_update_option( 'max_order_items', $export->max_order_items );
+						}
 						break;
 
 					case 'customers':
@@ -168,11 +196,14 @@ if( is_admin() ) {
 						'offset' => $export->offset,
 						'encoding' => $export->encoding,
 						'product_categories' => $export->product_categories,
+						'product_tags' => $export->product_tags,
 						'product_status' => $export->product_status,
 						'order_status' => $export->order_status,
+						'order_dates_filter' => $export->order_dates_filter,
 						'order_dates_from' => woo_ce_format_order_date( $export->order_dates_from ),
 						'order_dates_to' => woo_ce_format_order_date( $export->order_dates_to ),
-						'order_customer' => $export->order_customer
+						'order_customer' => $export->order_customer,
+						'order_items' => $export->order_items
 					);
 					woo_ce_save_fields( $dataset, $export->fields );
 					if( isset( $woo_ce['debug'] ) && $woo_ce['debug'] ) {
@@ -183,6 +214,10 @@ if( is_admin() ) {
 
 						$filename = woo_ce_generate_csv_filename( $export->type );
 						$bits = woo_ce_export_dataset( $dataset, $args );
+						if( !$bits ) {
+							wp_redirect( add_query_arg( 'empty', true ) );
+							exit();
+						}
 						if( $export->delete_temporary_csv ) {
 
 							/* Print to browser */
@@ -217,7 +252,9 @@ if( is_admin() ) {
 				break;
 
 			default:
-				add_action( 'woo_ce_export_order_options_table', 'woo_ce_orders_filter_by_date' );
+				add_action( 'woo_ce_export_order_options_before_table', 'woo_ce_orders_filter_by_date' );
+				add_action( 'woo_ce_export_order_options_before_table', 'woo_ce_orders_filter_by_status' );
+				add_action( 'woo_ce_export_order_options_before_table', 'woo_ce_orders_filter_by_customer' );
 				break;
 
 		}
@@ -284,6 +321,7 @@ if( is_admin() ) {
 			$tab = $_GET['tab'];
 		$url = add_query_arg( 'page', 'woo_ce' );
 		woo_ce_memory_prompt();
+		woo_ce_fail_notices();
 		include_once( 'templates/admin/woo-admin_ce-export.php' );
 
 	}

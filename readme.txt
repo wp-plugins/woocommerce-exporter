@@ -5,7 +5,7 @@ Donate link: http://www.visser.com.au/#donations
 Tags: e-commerce, woocommerce, shop, cart, ecommerce, export, csv
 Requires at least: 2.9.2
 Tested up to: 3.5.2
-Stable tag: 1.2.2
+Stable tag: 1.2.3
 
 == Description ==
 
@@ -53,6 +53,12 @@ http://www.visser.com.au/woocommerce/forums/
 4. A range of global export options are included.
 
 == Changelog ==
+
+= 1.2.3 =
+* Fixed: Tags export
+* Added: Export Products by Product Tag filter
+* Added: Notice for empty export files
+* Changed: UI changes to Filter dialogs
 
 = 1.2.2 =
 * Changed: Free version can see Order, Coupon and Customer export options

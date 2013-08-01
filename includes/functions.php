@@ -61,7 +61,7 @@ if( is_admin() ) {
 
 	function woo_ce_save_fields( $dataset, $fields = array() ) {
 
-		if( $dataset && $fields ) {
+		if( $dataset && !empty( $fields ) ) {
 			$type = $dataset[0];
 			woo_ce_update_option( $type . '_fields', $fields );
 		}
@@ -96,16 +96,66 @@ if( is_admin() ) {
 
 	function woo_ce_orders_filter_by_date() {
 
+		$current_month = date( 'F' );
+		$last_month = date( 'F', mktime( 0, 0, 0, date( 'n' )-1, 1, date( 'Y' ) ) );
+		$order_dates_from = '-';
+		$order_dates_to = '-';
+
 		ob_start(); ?>
-<tr>
-	<th>
-		<label for="delimiter"><?php _e( 'Order Dates', 'woo_ce' ); ?></label>
-	</th>
-	<td>
-		<input type="text" size="10" maxlength="10" id="order_dates_from" name="order_dates_from" value="-" class="text" disabled="disabled" /> to <input type="text" size="10" maxlength="10" id="order_dates_to" name="order_dates_to" value="-" class="text" disabled="disabled" />
-		<p class="description"><?php _e( 'Filter the dates of Orders to be included in the export. Default is the date of the first order to today.', 'woo_ce' ); ?></p>
-	</td>
-</tr>
+<p><label><input type="checkbox" id="orders-filters-date" /> <?php _e( 'Filter Orders by Order Date', 'woo_ce' ); ?></label></p>
+<div id="export-orders-filters-date" class="separator">
+	<ul>
+		<li>
+			<label><input type="radio" name="order_dates_filter" value="current_month" disabled="disabled" /> <?php _e( 'Current month', 'woo_ce' ); ?> (<?php echo $current_month; ?>)</label>
+		</li>
+		<li>
+			<label><input type="radio" name="order_dates_filter" value="last_month" disabled="disabled" /> <?php _e( 'Last month', 'woo_ce' ); ?> (<?php echo $last_month; ?>)</label>
+		</li>
+		<li>
+			<label><input type="radio" name="order_dates_filter" value="manual" disabled="disabled" /> <?php _e( 'Manual', 'woo_ce' ); ?></label>
+			<div style="margin-top:0.2em;">
+				<input type="text" size="10" maxlength="10" id="order_dates_from" name="order_dates_from" value="<?php echo $order_dates_from; ?>" class="text" disabled="disabled" /> to <input type="text" size="10" maxlength="10" id="order_dates_to" name="order_dates_to" value="<?php echo $order_dates_to; ?>" class="text" disabled="disabled" />
+				<p class="description"><?php _e( 'Filter the dates of Orders to be included in the export. Default is the date of the first order to today.', 'woo_ce' ); ?></p>
+			</div>
+		</li>
+	</ul>
+</div>
+<!-- #export-orders-filters-date -->
+<?php
+		ob_end_flush();
+
+	}
+
+	function woo_ce_orders_filter_by_customer() {
+
+		ob_start(); ?>
+<p><label for="order_customer"><?php _e( 'Filter Orders by Customer', 'woo_ce' ); ?></label></p>
+<div id="export-orders-filters-date" class="separator">
+	<select id="order_customer" name="order_customer" disabled="disabled">
+		<option value=""><?php _e( 'Show all customers', 'woo_ce' ); ?></option>
+	</select>
+	<p class="description"><?php _e( 'Filter Orders by Customer (unique e-mail address) to be included in the export. Default is to include all Orders.', 'woo_ce' ); ?></p>
+</div>
+<!-- #export-orders-filters-date -->
+<?php
+		ob_end_flush();
+
+	}
+
+	function woo_ce_orders_filter_by_status() {
+
+		$order_statuses = woo_ce_get_order_statuses();
+		ob_start(); ?>
+<p><label><input type="checkbox" id="orders-filters-status" /> <?php _e( 'Filter Orders by Order Status', 'wpsc_ce' ); ?></label></p>
+<div id="export-orders-filters-status" class="separator">
+	<ul>
+<?php foreach( $order_statuses as $order_status ) { ?>
+		<li><label><input type="checkbox" name="order_filter_status[<?php echo $order_status->name; ?>]" value="<?php echo $order_status->name; ?>" disabled="disabled" /> <?php echo ucfirst( $order_status->name ); ?></label></li>
+<?php } ?>
+	</ul>
+	<p class="description"><?php _e( 'Select the Order Status you want to filter exported Orders by. Default is to include all Order Status options.', 'wpsc_ce' ); ?></p>
+</div>
+<!-- #export-orders-filters-status -->
 <?php
 		ob_end_flush();
 
@@ -366,9 +416,9 @@ if( is_admin() ) {
 					$size = count( $columns );
 					for( $i = 0; $i < $size; $i++ ) {
 						if( $i == ( $size - 1 ) )
-							$csv .= $columns[$i] . "\n";
+							$csv .= woo_ce_escape_csv_value( $columns[$i], $export->delimiter, $export->escape_formatting ) . "\n";
 						else
-							$csv .= $columns[$i] . $separator;
+							$csv .= woo_ce_escape_csv_value( $columns[$i], $export->delimiter, $export->escape_formatting ) . $separator;
 					}
 					$tags = woo_ce_get_product_tags();
 					if( $tags ) {
@@ -392,11 +442,15 @@ if( is_admin() ) {
 					break;
 
 			}
-
-			if( isset( $woo_ce['debug'] ) && $woo_ce['debug'] )
-				$woo_ce['debug_log'] = $csv;
-			else
-				return $csv;
+			if( $csv ) {
+				$csv = utf8_decode( $csv );
+				if( isset( $woo_ce['debug'] ) && $woo_ce['debug'] )
+					$woo_ce['debug_log'] = $csv;
+				else
+					return $csv;
+			} else {
+				return false;
+			}
 
 		}
 
@@ -409,12 +463,15 @@ if( is_admin() ) {
 		$limit_volume = -1;
 		$offset = 0;
 		$product_categories = false;
+		$product_tags = false;
 		$product_status = false;
 		if( $args ) {
 			$limit_volume = $args['limit_volume'];
 			$offset = $args['offset'];
 			if( !empty( $args['product_categories'] ) )
 				$product_categories = $args['product_categories'];
+			if( !empty( $args['product_tags'] ) )
+				$product_tags = $args['product_tags'];
 			if( !empty( $args['product_status'] ) )
 				$product_status = $args['product_status'];
 		}
@@ -431,6 +488,15 @@ if( is_admin() ) {
 					'taxonomy' => 'product_cat',
 					'field' => 'id',
 					'terms' => $product_categories
+				)
+			);
+		}
+		if( $product_tags ) {
+			$args['tax_query'] = array(
+				array(
+					'taxonomy' => 'product_tag',
+					'field' => 'id',
+					'terms' => $product_tags
 				)
 			);
 		}
@@ -461,7 +527,7 @@ if( is_admin() ) {
 				$products[$key]->length = get_post_meta( $product->ID, '_length', true );
 				$products[$key]->length_unit = $length_unit;
 				$products[$key]->category = woo_ce_get_product_assoc_categories( $product->ID );
-				$products[$key]->tag = woo_ce_get_product_tags( $product->ID );
+				$products[$key]->tag = woo_ce_get_product_assoc_tags( $product->ID );
 				$products[$key]->quantity = get_post_meta( $product->ID, '_stock', true );
 				$products[$key]->external_link = get_post_meta( $product->ID, '_product_url', true );
 				$products[$key]->product_status = woo_ce_format_product_status( $product->post_status );
@@ -511,7 +577,7 @@ if( is_admin() ) {
 
 	}
 
-	function woo_ce_get_product_tags( $product_id ) {
+	function woo_ce_get_product_assoc_tags( $product_id = 0 ) {
 
 		global $export;
 
@@ -741,6 +807,22 @@ if( is_admin() ) {
 
 	}
 
+	/* Tags */
+
+	function woo_ce_get_product_tags() {
+
+		$output = '';
+		$term_taxonomy = 'product_tag';
+		$args = array(
+			'hide_empty' => 0
+		);
+		$tags = get_terms( $term_taxonomy, $args );
+		if( $tags )
+			$output = $tags;
+		return $output;
+
+	}
+
 	/* Orders */
 
 	function woo_ce_get_order_fields( $format = 'full' ) {
@@ -934,6 +1016,16 @@ if( is_admin() ) {
 			'default' => 1
 		);
 		$fields[] = array(
+			'name' => 'order_items_product_id',
+			'label' => __( 'Order Items: Product ID', 'woo_ce' ),
+			'default' => 1
+		);
+		$fields[] = array(
+			'name' => 'order_items_variation_id',
+			'label' => __( 'Order Items: Variation ID', 'woo_ce' ),
+			'default' => 1
+		);
+		$fields[] = array(
 			'name' => 'order_items_sku',
 			'label' => __( 'Order Items: SKU', 'woo_ce' ),
 			'default' => 1
@@ -944,8 +1036,43 @@ if( is_admin() ) {
 			'default' => 1
 		);
 		$fields[] = array(
+			'name' => 'order_items_variation',
+			'label' => __( 'Order Items: Product Variation', 'woo_ce' ),
+			'default' => 1
+		);
+		$fields[] = array(
+			'name' => 'order_items_tax_class',
+			'label' => __( 'Order Items: Tax Class', 'woo_ce' ),
+			'default' => 1
+		);
+		$fields[] = array(
 			'name' => 'order_items_quantity',
 			'label' => __( 'Order Items: Quantity', 'woo_ce' ),
+			'default' => 1
+		);
+		$fields[] = array(
+			'name' => 'order_items_total',
+			'label' => __( 'Order Items: Total', 'woo_ce' ),
+			'default' => 1
+		);
+		$fields[] = array(
+			'name' => 'order_items_subtotal',
+			'label' => __( 'Order Items: Subtotal', 'woo_ce' ),
+			'default' => 1
+		);
+		$fields[] = array(
+			'name' => 'order_items_tax',
+			'label' => __( 'Order Items: Tax', 'woo_ce' ),
+			'default' => 1
+		);
+		$fields[] = array(
+			'name' => 'order_items_tax_subtotal',
+			'label' => __( 'Order Items: Tax Subtotal', 'woo_ce' ),
+			'default' => 1
+		);
+		$fields[] = array(
+			'name' => 'order_items_type',
+			'label' => __( 'Order Items: Type', 'woo_ce' ),
 			'default' => 1
 		);
 
@@ -965,8 +1092,10 @@ if( is_admin() ) {
 			$remember = maybe_unserialize( $remember );
 			$size = count( $fields );
 			for( $i = 0; $i < $size; $i++ ) {
-				if( !array_key_exists( $fields[$i]['name'], $remember ) )
-					$fields[$i]['default'] = 0;
+				if( $fields[$i] ) {
+					if( !array_key_exists( $fields[$i]['name'], $remember ) )
+						$fields[$i]['default'] = 0;
+				}
 			}
 		}
 
@@ -1427,6 +1556,7 @@ if( is_admin() ) {
 				$product_fields = woo_ce_get_product_fields();
 				if( $product_fields ) {
 					$product_categories = woo_ce_get_product_categories();
+					$product_tags = woo_ce_get_product_tags();
 					$product_statuses = get_post_statuses();
 					$product_statuses['trash'] = __( 'Trash', 'woo_ce' );
 				}
@@ -1530,6 +1660,25 @@ if( is_admin() ) {
 			}
 		}
 
+	}
+
+	function woo_ce_fail_notices() {
+
+		$message = false;
+		if( isset( $_GET['failed'] ) )
+			$message = __( 'A WordPress error caused the exporter to fail, please get in touch.', 'woo_ce' );
+		if( isset( $_GET['empty'] ) )
+			$message = __( 'No export entries were found, please try again with different export filters.', 'woo_ce' );
+		if( $message ) {
+			ob_start(); ?>
+<div class="updated settings-error">
+	<p>
+		<strong><?php echo $message; ?></strong>
+	</p>
+</div>
+<?php
+			ob_end_flush();
+		}
 	}
 
 	function woo_ce_get_archive_files() {

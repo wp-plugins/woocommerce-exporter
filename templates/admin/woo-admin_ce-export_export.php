@@ -4,7 +4,8 @@
 	<?php do_action( 'woo_ce_export_quicklinks' ); ?>
 </ul>
 <br class="clear" />
-<form method="post" id="postform">
+<p><?php _e( 'Select an export type from the list below to export entries. Once you have selected an export type you may select the fields you would like to export and optional filters available for each export type. When you click the export button below, Store Exporter will create a CSV file for you to save to your computer.', 'woo_ce' ); ?></p>
+<form method="post" action="<?php echo add_query_arg( array( 'failed' => null, 'empty' => null ) ); ?>" id="postform">
 	<div id="poststuff">
 
 		<div class="postbox" id="export-type">
@@ -130,7 +131,7 @@
 				<div class="inside">
 
 					<p><label><input type="checkbox" id="products-filters-categories" /> <?php _e( 'Filter Products by Product Categories', 'woo_ce' ); ?></label></p>
-					<div id="export-products-filters-categories">
+					<div id="export-products-filters-categories" class="separator">
 						<ul>
 <?php foreach( $product_categories as $product_category ) { ?>
 							<li><label><input type="checkbox" name="product_filter_categories[<?php echo $product_category->term_id; ?>]" value="<?php echo $product_category->term_id; ?>" /> <?php echo $product_category->name; ?> (#<?php echo $product_category->term_id; ?>)</label></li>
@@ -140,8 +141,19 @@
 					</div>
 					<!-- #export-products-filters-categories -->
 
+					<p><label><input type="checkbox" id="products-filters-tags" /> <?php _e( 'Filter Products by Product Tags', 'woo_ce' ); ?></label></p>
+					<div id="export-products-filters-tags" class="separator">
+						<ul>
+<?php foreach( $product_tags as $product_tag ) { ?>
+							<li><label><input type="checkbox" name="product_filter_tags[<?php echo $product_tag->term_id; ?>]" value="<?php echo $product_tag->term_id; ?>" /> <?php echo $product_tag->name; ?> (#<?php echo $product_tag->term_id; ?>)</label></li>
+<?php } ?>
+						</ul>
+						<p class="description"><?php _e( 'Select the Product Tags you want to filter exported Products by. Default is to include all Product Tags.', 'woo_ce' ); ?></p>
+					</div>
+					<!-- #export-products-filters-tags -->
+
 					<p><label><input type="checkbox" id="products-filters-status" /> <?php _e( 'Filter Products by Product Status', 'woo_ce' ); ?></label></p>
-					<div id="export-products-filters-status">
+					<div id="export-products-filters-status" class="separator">
 						<ul>
 <?php foreach( $product_statuses as $key => $product_status ) { ?>
 							<li><label><input type="checkbox" name="product_filter_status[<?php echo $key; ?>]" value="<?php echo $key; ?>" /> <?php echo $product_status; ?></label></li>
@@ -252,11 +264,7 @@
 			<div class="inside">
 	<?php if( $customers ) { ?>
 				<p class="description"><?php _e( 'Select the Customer fields you would like to export.', 'woo_ce' ); ?></p>
-		<?php if( function_exists( 'woo_cd_admin_init' ) ) { ?>
 				<p><a href="javascript:void(0)" id="customers-checkall"><?php _e( 'Check All', 'woo_ce' ); ?></a> | <a href="javascript:void(0)" id="customers-uncheckall"><?php _e( 'Uncheck All', 'woo_ce' ); ?></a></p>
-		<?php } else { ?>
-				<p>Uncheck All | Check All</p>
-		<?php } ?>
 				<table>
 
 		<?php foreach( $customer_fields as $customer_field ) { ?>
@@ -413,7 +421,7 @@
 
 					<tr>
 						<th>
-							<label for=""><?php _e( 'Delete temporary CSV after export', 'woo_ce' ); ?></label>
+							<label for="delete_temporary_csv"><?php _e( 'Delete temporary CSV after export', 'woo_ce' ); ?></label>
 						</th>
 						<td>
 							<select id="delete_temporary_csv" name="delete_temporary_csv">
@@ -439,6 +447,9 @@
 						</td>
 					</tr>
 <?php } ?>
+
+					<?php do_action( 'woo_ce_export_options_after' ); ?>
+
 				</table>
 			</div>
 		</div>
