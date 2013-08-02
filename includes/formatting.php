@@ -14,12 +14,22 @@ function woo_ce_clean_html( $content ) {
 
 }
 
+if( !function_exists( 'escape_csv_value' ) ) {
+	function escape_csv_value( $value ) {
+
+		$value = str_replace( '"', '""', $value ); // First off escape all " and make them ""
+		$value = str_replace( PHP_EOL, ' ', $value );
+		return '"' . $value . '"'; // If I have new lines or commas escape them
+
+	}
+}
+
 function woo_ce_escape_csv_value( $value = '', $delimiter = ',', $format = 'all' ) {
 
 	$output = $value;
 	if( !empty( $output ) ) {
 		$output = str_replace( '"', '""', $output );
-		//$output = str_replace( PHP_EOL, ' ', $output );
+		// output = str_replace( PHP_EOL, ' ', $output );
 		$output = str_replace( PHP_EOL, "\r\n", $output );
 		switch( $format ) {
 	

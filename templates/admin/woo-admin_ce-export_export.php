@@ -203,11 +203,7 @@
 
 	<?php if( $orders ) { ?>
 					<p class="description"><?php _e( 'Select the Order fields you would like to export.', 'woo_ce' ); ?></p>
-		<?php if( function_exists( 'woo_cd_admin_init' ) ) { ?>
-				<p><a href="javascript:void(0)" id="orders-checkall"><?php _e( 'Check All', 'woo_ce' ); ?></a> | <a href="javascript:void(0)" id="orders-uncheckall"><?php _e( 'Uncheck All', 'woo_ce' ); ?></a></p>
-		<?php } else { ?>
-				<p>Check All | Uncheck All</p>
-		<?php } ?>
+					<p><a href="javascript:void(0)" id="orders-checkall"><?php _e( 'Check All', 'woo_ce' ); ?></a> | <a href="javascript:void(0)" id="orders-uncheckall"><?php _e( 'Uncheck All', 'woo_ce' ); ?></a></p>
 					<table>
 
 		<?php foreach( $order_fields as $order_field ) { ?>

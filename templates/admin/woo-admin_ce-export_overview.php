@@ -37,6 +37,7 @@
 
 	<h3><a href="<?php echo add_query_arg( 'tab', 'tools' ); ?>"><?php _e( 'Tools', 'woo_ce' ); ?></a></h3>
 	<p><?php _e( 'Export tools for WooCommerce.', 'woo_ce' ); ?></p>
+
 </div>
 <!-- .overview-left -->
 <?php if( !function_exists( 'woo_cd_admin_init' ) ) { ?>

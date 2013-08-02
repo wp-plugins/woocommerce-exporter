@@ -529,6 +529,7 @@ if( is_admin() ) {
 				$products[$key]->category = woo_ce_get_product_assoc_categories( $product->ID );
 				$products[$key]->tag = woo_ce_get_product_assoc_tags( $product->ID );
 				$products[$key]->quantity = get_post_meta( $product->ID, '_stock', true );
+				$products[$key]->image = woo_ce_get_product_assoc_images( $product->ID );
 				$products[$key]->external_link = get_post_meta( $product->ID, '_product_url', true );
 				$products[$key]->product_status = woo_ce_format_product_status( $product->post_status );
 				$products[$key]->comment_status = woo_ce_format_comment_status( $product->comment_status );
@@ -596,6 +597,20 @@ if( is_admin() ) {
 
 	}
 
+	function woo_ce_get_product_assoc_images( $product_id = 0 ) {
+
+		$output = '';
+		if( $product_id ) {
+			$thumbnail_id = get_post_meta( $product_id, '_thumbnail_id', true );
+			if( $thumbnail_id ) {
+				$thumbnail_post = get_post( $thumbnail_id );
+				if( $thumbnail_post )
+					$output = $thumbnail_post->guid;
+			}
+		}
+		return $output;
+	
+	}
 	function woo_ce_post_statuses( $extra_status = array(), $override = false ) {
 
 		$output = array(
@@ -702,6 +717,11 @@ if( is_admin() ) {
 		$fields[] = array(
 			'name' => 'tag',
 			'label' => __( 'Tag', 'woo_ce' ),
+			'default' => 1
+		);
+		$fields[] = array(
+			'name' => 'image',
+			'label' => __( 'Featured Image', 'woo_ce' ),
 			'default' => 1
 		);
 		$fields[] = array(
@@ -1571,7 +1591,6 @@ if( is_admin() ) {
 				$limit_volume = woo_ce_get_option( 'limit_volume' );
 				$offset = woo_ce_get_option( 'offset' );
 				$timeout = woo_ce_get_option( 'timeout', 0 );
-
 				$delete_csv = woo_ce_get_option( 'delete_csv', 0 );
 				$file_encodings = mb_list_encodings();
 				break;
@@ -1628,7 +1647,6 @@ if( is_admin() ) {
 		wp_update_post( $object );
 
 	}
-
 
 	function woo_ce_get_order_statuses() {
 
