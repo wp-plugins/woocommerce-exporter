@@ -4,8 +4,8 @@ Contributors: visser
 Donate link: http://www.visser.com.au/#donations
 Tags: e-commerce, woocommerce, shop, cart, ecommerce, export, csv
 Requires at least: 2.9.2
-Tested up to: 3.6
-Stable tag: 1.2.5
+Tested up to: 3.7
+Stable tag: 1.2.6
 
 == Description ==
 
@@ -53,6 +53,11 @@ http://www.visser.com.au/woocommerce/forums/
 4. A range of global export options are included.
 
 == Changelog ==
+
+= 1.2.6 =
+* Added: Product Type support
+* Added: Native jQuery UI support
+* Fixed: Various small bugs
 
 = 1.2.5 =
 * Added: Featured Image support

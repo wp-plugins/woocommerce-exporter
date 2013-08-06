@@ -101,7 +101,7 @@
 				<div class="inside">
 	<?php if( $products ) { ?>
 					<p class="description"><?php _e( 'Select the Product fields you would like to export.', 'woo_ce' ); ?></p>
-					<p><a href="javascript:void(0)" id="products-checkall"><?php _e( 'Check All', 'woo_ce' ); ?></a> | <a href="javascript:void(0)" id="products-uncheckall"><?php _e( 'Uncheck All', 'woo_ce' ); ?></a></p>
+					<p><a href="javascript:void(0)" id="products-checkall" class="checkall"><?php _e( 'Check All', 'woo_ce' ); ?></a> | <a href="javascript:void(0)" id="products-uncheckall" class="uncheckall"><?php _e( 'Uncheck All', 'woo_ce' ); ?></a></p>
 					<table>
 
 		<?php foreach( $product_fields as $product_field ) { ?>
@@ -203,7 +203,7 @@
 
 	<?php if( $orders ) { ?>
 					<p class="description"><?php _e( 'Select the Order fields you would like to export.', 'woo_ce' ); ?></p>
-					<p><a href="javascript:void(0)" id="orders-checkall"><?php _e( 'Check All', 'woo_ce' ); ?></a> | <a href="javascript:void(0)" id="orders-uncheckall"><?php _e( 'Uncheck All', 'woo_ce' ); ?></a></p>
+					<p><a href="javascript:void(0)" id="orders-checkall" class="checkall"><?php _e( 'Check All', 'woo_ce' ); ?></a> | <a href="javascript:void(0)" id="orders-uncheckall" class="uncheckall"><?php _e( 'Uncheck All', 'woo_ce' ); ?></a></p>
 					<table>
 
 		<?php foreach( $order_fields as $order_field ) { ?>
@@ -260,7 +260,7 @@
 			<div class="inside">
 	<?php if( $customers ) { ?>
 				<p class="description"><?php _e( 'Select the Customer fields you would like to export.', 'woo_ce' ); ?></p>
-				<p><a href="javascript:void(0)" id="customers-checkall"><?php _e( 'Check All', 'woo_ce' ); ?></a> | <a href="javascript:void(0)" id="customers-uncheckall"><?php _e( 'Uncheck All', 'woo_ce' ); ?></a></p>
+				<p><a href="javascript:void(0)" id="customers-checkall" class="checkall"><?php _e( 'Check All', 'woo_ce' ); ?></a> | <a href="javascript:void(0)" id="customers-uncheckall" class="uncheckall"><?php _e( 'Uncheck All', 'woo_ce' ); ?></a></p>
 				<table>
 
 		<?php foreach( $customer_fields as $customer_field ) { ?>
@@ -297,7 +297,7 @@
 	<?php if( $coupons ) { ?>
 				<p class="description"><?php _e( 'Select the Coupon fields you would like to export.', 'woo_ce' ); ?></p>
 		<?php if( function_exists( 'woo_cd_admin_init' ) ) { ?>
-				<p><a href="javascript:void(0)" id="coupons-checkall"><?php _e( 'Check All', 'woo_ce' ); ?></a> | <a href="javascript:void(0)" id="coupons-uncheckall"><?php _e( 'Uncheck All', 'woo_ce' ); ?></a></p>
+				<p><a href="javascript:void(0)" id="coupons-checkall" class="checkall"><?php _e( 'Check All', 'woo_ce' ); ?></a> | <a href="javascript:void(0)" id="coupons-uncheckall" class="uncheckall"><?php _e( 'Uncheck All', 'woo_ce' ); ?></a></p>
 		<?php } else { ?>
 				<p>Uncheck All | Check All</p>
 		<?php } ?>

@@ -162,4 +162,23 @@ function woo_ce_format_product_filters( $product_filters = array() ) {
 	return $output;
 
 }
+
+function woo_ce_format_product_type( $type_id = '' ) {
+
+	$output = $type_id;
+	if( $output ) {
+		$product_types = array(
+			'simple' => __( 'Simple', 'woocommerce' ),
+			'downloadable' => __( 'Downloadable', 'woocommerce' ),
+			'grouped' => __( 'Grouped', 'woocommerce' ),
+			'virtual' => __( 'Virtual', 'woocommerce' ),
+			'variable' => __( 'Variable', 'woocommerce' ),
+			'external' => __( 'External / Affiliate', 'woocommerce' )
+		);
+		if( isset( $product_types[$type_id] ) )
+			$output = $product_types[$type_id];
+	}
+	return $output;
+
+}
 ?>

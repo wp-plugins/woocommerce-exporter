@@ -3,7 +3,7 @@
 Plugin Name: WooCommerce - Store Exporter
 Plugin URI: http://www.visser.com.au/woocommerce/plugins/exporter/
 Description: Export store details out of WooCommerce into a CSV-formatted file.
-Version: 1.2.5
+Version: 1.2.6
 Author: Visser Labs
 Author URI: http://www.visser.com.au/about/
 License: GPL2
@@ -49,7 +49,7 @@ if( is_admin() ) {
 		$page = 'woocommerce_page_woo_ce';
 		if( $page == $hook ) {
 			/* Date Picker */
-			wp_enqueue_script( 'jquery-ui-datepicker', plugins_url( '/js/ui-datepicker.js', __FILE__ ), array( 'jquery', 'jquery-ui-core' ) );
+			wp_enqueue_script( 'jquery-ui-datepicker' );
 			wp_enqueue_style( 'jquery-ui-datepicker', plugins_url( '/templates/admin/jquery-ui-datepicker.css', __FILE__ ) );
 
 			/* Common */
@@ -206,13 +206,13 @@ if( is_admin() ) {
 						'order_items' => $export->order_items
 					);
 					woo_ce_save_fields( $dataset, $export->fields );
+					$export->filename = woo_ce_generate_csv_filename( $export->type );
 					if( isset( $woo_ce['debug'] ) && $woo_ce['debug'] ) {
 						woo_ce_export_dataset( $dataset, $args );
 					} else {
 
 						/* Generate CSV contents */
 
-						$filename = woo_ce_generate_csv_filename( $export->type );
 						$bits = woo_ce_export_dataset( $dataset, $args );
 						if( !$bits ) {
 							wp_redirect( add_query_arg( 'empty', true ) );
@@ -230,16 +230,14 @@ if( is_admin() ) {
 
 							/* Save to file and insert to WordPress Media */
 
-							if( $filename && $bits ) {
-								$post_ID = woo_ce_save_csv_file_attachment( $filename );
-								$upload = wp_upload_bits( $filename, null, $bits );
+							if( $export->filename && $bits ) {
+								$post_ID = woo_ce_save_csv_file_attachment( $export->filename );
+								$upload = wp_upload_bits( $export->filename, null, $bits );
 								$attach_data = wp_generate_attachment_metadata( $post_ID, $upload['file'] );
 								wp_update_attachment_metadata( $post_ID, $attach_data );
 								if( $post_ID )
 									woo_ce_save_csv_file_guid( $post_ID, $export->type, $upload['url'] );
 								woo_ce_generate_csv_header( $export->type );
-								ob_clean();
-								flush();
 								readfile( $upload['file'] );
 							} else {
 								wp_redirect( add_query_arg( 'failed', true ) );
@@ -264,7 +262,7 @@ if( is_admin() ) {
 
 	function woo_ce_html_page() {
 
-		global $wpdb, $woo_ce;
+		global $wpdb, $woo_ce, $export;
 
 		$title = apply_filters( 'woo_ce_template_header', '' );
 		woo_ce_template_header( $title );
@@ -276,7 +274,9 @@ if( is_admin() ) {
 				$message = __( 'Chosen WooCommerce details have been exported from your store.', 'woo_ce' );
 				$output = '<div class="updated settings-error"><p><strong>' . $message . '</strong></p></div>';
 				if( isset( $woo_ce['debug'] ) && $woo_ce['debug'] ) {
-					$output .= '<h3>' . __( 'Export Log', 'woo_ce' ) . '</h3>';
+					if( !isset( $jigo_ce['debug_log'] ) )
+						$jigo_ce['debug_log'] = __( 'No export entries were found, please try again with different export filters.', 'woo_ce' );
+					$output .= '<h3>' . sprintf( __( 'Export Log: %s', 'woo_ce' ), $export->filename ) . '</h3>';
 					$output .= '<textarea id="export_log">' . $woo_ce['debug_log'] . '</textarea>';
 				}
 				echo $output;

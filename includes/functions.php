@@ -350,15 +350,15 @@ if( is_admin() ) {
 						foreach( $export->fields as $key => $field )
 							$export->columns[] = woo_ce_get_product_field( $key );
 					}
-					$size = count( $export->columns );
-					for( $i = 0; $i < $size; $i++ ) {
-						if( $i == ( $size - 1 ) )
-							$csv .= woo_ce_escape_csv_value( $export->columns[$i], $export->delimiter, $export->escape_formatting ) . "\n";
-						else
-							$csv .= woo_ce_escape_csv_value( $export->columns[$i], $export->delimiter, $export->escape_formatting ) . $separator;
-					}
 					$products = woo_ce_get_products( $export->args );
 					if( $products ) {
+						$size = count( $export->columns );
+						for( $i = 0; $i < $size; $i++ ) {
+							if( $i == ( $size - 1 ) )
+								$csv .= woo_ce_escape_csv_value( $export->columns[$i], $export->delimiter, $export->escape_formatting ) . "\n";
+							else
+								$csv .= woo_ce_escape_csv_value( $export->columns[$i], $export->delimiter, $export->escape_formatting ) . $separator;
+						}
 						$weight_unit = get_option( 'woocommerce_weight_unit' );
 						$dimension_unit = get_option( 'woocommerce_dimension_unit' );
 						$height_unit = $dimension_unit;
@@ -518,6 +518,7 @@ if( is_admin() ) {
 				$products[$key]->slug = $product->post_name;
 				$products[$key]->permalink = get_permalink( $product->ID );
 				$products[$key]->excerpt = woo_ce_clean_html( $product->post_excerpt );
+				$products[$key]->type = woo_ce_get_product_assoc_type( $product->ID );
 				$products[$key]->weight = get_post_meta( $product->ID, '_weight', true );
 				$products[$key]->weight_unit = $weight_unit;
 				$products[$key]->height = get_post_meta( $product->ID, '_height', true );
@@ -609,8 +610,28 @@ if( is_admin() ) {
 			}
 		}
 		return $output;
-	
+
 	}
+
+	function woo_ce_get_product_assoc_type( $product_id = 0 ) {
+
+		global $export;
+
+		$output = '';
+		$term_taxonomy = 'product_type';
+		$types = wp_get_object_terms( $product_id, $term_taxonomy );
+		if( $types ) {
+			$size = count( $types );
+			for( $i = 0; $i < $size; $i++ ) {
+				$type = get_term( $types[$i]->term_id, $term_taxonomy );
+				$output .= woo_ce_format_product_type( $type->name ) . $export->category_separator;
+			}
+			$output = substr( $output, 0, -1 );
+		}
+		return $output;
+
+	}
+
 	function woo_ce_post_statuses( $extra_status = array(), $override = false ) {
 
 		$output = array(
@@ -645,6 +666,11 @@ if( is_admin() ) {
 			'default' => 1
 		);
 		$fields[] = array(
+			'name' => 'slug',
+			'label' => __( 'Slug', 'woo_ce' ),
+			'default' => 1
+		);
+		$fields[] = array(
 			'name' => 'permalink',
 			'label' => __( 'Permalink', 'woo_ce' ),
 			'default' => 1
@@ -657,6 +683,11 @@ if( is_admin() ) {
 		$fields[] = array(
 			'name' => 'excerpt',
 			'label' => __( 'Excerpt', 'woo_ce' ),
+			'default' => 1
+		);
+		$fields[] = array(
+			'name' => 'type',
+			'label' => __( 'Type', 'woo_ce' ),
 			'default' => 1
 		);
 		$fields[] = array(
@@ -905,27 +936,27 @@ if( is_admin() ) {
 			'default' => 1
 		);
 */
-		$fields[] = array( 
+		$fields[] = array(
 			'name' => 'user_id',
 			'label' => __( 'User ID', 'woo_ce' ),
 			'default' => 1
 		);
-		$fields[] = array( 
+		$fields[] = array(
 			'name' => 'user_name',
 			'label' => __( 'Username', 'woo_ce' ),
 			'default' => 1
 		);
-		$fields[] = array( 
+		$fields[] = array(
 			'name' => 'billing_full_name',
 			'label' => __( 'Billing: Full Name', 'woo_ce' ),
 			'default' => 1
 		);
-		$fields[] = array( 
+		$fields[] = array(
 			'name' => 'billing_first_name',
 			'label' => __( 'Billing: First Name', 'woo_ce' ),
 			'default' => 1
 		);
-		$fields[] = array( 
+		$fields[] = array(
 			'name' => 'billing_last_name',
 			'label' => __( 'Billing: Last Name', 'woo_ce' ),
 			'default' => 1
@@ -1700,7 +1731,7 @@ if( is_admin() ) {
 	}
 
 	function woo_ce_get_archive_files() {
-	
+
 		$args = array(
 			'post_type' => 'attachment',
 			'post_mime_type' => 'text/csv',
@@ -1739,6 +1770,7 @@ if( is_admin() ) {
 			$file->post_date = sprintf( __( '%s ago' ), human_time_diff( $time ) );
 		else
 			$file->post_date = mysql2date( __( 'Y/m/d' ), $file->post_date );
+		unset( $author_name, $t_time, $time );
 		return $file;
 
 	}
