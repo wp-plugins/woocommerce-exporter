@@ -3,7 +3,7 @@
 Plugin Name: WooCommerce - Store Exporter
 Plugin URI: http://www.visser.com.au/woocommerce/plugins/exporter/
 Description: Export store details out of WooCommerce into a CSV-formatted file.
-Version: 1.2.6
+Version: 1.2.7
 Author: Visser Labs
 Author URI: http://www.visser.com.au/about/
 License: GPL2
@@ -51,6 +51,10 @@ if( is_admin() ) {
 			/* Date Picker */
 			wp_enqueue_script( 'jquery-ui-datepicker' );
 			wp_enqueue_style( 'jquery-ui-datepicker', plugins_url( '/templates/admin/jquery-ui-datepicker.css', __FILE__ ) );
+
+			/* Chosen */
+			wp_enqueue_script( 'jquery-chosen', plugins_url( '/js/chosen.jquery.js', __FILE__ ), array( 'jquery' ) );
+			wp_enqueue_style( 'jquery-chosen', plugins_url( '/templates/admin/chosen.css', __FILE__ ) );
 
 			/* Common */
 			wp_enqueue_style( 'woo_ce_styles', plugins_url( '/templates/admin/woo-admin_ce-export.css', __FILE__ ) );
@@ -274,8 +278,8 @@ if( is_admin() ) {
 				$message = __( 'Chosen WooCommerce details have been exported from your store.', 'woo_ce' );
 				$output = '<div class="updated settings-error"><p><strong>' . $message . '</strong></p></div>';
 				if( isset( $woo_ce['debug'] ) && $woo_ce['debug'] ) {
-					if( !isset( $jigo_ce['debug_log'] ) )
-						$jigo_ce['debug_log'] = __( 'No export entries were found, please try again with different export filters.', 'woo_ce' );
+					if( !isset( $woo_ce['debug_log'] ) )
+						$woo_ce['debug_log'] = __( 'No export entries were found, please try again with different export filters.', 'woo_ce' );
 					$output .= '<h3>' . sprintf( __( 'Export Log: %s', 'woo_ce' ), $export->filename ) . '</h3>';
 					$output .= '<textarea id="export_log">' . $woo_ce['debug_log'] . '</textarea>';
 				}

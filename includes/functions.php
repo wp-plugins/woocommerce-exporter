@@ -257,14 +257,22 @@ if( is_admin() ) {
 			case 'orders':
 				$post_type = 'shop_order';
 				$count = wp_count_posts( $post_type );
+				$exclude_post_types = array( 'auto-draft' );
+				if( woo_ce_count_object( $count, $exclude_post_types ) > 100 ) {
+					$count = '~' . woo_ce_count_object( $count, $exclude_post_types ) . ' *';
+				} else {
+					$count = woo_ce_count_object( $count, $exclude_post_types );
+				}
 				break;
 
 			case 'customers':
 				$post_type = 'shop_order';
 				$count = wp_count_posts( $post_type );
-				if( woo_ce_count_object( $count ) > 100 ) {
-						$count = '~' . woo_ce_count_object( $count ) . ' *';
+				$exclude_post_types = array( 'auto-draft' );
+				if( woo_ce_count_object( $count, $exclude_post_types ) > 100 ) {
+						$count = '~' . woo_ce_count_object( $count, $exclude_post_types ) . ' *';
 				} else {
+					$count = 0;
 					$args = array(
 						'post_type' => $post_type,
 						'numberposts' => -1,
@@ -273,7 +281,7 @@ if( is_admin() ) {
 							array(
 								'taxonomy' => 'shop_order_status',
 								'field' => 'slug',
-								'terms' => array( 'completed', 'processing', 'on-hold' )
+								'terms' => array( 'pending', 'on-hold', 'processing', 'completed' )
 							)
 						)
 					);
@@ -281,11 +289,20 @@ if( is_admin() ) {
 					if( $orders ) {
 						$customers = array();
 						foreach( $orders as $order ) {
-							if( $order->email = get_post_meta( $order->ID, '_billing_email', true ) ) {
-								if( !in_array( $order->email, $customers ) ) {
-									$customers[$order->ID] = $order->email;
-									$count++;
+							$order->email = get_post_meta( $order->ID, '_billing_email', true );
+							if( empty( $order->email ) ) {
+								if( $order->user_id = get_post_meta( $order->ID, '_customer_user', true ) ) {
+									$user = get_userdata( $order->user_id );
+									if( $user )
+										$order->email = $user->user_email;
+									unset( $user );
+								} else {
+									$order->email = '-';
 								}
+							}
+							if( !in_array( $order->email, $customers ) ) {
+								$customers[$order->ID] = $order->email;
+								$count++;
 							}
 						}
 					}
@@ -315,10 +332,17 @@ if( is_admin() ) {
 
 	}
 
-	function woo_ce_count_object( $object = 0 ) {
+	function woo_ce_count_object( $object = 0, $exclude_post_types = array() ) {
 	
 		$count = 0;
 		if( is_object( $object ) ) {
+			if( $exclude_post_types ) {
+				$size = count( $exclude_post_types );
+				for( $i = 0; $i < $size; $i++ ) {
+					if( isset( $object->$exclude_post_types[$i] ) )
+						unset( $object->$exclude_post_types[$i] );
+				}
+			}
 			foreach( $object as $key => $item )
 				$count = $item + $count;
 		} else {

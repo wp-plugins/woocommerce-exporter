@@ -181,4 +181,29 @@ function woo_ce_format_product_type( $type_id = '' ) {
 	return $output;
 
 }
+
+function woo_ce_expand_state_name( $country_prefix = '', $state_prefix = '' ) {
+
+	$output = $state_prefix;
+	if( $output ) {
+		$countries = new WC_Countries();
+		$states = $countries->get_states( $country_prefix );
+		if( $state = $states[$state_prefix] )
+			$output = $state;
+	}
+	return $output;
+
+}
+
+function woo_ce_expand_country_name( $country_prefix = '' ) {
+
+	$output = $country_prefix;
+	if( $output ) {
+		$countries = new WC_Countries();
+		if( $country = $countries->countries[$country_prefix] )
+			$output = $country;
+	}
+	return $output;
+
+}
 ?>
