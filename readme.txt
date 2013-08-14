@@ -5,7 +5,7 @@ Donate link: http://www.visser.com.au/#donations
 Tags: e-commerce, woocommerce, shop, cart, ecommerce, export, csv
 Requires at least: 2.9.2
 Tested up to: 3.7
-Stable tag: 1.2.7
+Stable tag: 1.2.8
 
 == Description ==
 
@@ -58,6 +58,18 @@ http://www.visser.com.au/woocommerce/forums/
 4. A range of global export options are included.
 
 == Changelog ==
+
+= 1.2.8 =
+* Added: Product ID support
+* Added: Post Parent ID support
+* Added: Export Product variation support
+* Added: Product Attribute support
+* Added: Filter Products export by Type
+* Added: Sale Price Dates From/To support
+* Added: Virtual and Downloadable Product support
+* Added: Remove archived export
+* Added: Count and filter of archived exports
+* Fixed: Hide User ID 0 (guest) from Orders
 
 = 1.2.7 =
 * Added: jQuery Chosen support to Orders Customer dropdown

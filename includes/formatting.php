@@ -48,6 +48,53 @@ function woo_ce_escape_csv_value( $value = '', $delimiter = ',', $format = 'all'
 
 }
 
+function woo_ce_convert_product_ids( $product_ids = null ) {
+
+	global $export;
+
+	$output = '';
+	if( $product_ids ) {
+		if( is_array( $product_ids ) ) {
+			$size = count( $product_ids );
+			for( $i = 0; $i < $size; $i++ )
+				$output .= $product_ids[$i] . $export->category_separator;
+			$output = substr( $output, 0, -1 );
+		} else if( strstr( $product_ids, ',' ) ) {
+			$output = str_replace( ',', $export->category_separator, $product_ids );
+		}
+	}
+	return $output;
+
+}
+
+function woo_ce_format_visibility( $visibility = '' ) {
+
+	$output = '';
+	if( $visibility ) {
+		switch( $visibility ) {
+
+			case 'visible':
+				$output = __( 'Catalog & Search', 'woo_ce' );
+				break;
+
+			case 'catalog':
+				$output = __( 'Catalog', 'woo_ce' );
+				break;
+
+			case 'search':
+				$output = __( 'Search', 'woo_ce' );
+				break;
+
+			case 'hidden':
+				$output = __( 'Hidden', 'woo_ce' );
+				break;
+
+		}
+	}
+	return $output;
+
+}
+
 function woo_ce_format_product_status( $product_status ) {
 
 	$output = $product_status;
@@ -151,6 +198,77 @@ function woo_ce_format_switch( $input = '', $output_format = 'answer' ) {
 
 }
 
+function woo_ce_format_stock_status( $stock_status = '' ) {
+
+	$output = '';
+	if( $stock_status ) {
+		switch( $stock_status ) {
+
+			case 'instock':
+				$output = __( 'In Stock', 'woo_ce' );
+				break;
+
+			case 'outofstock':
+				$output = __( 'Out of Stock', 'woo_ce' );
+				break;
+
+		}
+	}
+	return $output;
+
+}
+
+function woo_ce_format_tax_status( $tax_status = null ) {
+
+	$output = '';
+	if( $tax_status ) {
+		switch( $tax_status ) {
+	
+			case 'taxable':
+				$output = __( 'Taxable', 'woo_ce' );
+				break;
+	
+			case 'shipping':
+				$output = __( 'Shipping Only', 'woo_ce' );
+				break;
+
+			case 'none':
+				$output = __( 'None', 'woo_ce' );
+				break;
+
+		}
+	}
+	return $output;
+
+}
+
+function woo_ce_format_tax_class( $tax_class = '' ) {
+
+	global $export;
+
+	$output = '';
+	if( $tax_class ) {
+		switch( $tax_class ) {
+
+			case '*':
+				$tax_class = __( 'Standard', 'woo_ce' );
+				break;
+
+			case 'reduced-rate':
+				$tax_class = __( 'Reduced Rate', 'woo_ce' );
+				break;
+
+			case 'zero-rate':
+				$tax_class = __( 'Zero Rate', 'woo_ce' );
+				break;
+
+		}
+		$output = $tax_class;
+	}
+	return $output;
+
+}
+
 function woo_ce_format_product_filters( $product_filters = array() ) {
 
 	$output = array();
@@ -167,17 +285,27 @@ function woo_ce_format_product_type( $type_id = '' ) {
 
 	$output = $type_id;
 	if( $output ) {
-		$product_types = array(
+		$product_types = apply_filters( 'woo_ce_format_product_types', array(
 			'simple' => __( 'Simple', 'woocommerce' ),
 			'downloadable' => __( 'Downloadable', 'woocommerce' ),
 			'grouped' => __( 'Grouped', 'woocommerce' ),
 			'virtual' => __( 'Virtual', 'woocommerce' ),
 			'variable' => __( 'Variable', 'woocommerce' ),
-			'external' => __( 'External / Affiliate', 'woocommerce' )
-		);
+			'external' => __( 'External / Affiliate', 'woocommerce' ),
+			'variation' => __( 'Variation', 'woo_ce' )
+		) );
 		if( isset( $product_types[$type_id] ) )
 			$output = $product_types[$type_id];
 	}
+	return $output;
+
+}
+
+function woo_ce_format_sale_price_dates( $sale_date = '' ) {
+
+	$output = $sale_date;
+	if( $sale_date )
+		$output = date( 'd/m/Y', $sale_date );
 	return $output;
 
 }

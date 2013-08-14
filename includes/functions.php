@@ -73,7 +73,7 @@ if( is_admin() ) {
 		$filename = woo_ce_generate_csv_filename( $dataset );
 		if( $filename ) {
 			header( 'Content-Encoding: UTF-8' );
-			header( 'Content-type: application/csv; charset=UTF-8' );
+			header( 'Content-Type: text/csv; charset=UTF-8' );
 			header( 'Content-Disposition: attachment; filename=' . $filename );
 			header( 'Pragma: no-cache' );
 			header( 'Expires: 0' );
@@ -146,14 +146,14 @@ if( is_admin() ) {
 
 		$order_statuses = woo_ce_get_order_statuses();
 		ob_start(); ?>
-<p><label><input type="checkbox" id="orders-filters-status" /> <?php _e( 'Filter Orders by Order Status', 'wpsc_ce' ); ?></label></p>
+<p><label><input type="checkbox" id="orders-filters-status" /> <?php _e( 'Filter Orders by Order Status', 'woo_ce' ); ?></label></p>
 <div id="export-orders-filters-status" class="separator">
 	<ul>
 <?php foreach( $order_statuses as $order_status ) { ?>
 		<li><label><input type="checkbox" name="order_filter_status[<?php echo $order_status->name; ?>]" value="<?php echo $order_status->name; ?>" disabled="disabled" /> <?php echo ucfirst( $order_status->name ); ?></label></li>
 <?php } ?>
 	</ul>
-	<p class="description"><?php _e( 'Select the Order Status you want to filter exported Orders by. Default is to include all Order Status options.', 'wpsc_ce' ); ?></p>
+	<p class="description"><?php _e( 'Select the Order Status you want to filter exported Orders by. Default is to include all Order Status options.', 'woo_ce' ); ?></p>
 </div>
 <!-- #export-orders-filters-status -->
 <?php
@@ -179,6 +179,7 @@ if( is_admin() ) {
 
 		$filename = $post->post_name;
 		$filepath = get_attached_file( $post->ID );
+		$contents = __( 'No export entries were found, please try again with different export filters.', 'woo_ce' );
 		if( file_exists( $filepath ) ) {
 			$handle = fopen( $filepath, "r" );
 			$contents = stream_get_contents( $handle );
@@ -489,6 +490,7 @@ if( is_admin() ) {
 		$product_categories = false;
 		$product_tags = false;
 		$product_status = false;
+		$product_type = false;
 		if( $args ) {
 			$limit_volume = $args['limit_volume'];
 			$offset = $args['offset'];
@@ -498,12 +500,16 @@ if( is_admin() ) {
 				$product_tags = $args['product_tags'];
 			if( !empty( $args['product_status'] ) )
 				$product_status = $args['product_status'];
+			if( !empty( $args['product_type'] ) )
+				$product_type = $args['product_type'];
 		}
-		$post_type = 'product';
+		$post_type = array( 'product', 'product_variation' );
 		$args = array(
 			'post_type' => $post_type,
 			'numberposts' => $limit_volume,
 			'offset' => $offset,
+			'orderby' => 'ID',
+			'order' => 'ASC',
 			'post_status' => woo_ce_post_statuses()
 		);
 		if( $product_categories ) {
@@ -525,7 +531,20 @@ if( is_admin() ) {
 			);
 		}
 		if( $product_status )
-			$args['post_status'] = wpsc_ce_post_statuses( $product_status, true );
+			$args['post_status'] = woo_ce_post_statuses( $product_status, true );
+		if( $product_type ) {
+			if( in_array( 'variation', $product_type ) ) {
+				$args['post_type'] = 'product_variation';
+			} else {
+				$args['tax_query'] = array(
+					array(
+						'taxonomy' => 'product_type',
+						'field' => 'slug',
+						'terms' => $product_type
+					)
+				);
+			}
+		}
 		$products = get_posts( $args );
 		if( $products ) {
 			$weight_unit = get_option( 'woocommerce_weight_unit' );
@@ -534,15 +553,31 @@ if( is_admin() ) {
 			$width_unit = $dimension_unit;
 			$length_unit = $dimension_unit;
 			foreach( $products as $key => $product ) {
+				$products[$key]->parent_id = '';
+				if( $product->post_type == 'product_variation' )
+					$products[$key]->parent_id = $product->post_parent;
+				$products[$key]->parent_sku = get_post_meta( $product->post_parent, '_sku', true );
+				$products[$key]->product_id = $product->ID;
 				$products[$key]->sku = get_post_meta( $product->ID, '_sku', true );
 				$products[$key]->name = get_the_title( $product->ID );
 				$products[$key]->description = woo_ce_clean_html( $product->post_content );
+				$products[$key]->regular_price = get_post_meta( $product->ID, '_regular_price', true );
 				$products[$key]->price = get_post_meta( $product->ID, '_price', true );
+				if( !empty( $products[$key]->regular_price ) && ( $products[$key]->regular_price <> $products[$key]->price ) )
+					$products[$key]->price = $products[$key]->regular_price;
 				$products[$key]->sale_price = get_post_meta( $product->ID, '_sale_price', true );
+				$products[$key]->sale_price_dates_from = woo_ce_format_sale_price_dates( get_post_meta( $product->ID, '_sale_price_dates_from', true ) );
+				$products[$key]->sale_price_dates_to = woo_ce_format_sale_price_dates( get_post_meta( $product->ID, '_sale_price_dates_to', true ) );
 				$products[$key]->slug = $product->post_name;
 				$products[$key]->permalink = get_permalink( $product->ID );
 				$products[$key]->excerpt = woo_ce_clean_html( $product->post_excerpt );
 				$products[$key]->type = woo_ce_get_product_assoc_type( $product->ID );
+				if( $product->post_type == 'product_variation' )
+					$products[$key]->type = __( 'Variation', 'woo_ce' );
+				$products[$key]->visibility = woo_ce_format_visibility( get_post_meta( $product->ID, '_visibility', true ) );
+				$products[$key]->featured = woo_ce_format_switch( get_post_meta( $product->ID, '_featured', true ) );
+				$products[$key]->virtual = woo_ce_format_switch( get_post_meta( $product->ID, '_virtual', true ) );
+				$products[$key]->downloadable = woo_ce_format_switch( get_post_meta( $product->ID, '_downloadable', true ) );
 				$products[$key]->weight = get_post_meta( $product->ID, '_weight', true );
 				$products[$key]->weight_unit = $weight_unit;
 				$products[$key]->height = get_post_meta( $product->ID, '_height', true );
@@ -553,11 +588,40 @@ if( is_admin() ) {
 				$products[$key]->length_unit = $length_unit;
 				$products[$key]->category = woo_ce_get_product_assoc_categories( $product->ID );
 				$products[$key]->tag = woo_ce_get_product_assoc_tags( $product->ID );
+				$products[$key]->manage_stock = woo_ce_format_switch( get_post_meta( $product->ID, '_manage_stock', true ) );
+				$products[$key]->allow_backorders = woo_ce_format_switch( get_post_meta( $product->ID, '_backorders', true ) );
+				$products[$key]->sold_individually = woo_ce_format_switch( get_post_meta( $product->ID, '_sold_individually', true ) );
+				$products[$key]->upsell_ids = woo_ce_convert_product_ids( get_post_meta( $product->ID, '_upsell_ids', true ) );
+				$products[$key]->crosssell_ids = woo_ce_convert_product_ids( get_post_meta( $product->ID, '_crosssell_ids', true ) );
 				$products[$key]->quantity = get_post_meta( $product->ID, '_stock', true );
-				$products[$key]->image = woo_ce_get_product_assoc_images( $product->ID );
-				$products[$key]->external_link = get_post_meta( $product->ID, '_product_url', true );
+				$products[$key]->stock_status = woo_ce_format_stock_status( get_post_meta( $product->ID, '_stock_status', true ) );
+				$products[$key]->image = woo_ce_get_product_assoc_featured_image( $product->ID );
+				$products[$key]->product_gallery = woo_ce_get_product_assoc_product_gallery( $product->ID );
+				$products[$key]->tax_status = woo_ce_format_tax_status( get_post_meta( $product->ID, '_tax_status', true ) );
+				$products[$key]->tax_class = woo_ce_format_tax_class( get_post_meta( $product->ID, '_tax_class', true ) );
+				$products[$key]->product_url = get_post_meta( $product->ID, '_product_url', true );
+				$products[$key]->button_text = get_post_meta( $product->ID, '_button_text', true );
+				$products[$key]->file_download = woo_ce_get_product_assoc_file_downloads( $product->ID );
+				$products[$key]->download_limit = get_post_meta( $product->ID, '_download_limit', true );
+				$products[$key]->download_expiry = get_post_meta( $product->ID, '_download_expiry', true );
+				$products[$key]->purchase_note = get_post_meta( $product->ID, '_purchase_note', true );
 				$products[$key]->product_status = woo_ce_format_product_status( $product->post_status );
 				$products[$key]->comment_status = woo_ce_format_comment_status( $product->comment_status );
+				if( $attributes = woo_ce_get_product_attributes() ) {
+					if( $product->post_type == 'product_variation' ) {
+						foreach( $attributes as $attribute ) {
+							$products[$key]->{'attribute_' . $attribute->attribute_name} = get_post_meta( $product->ID, sprintf( 'attribute_pa_%s', $attribute->attribute_name ), true );
+						}
+					} else {
+						$products[$key]->attributes = maybe_unserialize( get_post_meta( $product->ID, '_product_attributes', true ) );
+						if( !empty( $products[$key]->attributes ) ) {
+							foreach( $attributes as $attribute ) {
+								if( isset( $products[$key]->attributes['pa_' . $attribute->attribute_name] ) )
+									$products[$key]->{'attribute_' . $attribute->attribute_name} = woo_ce_get_product_assoc_attributes( $product->ID, $products[$key]->attributes['pa_' . $attribute->attribute_name] );
+							}
+						}
+					}
+				}
 			}
 		}
 		return $products;
@@ -622,7 +686,7 @@ if( is_admin() ) {
 
 	}
 
-	function woo_ce_get_product_assoc_images( $product_id = 0 ) {
+	function woo_ce_get_product_assoc_featured_image( $product_id = 0 ) {
 
 		$output = '';
 		if( $product_id ) {
@@ -631,6 +695,22 @@ if( is_admin() ) {
 				$thumbnail_post = get_post( $thumbnail_id );
 				if( $thumbnail_post )
 					$output = $thumbnail_post->guid;
+			}
+		}
+		return $output;
+
+	}
+
+	function woo_ce_get_product_assoc_product_gallery( $product_id = 0 ) {
+
+		global $export;
+
+		$output = '';
+		if( $product_id ) {
+			$images = get_post_meta( $product_id, '_product_image_gallery', true );
+			if( $images ) {
+				$images = str_replace( ',', $export->category_separator, $images );
+				$output = $images;
 			}
 		}
 		return $output;
@@ -649,6 +729,44 @@ if( is_admin() ) {
 			for( $i = 0; $i < $size; $i++ ) {
 				$type = get_term( $types[$i]->term_id, $term_taxonomy );
 				$output .= woo_ce_format_product_type( $type->name ) . $export->category_separator;
+			}
+			$output = substr( $output, 0, -1 );
+		}
+		return $output;
+
+	}
+
+	function woo_ce_get_product_assoc_attributes( $product_id = 0, $attribute = array() ) {
+
+		global $export;
+
+		$output = '';
+		if( $product_id ) {
+			if( $attribute['is_taxonomy'] == 1 )
+				$terms = wp_get_object_terms( $product_id, $attribute['name'] );
+			if( $terms && !is_wp_error( $terms ) ) {
+				$size = count( $terms );
+				for( $i = 0; $i < $size; $i++ )
+					$output .= $terms[$i]->slug . $export->category_separator;
+				unset( $terms );
+			}
+			$output = substr( $output, 0, -1 );
+		}
+		return $output;
+
+	}
+
+	function woo_ce_get_product_assoc_file_downloads( $product_id = 0 ) {
+
+		global $export;
+
+		$output = '';
+		if( $product_id ) {
+			$file_downloads = maybe_unserialize( get_post_meta( $product_id, '_file_paths', true ) );
+			if( $file_downloads ) {
+				foreach( $file_downloads as $file_download )
+					$output .= $file_download . $export->category_separator;
+				unset( $file_downloads );
 			}
 			$output = substr( $output, 0, -1 );
 		}
@@ -680,8 +798,23 @@ if( is_admin() ) {
 
 		$fields = array();
 		$fields[] = array(
+			'name' => 'parent_id',
+			'label' => __( 'Parent ID', 'woo_ce' ),
+			'default' => 1
+		);
+		$fields[] = array(
+			'name' => 'parent_sku',
+			'label' => __( 'Parent SKU', 'woo_ce' ),
+			'default' => 1
+		);
+		$fields[] = array(
+			'name' => 'product_id',
+			'label' => __( 'Product ID', 'woo_ce' ),
+			'default' => 1
+		);
+		$fields[] = array(
 			'name' => 'sku',
-			'label' => __( 'SKU', 'woo_ce' ),
+			'label' => __( 'Product SKU', 'woo_ce' ),
 			'default' => 1
 		);
 		$fields[] = array(
@@ -715,6 +848,26 @@ if( is_admin() ) {
 			'default' => 1
 		);
 		$fields[] = array(
+			'name' => 'visibility',
+			'label' => __( 'Visibility', 'woo_ce' ),
+			'default' => 1
+		);
+		$fields[] = array(
+			'name' => 'featured',
+			'label' => __( 'Featured', 'woo_ce' ),
+			'default' => 1
+		);
+		$fields[] = array(
+			'name' => 'virtual',
+			'label' => __( 'Virtual', 'woo_ce' ),
+			'default' => 1
+		);
+		$fields[] = array(
+			'name' => 'downloadable',
+			'label' => __( 'Downloadable', 'woo_ce' ),
+			'default' => 1
+		);
+		$fields[] = array(
 			'name' => 'price',
 			'label' => __( 'Price', 'woo_ce' ),
 			'default' => 1
@@ -722,6 +875,21 @@ if( is_admin() ) {
 		$fields[] = array(
 			'name' => 'sale_price',
 			'label' => __( 'Sale Price', 'woo_ce' ),
+			'default' => 1
+		);
+		$fields[] = array(
+			'name' => 'sale_price',
+			'label' => __( 'Sale Price', 'woo_ce' ),
+			'default' => 1
+		);
+		$fields[] = array(
+			'name' => 'sale_price_dates_from',
+			'label' => __( 'Sale Price Dates From', 'woo_ce' ),
+			'default' => 1
+		);
+		$fields[] = array(
+			'name' => 'sale_price_dates_to',
+			'label' => __( 'Sale Price Dates To', 'woo_ce' ),
 			'default' => 1
 		);
 		$fields[] = array(
@@ -780,13 +948,83 @@ if( is_admin() ) {
 			'default' => 1
 		);
 		$fields[] = array(
+			'name' => 'product_gallery',
+			'label' => __( 'Product Gallery', 'woo_ce' ),
+			'default' => 1
+		);
+		$fields[] = array(
+			'name' => 'tax_status',
+			'label' => __( 'Tax Status', 'woo_ce' ),
+			'default' => 1
+		);
+		$fields[] = array(
+			'name' => 'tax_class',
+			'label' => __( 'Tax Class', 'woo_ce' ),
+			'default' => 1
+		);
+		$fields[] = array(
+			'name' => 'file_download',
+			'label' => __( 'File Download', 'woo_ce' ),
+			'default' => 1
+		);
+		$fields[] = array(
+			'name' => 'download_limit',
+			'label' => __( 'Download Limit', 'woo_ce' ),
+			'default' => 1
+		);
+		$fields[] = array(
+			'name' => 'download_expiry',
+			'label' => __( 'Download Expiry', 'woo_ce' ),
+			'default' => 1
+		);
+		$fields[] = array(
+			'name' => 'manage_stock',
+			'label' => __( 'Manage Stock', 'woo_ce' ),
+			'default' => 1
+		);
+		$fields[] = array(
 			'name' => 'quantity',
 			'label' => __( 'Quantity', 'woo_ce' ),
 			'default' => 1
 		);
 		$fields[] = array(
-			'name' => 'external_link',
-			'label' => __( 'External Link', 'woo_ce' ),
+			'name' => 'stock_status',
+			'label' => __( 'Stock Status', 'woo_ce' ),
+			'default' => 1
+		);
+		$fields[] = array(
+			'name' => 'allow_backorders',
+			'label' => __( 'Allow Backorders', 'woo_ce' ),
+			'default' => 1
+		);
+		$fields[] = array(
+			'name' => 'sold_individually',
+			'label' => __( 'Sold Individually', 'woo_ce' ),
+			'default' => 1
+		);
+		$fields[] = array(
+			'name' => 'upsell_ids',
+			'label' => __( 'Up-Sells', 'woo_ce' ),
+			'default' => 1
+		);
+		$fields[] = array(
+			'name' => 'crosssell_ids',
+			'label' => __( 'Cross-Sells', 'woo_ce' ),
+			'default' => 1
+		);
+		$fields[] = array(
+			'name' => 'product_url',
+			'label' => __( 'Product URL', 'woo_ce' ),
+			'default' => 1
+		);
+		$fields[] = array(
+			'name' => 'button_text',
+			'label' => __( 'Button Text', 'woo_ce' ),
+			'default' => 1
+		);
+		$fields[] = array(
+			'name' => 'purchase_note',
+			'label' => __( 'Purchase Note', 'woo_ce' ),
 			'default' => 1
 		);
 		$fields[] = array(
@@ -799,7 +1037,17 @@ if( is_admin() ) {
 			'label' => __( 'Comment Status', 'woo_ce' ),
 			'default' => 1
 		);
-
+		if( $attributes = woo_ce_get_product_attributes() ) {
+			foreach( $attributes as $attribute ) {
+				if( empty( $attribute->attribute_label ) )
+					$attribute->attribute_label = $attribute->attribute_name;
+				$fields[] = array(
+					'name' => sprintf( 'attribute_%s', $attribute->attribute_name ),
+					'label' => sprintf( __( 'Attribute: %s', 'woo_ce' ), ucwords( $attribute->attribute_label ) ),
+					'default' => 1
+				);
+			}
+		}
 /*
 		$fields[] = array(
 			'name' => '',
@@ -882,6 +1130,25 @@ if( is_admin() ) {
 
 	}
 
+	function woo_ce_get_product_types() {
+
+		$output = '';
+		$term_taxonomy = 'product_type';
+		$args = array(
+			'hide_empty' => 0
+		);
+		$types = get_terms( $term_taxonomy, $args );
+		if( $types ) {
+			$size = count( $types );
+			for( $i = 0; $i < $size; $i++ )
+				$output[$types[$i]->slug] = $types[$i]->name;
+			$output['variation'] = __( 'variation', 'woo_ce' );
+			asort( $output );
+		}
+		return $output;
+
+	}
+
 	/* Tags */
 
 	function woo_ce_get_product_tags() {
@@ -899,6 +1166,19 @@ if( is_admin() ) {
 	}
 
 	/* Orders */
+
+	function woo_ce_get_product_attributes() {
+
+		global $wpdb;
+
+		$output = '';
+		$attributes_sql = "SELECT * FROM " . $wpdb->prefix . "woocommerce_attribute_taxonomies";
+		$attributes = $wpdb->get_results( $attributes_sql );
+		if( $attributes )
+			$output = $attributes;
+		return $output;
+
+	}
 
 	function woo_ce_get_order_fields( $format = 'full' ) {
 
@@ -1630,10 +1910,15 @@ if( is_admin() ) {
 
 				$product_fields = woo_ce_get_product_fields();
 				if( $product_fields ) {
+					foreach( $product_fields as $key => $product_field ) {
+						if( !isset( $product_fields[$key]['disabled'] ) )
+							$product_fields[$key]['disabled'] = 0;
+					}
 					$product_categories = woo_ce_get_product_categories();
 					$product_tags = woo_ce_get_product_tags();
 					$product_statuses = get_post_statuses();
 					$product_statuses['trash'] = __( 'Trash', 'woo_ce' );
+					$product_types = woo_ce_get_product_types();
 				}
 				$order_fields = woo_ce_get_order_fields();
 				$customer_fields = woo_ce_get_customer_fields();
@@ -1796,6 +2081,38 @@ if( is_admin() ) {
 			$file->post_date = mysql2date( __( 'Y/m/d' ), $file->post_date );
 		unset( $author_name, $t_time, $time );
 		return $file;
+
+	}
+
+	function woo_ce_archives_quicklink_current( $current = '' ) {
+
+		$output = '';
+		if( isset( $_GET['filter'] ) ) {
+			$filter = $_GET['filter'];
+			if( $filter == $current )
+				$output = ' class="current"';
+		} else if( $current == 'all' ) {
+			$output = ' class="current"';
+		}
+		echo $output;
+
+	}
+
+	function woo_ce_archives_quicklink_count( $type = '' ) {
+
+		$output = '0';
+		$args = array(
+			'post_type' => 'attachment',
+			'meta_key' => '_woo_export_type',
+			'meta_value' => null,
+			'numberposts' => -1
+		);
+		if( $type )
+			$args['meta_value'] = $type;
+		$posts = get_posts( $args );
+		if( $posts )
+			$output = count( $posts );
+		echo $output;
 
 	}
 

@@ -1,11 +1,11 @@
 <ul class="subsubsub">
-	<li><a href="<?php echo add_query_arg( 'filter', '' ); ?>"><?php _e( 'All', 'woo_ce' ); ?></a> |</li>
-	<li><a href="<?php echo add_query_arg( 'filter', 'products' ); ?>"><?php _e( 'Products', 'woo_ce' ); ?></a> |</li>
-	<li><a href="<?php echo add_query_arg( 'filter', 'categories' ); ?>"><?php _e( 'Categories', 'woo_ce' ); ?></a> |</li>
-	<li><a href="<?php echo add_query_arg( 'filter', 'tags' ); ?>"><?php _e( 'Tags', 'woo_ce' ); ?></a> |</li>
-	<li><a href="<?php echo add_query_arg( 'filter', 'orders' ); ?>"><?php _e( 'Orders', 'woo_ce' ); ?></a> |</li>
-	<li><a href="<?php echo add_query_arg( 'filter', 'customers' ); ?>"><?php _e( 'Customers', 'woo_ce' ); ?></a> |</li>
-	<li><a href="<?php echo add_query_arg( 'filter', 'coupons' ); ?>"><?php _e( 'Coupons', 'woo_ce' ); ?></a></li>
+	<li><a href="<?php echo add_query_arg( 'filter', null ); ?>"<?php woo_ce_archives_quicklink_current( 'all' ); ?>><?php _e( 'All', 'woo_ce' ); ?> <span class="count">(<?php woo_ce_archives_quicklink_count(); ?>)</span></a> |</li>
+	<li><a href="<?php echo add_query_arg( 'filter', 'products' ); ?>"<?php woo_ce_archives_quicklink_current( 'products' ); ?>><?php _e( 'Products', 'woo_ce' ); ?> <span class="count">(<?php woo_ce_archives_quicklink_count( 'products' ); ?>)</span></a> |</li>
+	<li><a href="<?php echo add_query_arg( 'filter', 'categories' ); ?>"<?php woo_ce_archives_quicklink_current( 'categories' ); ?>><?php _e( 'Categories', 'woo_ce' ); ?> <span class="count">(<?php woo_ce_archives_quicklink_count( 'categories' ); ?>)</span></a> |</li>
+	<li><a href="<?php echo add_query_arg( 'filter', 'tags' ); ?>"<?php woo_ce_archives_quicklink_current( 'tags' ); ?>><?php _e( 'Tags', 'woo_ce' ); ?> <span class="count">(<?php woo_ce_archives_quicklink_count( 'tags' ); ?>)</span></a> |</li>
+	<li><a href="<?php echo add_query_arg( 'filter', 'orders' ); ?>"<?php woo_ce_archives_quicklink_current( 'orders' ); ?>><?php _e( 'Orders', 'woo_ce' ); ?> <span class="count">(<?php woo_ce_archives_quicklink_count( 'orders' ); ?>)</span></a> |</li>
+	<li><a href="<?php echo add_query_arg( 'filter', 'customers' ); ?>"<?php woo_ce_archives_quicklink_current( 'customers' ); ?>><?php _e( 'Customers', 'woo_ce' ); ?> <span class="count">(<?php woo_ce_archives_quicklink_count( 'customers' ); ?>)</span></a> |</li>
+	<li><a href="<?php echo add_query_arg( 'filter', 'coupons' ); ?>"<?php woo_ce_archives_quicklink_current( 'coupons' ); ?>><?php _e( 'Coupons', 'woo_ce' ); ?> <span class="count">(<?php woo_ce_archives_quicklink_count( 'coupons' ); ?>)</span></a></li>
 </ul>
 <br class="clear" />
 <form action="" method="GET">
@@ -40,14 +40,14 @@
 				<td class="column-icon media-icon">
 					<?php echo $file->media_icon; ?>
 				</td>
-				<td class="title column-title">
-					<a href="<?php echo $file->guid; ?>"><strong><?php echo $file->post_title; ?></strong></a>
-					<p><?php echo $file->post_mime_type; ?></p>
+				<td class="post-title page-title column-title">
+					<strong><a href="<?php echo $file->guid; ?>" class="row-title"><?php echo $file->post_title; ?></a></strong>
 					<div class="row-actions">
-						<!-- ... -->
+						<span class="view"><a href="<?php echo get_edit_post_link( $file->ID ); ?>" title="<?php _e( 'Edit', 'woo_ce' ); ?>"><?php _e( 'Edit', 'woo_ce' ); ?></a></span> | 
+						<span class="trash"><a href="<?php echo get_delete_post_link( $file->ID, '', true ); ?>" title="<?php _e( 'Delete Permanently', 'woo_ce' ); ?>"><?php _e( 'Delete', 'woo_ce' ); ?></a></span>
 					</div>
 				</td>
-				<td class="title column-title">
+				<td class="title">
 					<a href="<?php echo add_query_arg( 'filter', $file->export_type ); ?>"><?php echo $file->export_type_label; ?></a>
 				</td>
 				<td class="author column-author"><?php echo $file->post_author_name; ?></td>

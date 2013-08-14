@@ -20,6 +20,11 @@ $j(function() {
 		dateFormat: 'dd/mm/yy'
 	});
 
+	// Chosen
+	$j(".chzn-select").chosen({
+		search_contains: true
+	});
+
 	$j('#export-products').show();
 	// Categories
 	$j('#export-products-filters-categories').hide();
@@ -35,6 +40,10 @@ $j(function() {
 	$j('#export-products-filters-status').hide();
 	if( $j('#products-filters-status').attr('checked') ) {
 		$j('#export-products-filters-status').show();
+	}
+	$j('#export-products-filters-type').hide();
+	if( $j('#products-filters-type').attr('checked') ) {
+		$j('#export-products-filters-type').show();
 	}
 	$j('#export-categories').hide();
 	$j('#export-tags').hide();
@@ -58,6 +67,9 @@ $j(function() {
 	});
 	$j('#products-filters-status').click(function(){
 		$j('#export-products-filters-status').toggle();
+	});
+	$j('#products-filters-type').click(function(){
+		$j('#export-products-filters-type').toggle();
 	});
 	$j('#orders-filters-status').click(function(){
 		$j('#export-orders-filters-status').toggle();

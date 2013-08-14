@@ -108,7 +108,7 @@
 						<tr>
 							<td>
 								<label>
-									<input type="checkbox" name="product_fields[<?php echo $product_field['name']; ?>]" class="product_field"<?php checked( $product_field['default'], 1 ); ?> />
+									<input type="checkbox" name="product_fields[<?php echo $product_field['name']; ?>]" class="product_field"<?php checked( $product_field['default'], 1 ); ?><?php disabled( $product_field['disabled'], 1 ); ?> />
 									<?php echo $product_field['label']; ?>
 								</label>
 							</td>
@@ -162,6 +162,17 @@
 						<p class="description"><?php _e( 'Select the Product Status options you want to filter exported Products by. Default is to include all Product Status options.', 'woo_ce' ); ?></p>
 					</div>
 					<!-- #export-products-filters-status -->
+
+					<p><label><input type="checkbox" id="products-filters-type" /> <?php _e( 'Filter Products by Product Type', 'woo_ce' ); ?></label></p>
+					<div id="export-products-filters-type" class="separator">
+						<ul>
+<?php foreach( $product_types as $key => $product_type ) { ?>
+							<li><label><input type="checkbox" name="product_filter_type[<?php echo $key; ?>]" value="<?php echo $key; ?>" /> <?php echo woo_ce_format_product_type( $product_type ); ?></label></li>
+<?php } ?>
+						</ul>
+						<p class="description"><?php _e( 'Select the Product Type\'s you want to filter exported Products by. Default is to include all Product Types and Variations.', 'woo_ce' ); ?></p>
+					</div>
+					<!-- #export-products-filters-type -->
 
 				</div>
 				<!-- .inside -->
