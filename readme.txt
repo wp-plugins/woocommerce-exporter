@@ -16,14 +16,16 @@ Features include:
 * Export Products (*)
 * Export Products by Product Category
 * Export Products by Product Status
+* Export Products by Type including Variations
 * Export Categories
 * Export Tags
 * Export Orders (**)
 * Export Orders by Order Status (**)
 * Export Orders by Order Date (**)
+* Export Orders by Customers (**)
 * Export Customers (**)
 * Export Coupons (**)
-* Toggle export fields
+* Toggle and save export fields
 
 (*) Compatible with Product Importer Deluxe, All in One SEO Pack, Advanced Google Product Feed and more.
 (**) Requries the Pro upgrade to enable additional store export functionality.
