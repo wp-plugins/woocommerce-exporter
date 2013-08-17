@@ -310,28 +310,32 @@ function woo_ce_format_sale_price_dates( $sale_date = '' ) {
 
 }
 
-function woo_ce_expand_state_name( $country_prefix = '', $state_prefix = '' ) {
+if( !function_exists( 'woo_ce_expand_state_name' ) ) {
+	function woo_ce_expand_state_name( $country_prefix = '', $state_prefix = '' ) {
 
-	$output = $state_prefix;
-	if( $output ) {
-		$countries = new WC_Countries();
-		$states = $countries->get_states( $country_prefix );
-		if( $state = $states[$state_prefix] )
-			$output = $state;
+		$output = $state_prefix;
+		if( $output ) {
+			$countries = new WC_Countries();
+			$states = $countries->get_states( $country_prefix );
+			if( $state = $states[$state_prefix] )
+				$output = $state;
+		}
+		return $output;
+
 	}
-	return $output;
-
 }
 
-function woo_ce_expand_country_name( $country_prefix = '' ) {
+if( !function_exists( 'woo_ce_expand_country_name' ) ) {
+	function woo_ce_expand_country_name( $country_prefix = '' ) {
 
-	$output = $country_prefix;
-	if( $output ) {
-		$countries = new WC_Countries();
-		if( $country = $countries->countries[$country_prefix] )
-			$output = $country;
+		$output = $country_prefix;
+		if( $output ) {
+			$countries = new WC_Countries();
+			if( $country = $countries->countries[$country_prefix] )
+				$output = $country;
+		}
+		return $output;
+
 	}
-	return $output;
-
 }
 ?>

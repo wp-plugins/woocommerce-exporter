@@ -1499,13 +1499,15 @@ if( is_admin() ) {
 
 	}
 
-	function woo_ce_format_order_date( $date ) {
+	if( !function_exists( 'woo_ce_format_order_date' ) ) {
+		function woo_ce_format_order_date( $date ) {
 
-		$output = $date;
-		if( $date )
-			$output = str_replace( '/', '-', $date );
-		return $output;
+			$output = $date;
+			if( $date )
+				$output = str_replace( '/', '-', $date );
+			return $output;
 
+		}
 	}
 
 	/* Customers */
