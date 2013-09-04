@@ -22,7 +22,7 @@ if( !function_exists( 'woo_vl_dashboard_setup' ) ) {
 
 		include_once( ABSPATH . WPINC . '/feed.php' );
 
-		$rss = fetch_feed( 'http://www.visser.com.au/blog/category/woo-commerce/feed/' );
+		$rss = fetch_feed( 'http://www.visser.com.au/blog/category/woocommerce/feed/' );
 		$output = '<div class="rss-widget">';
 		if( !is_wp_error( $rss ) ) {
 			$maxitems = $rss->get_item_quantity( 5 );
