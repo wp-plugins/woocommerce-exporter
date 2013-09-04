@@ -119,6 +119,7 @@
 					<p class="submit">
 						<input type="submit" id="export_products" value="<?php _e( 'Export Products', 'woo_ce' ); ?> " class="button-primary" />
 					</p>
+					<p class="description"><?php _e( 'Can\'t find a particular Product field in the above export list? <a href="' . $troubleshooting_url . '" target="_blank">Get in touch</a>.', 'woo_ce' ); ?></p>
 	<?php } else { ?>
 					<p><?php _e( 'No Products have been found.', 'woo_ce' ); ?></p>
 	<?php } ?>
@@ -236,6 +237,7 @@
 						<input type="button" class="button button-disabled" value="<?php _e( 'Export Orders', 'woo_ce' ); ?>" />
 		<?php } ?>
 					</p>
+					<p class="description"><?php _e( 'Can\'t find a particular Order field in the above export list? <a href="' . $troubleshooting_url . '" target="_blank">Get in touch</a>.', 'woo_ce' ); ?></p>
 	<?php } else { ?>
 					<p><?php _e( 'No Orders have been found.', 'woo_ce' ); ?></p>
 	<?php } ?>
@@ -293,6 +295,7 @@
 					<input type="button" class="button button-disabled" value="<?php _e( 'Export Customers', 'woo_ce' ); ?>" />
 		<?php } ?>
 				</p>
+					<p class="description"><?php _e( 'Can\'t find a particular Customer field in the above export list? <a href="' . $troubleshooting_url . '" target="_blank">Get in touch</a>.', 'woo_ce' ); ?></p>
 	<?php } else { ?>
 				<p><?php _e( 'No Customers have been found.', 'woo_ce' ); ?></p>
 	<?php } ?>
@@ -307,11 +310,7 @@
 			<div class="inside">
 	<?php if( $coupons ) { ?>
 				<p class="description"><?php _e( 'Select the Coupon fields you would like to export.', 'woo_ce' ); ?></p>
-		<?php if( function_exists( 'woo_cd_admin_init' ) ) { ?>
 				<p><a href="javascript:void(0)" id="coupons-checkall" class="checkall"><?php _e( 'Check All', 'woo_ce' ); ?></a> | <a href="javascript:void(0)" id="coupons-uncheckall" class="uncheckall"><?php _e( 'Uncheck All', 'woo_ce' ); ?></a></p>
-		<?php } else { ?>
-				<p>Uncheck All | Check All</p>
-		<?php } ?>
 				<table>
 
 		<?php foreach( $coupon_fields as $coupon_field ) { ?>
@@ -333,6 +332,7 @@
 					<input type="button" class="button button-disabled" value="<?php _e( 'Export Coupons', 'woo_ce' ); ?>" />
 		<?php } ?>
 				</p>
+				<p class="description"><?php _e( 'Can\'t find a particular Coupon field in the above export list? <a href="' . $troubleshooting_url . '" target="_blank">Get in touch</a>.', 'woo_ce' ); ?></p>
 	<?php } else { ?>
 				<p><?php _e( 'No Coupons have been found.', 'woo_ce' ); ?></p>
 	<?php } ?>

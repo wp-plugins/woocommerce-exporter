@@ -3,7 +3,7 @@
 Plugin Name: WooCommerce - Store Exporter
 Plugin URI: http://www.visser.com.au/woocommerce/plugins/exporter/
 Description: Export store details out of WooCommerce into a CSV-formatted file.
-Version: 1.2.9
+Version: 1.3.1
 Author: Visser Labs
 Author URI: http://www.visser.com.au/about/
 License: GPL2
@@ -66,7 +66,7 @@ if( is_admin() ) {
 
 	function woo_ce_admin_init() {
 
-		global $woo_ce, $export;
+		global $woo_ce, $export, $wp_roles;
 
 		include_once( 'includes/formatting.php' );
 
@@ -285,14 +285,28 @@ if( is_admin() ) {
 				break;
 
 			case 'update':
-				$custom_orders = $_POST['custom_orders'];
-				if( $custom_orders ) {
+				if( isset( $_POST['custom_orders'] ) ) {
+					$custom_orders = $_POST['custom_orders'];
 					$custom_orders = explode( "\n", trim( $custom_orders ) );
 					$size = count( $custom_orders );
 					if( $size ) {
 						for( $i = 0; $i < $size; $i++ )
 							$custom_orders[$i] = trim( $custom_orders[$i] );
 						woo_ce_update_option( 'custom_orders', $custom_orders );
+					}
+				}
+				if( isset( $_POST['custom_order_items'] ) ) {
+					$custom_order_items = $_POST['custom_order_items'];
+					if( !empty( $custom_order_items ) ) {
+						$custom_order_items = explode( "\n", trim( $custom_order_items ) );
+						$size = count( $custom_order_items );
+						if( $size ) {
+							for( $i = 0; $i < $size; $i++ )
+								$custom_order_items[$i] = trim( $custom_order_items[$i] );
+							woo_ce_update_option( 'custom_order_items', $custom_order_items );
+						}
+					} else {
+						woo_ce_update_option( 'custom_order_items', '' );
 					}
 				}
 

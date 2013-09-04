@@ -6,22 +6,21 @@ if( is_admin() ) {
 	/* WordPress Administration menu */
 	function woo_ce_admin_menu() {
 
-		add_submenu_page( 'woocommerce', __( 'Store Export', 'woo_ce' ), __( 'Store Export', 'woo_ce' ), 'manage_options', 'woo_ce', 'woo_ce_html_page' );
+		add_submenu_page( 'woocommerce', __( 'Store Exporter', 'woo_ce' ), __( 'Store Export', 'woo_ce' ), 'manage_woocommerce', 'woo_ce', 'woo_ce_html_page' );
 
 	}
 	add_action( 'admin_menu', 'woo_ce_admin_menu' );
 
-	function woo_ce_template_header( $title = '', $icon = 'tools' ) {
+	function woo_ce_template_header( $title = '', $icon = 'woocommerce' ) {
 
 		global $woo_ce;
 
 		if( $title )
 			$output = $title;
 		else
-			$output = $woo_ce['menu'];
-		$icon = woo_is_admin_icon_valid( $icon ); ?>
+			$output = $woo_ce['menu']; ?>
 <div class="wrap">
-	<div id="icon-<?php echo $icon; ?>" class="icon32"><br /></div>
+	<div id="icon-<?php echo $icon; ?>" class="icon32 icon32-woocommerce-importer"><br /></div>
 	<h2>
 		<?php echo $output; ?>
 		<a href="<?php echo add_query_arg( 'tab', 'export' ); ?>" class="add-new-h2"><?php _e( 'Add New', 'woo_ce' ); ?></a>
@@ -554,9 +553,11 @@ if( is_admin() ) {
 			$length_unit = $dimension_unit;
 			foreach( $products as $key => $product ) {
 				$products[$key]->parent_id = '';
-				if( $product->post_type == 'product_variation' )
+				$products[$key]->parent_sku = '';
+				if( $product->post_type == 'product_variation' ) {
 					$products[$key]->parent_id = $product->post_parent;
-				$products[$key]->parent_sku = get_post_meta( $product->post_parent, '_sku', true );
+					$products[$key]->parent_sku = get_post_meta( $product->post_parent, '_sku', true );
+				}
 				$products[$key]->product_id = $product->ID;
 				$products[$key]->sku = get_post_meta( $product->ID, '_sku', true );
 				$products[$key]->name = get_the_title( $product->ID );

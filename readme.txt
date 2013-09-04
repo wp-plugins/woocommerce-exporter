@@ -5,7 +5,7 @@ Donate link: http://www.visser.com.au/#donations
 Tags: e-commerce, woocommerce, shop, cart, ecommerce, export, csv
 Requires at least: 2.9.2
 Tested up to: 3.7
-Stable tag: 1.2.9
+Stable tag: 1.3.1
 
 == Description ==
 
@@ -41,8 +41,10 @@ That's it!
 
 == Usage ==
 
-1. Open WooCommerce > Store Export from the WordPress Administration
-2. Select which WooCommerce details you would like to export and click Export
+1. Open WooCommerce > Export from the WordPress Administration
+2. Select the Export tab on the Store Exporter screen
+3. Select which WooCommerce details you would like to export and click Export
+4. Download archived copies of previous exports from the Archives tab
 
 Done!
 
@@ -60,6 +62,14 @@ http://www.visser.com.au/woocommerce/forums/
 4. A range of global export options are included.
 
 == Changelog ==
+
+= 1.3.1 =
+* Added: Link to submit additional fields
+
+= 1.3 =
+* Changed: Using manage_woocommerce instead of manage_options for permission check
+* Changed: Removed woo_is_admin_valid_icon
+* Changed: Using default WooCommerce icons
 
 = 1.2.9 =
 * Fixed: Urgent fix for duplicate formatting function
