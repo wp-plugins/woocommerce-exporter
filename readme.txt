@@ -5,7 +5,7 @@ Donate link: http://www.visser.com.au/#donations
 Tags: e-commerce, woocommerce, shop, cart, ecommerce, export, csv
 Requires at least: 2.9.2
 Tested up to: 3.7
-Stable tag: 1.3.1
+Stable tag: 1.3.3
 
 == Description ==
 
@@ -62,6 +62,12 @@ http://www.visser.com.au/woocommerce/forums/
 4. A range of global export options are included.
 
 == Changelog ==
+
+= 1.3.3 =
+* Added: New Product filter 'woo_ce_product_item'
+
+= 1.3.2 =
+* Fixed: Order Notes on Orders export
 
 = 1.3.1 =
 * Added: Link to submit additional fields

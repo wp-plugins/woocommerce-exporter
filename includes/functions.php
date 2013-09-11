@@ -623,6 +623,7 @@ if( is_admin() ) {
 						}
 					}
 				}
+				$products[$key] = apply_filters( 'woo_ce_product_item', $products[$key], $product->ID );
 			}
 		}
 		return $products;
@@ -1234,13 +1235,11 @@ if( is_admin() ) {
 			'label' => __( 'Customer Note', 'woo_ce' ),
 			'default' => 1
 		);
-/*
 		$fields[] = array(
 			'name' => 'order_notes',
 			'label' => __( 'Order Notes', 'woo_ce' ),
 			'default' => 1
 		);
-*/
 		$fields[] = array(
 			'name' => 'user_id',
 			'label' => __( 'User ID', 'woo_ce' ),
@@ -2009,7 +2008,7 @@ if( is_admin() ) {
 			if( $memory_limit < $minimum_memory_limit ) {
 				ob_start();
 				$memory_url = add_query_arg( 'action', 'dismiss_memory_prompt' );
-				$message = sprintf( __( 'We recommend setting memory to at least 64MB, your site has %dMB currently allocated. See: <a href="%s" target="_blank">Increasing memory allocated to PHP</a>', 'woo_ce' ), $memory_limit, 'http://codex.wordpress.org/Editing_wp-config.php#Increasing_memory_allocated_to_PHP' ); ?>
+				$message = sprintf( __( 'We recommend setting memory to at least %dMB, your site has %dMB currently allocated. See: <a href="%s" target="_blank">Increasing memory allocated to PHP</a>', 'woo_ce' ), $minimum_memory_limit, $memory_limit, 'http://codex.wordpress.org/Editing_wp-config.php#Increasing_memory_allocated_to_PHP' ); ?>
 <div class="error settings-error">
 	<p>
 		<strong><?php echo $message; ?></strong>

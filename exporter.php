@@ -3,7 +3,7 @@
 Plugin Name: WooCommerce - Store Exporter
 Plugin URI: http://www.visser.com.au/woocommerce/plugins/exporter/
 Description: Export store details out of WooCommerce into a CSV-formatted file.
-Version: 1.3.1
+Version: 1.3.3
 Author: Visser Labs
 Author URI: http://www.visser.com.au/about/
 License: GPL2
@@ -180,15 +180,16 @@ if( is_admin() ) {
 
 					$timeout = 600;
 					if( isset( $_POST['timeout'] ) ) {
-						$timeout = $_POST['timeout'];
+						$timeout = (int)$_POST['timeout'];
 						if( $timeout <> woo_ce_get_option( 'timeout' ) )
 							woo_ce_update_option( 'timeout', $timeout );
 					}
 
 					if( !ini_get( 'safe_mode' ) )
-						set_time_limit( $timeout );
+						@set_time_limit( $timeout );
 
 					@ini_set( 'memory_limit', WP_MAX_MEMORY_LIMIT );
+					@ini_set( 'max_execution_time', (int)$timeout );
 
 					$args = array(
 						'limit_volume' => $export->limit_volume,
