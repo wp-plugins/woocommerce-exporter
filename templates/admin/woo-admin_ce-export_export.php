@@ -419,10 +419,15 @@
 						<td>
 							<select id="encoding" name="encoding">
 								<option><?php _e( 'System default', 'woo_ce' ); ?></option>
-<?php foreach( $file_encodings as $key => $chr ) { ?>
+<?php if( $file_encodings ) { ?>
+	<?php foreach( $file_encodings as $key => $chr ) { ?>
 								<option value="<?php echo $chr; ?>"><?php echo $chr; ?></option>
+	<?php } ?>
 <?php } ?>
+<?php if( !$file_encodings ) { ?>
 							</select>
+							<p class="description"><?php _e( 'Character encoding options are unavailable in PHP 4, contact your hosting provider to update your site install to use PHP 5 or higher.', 'woo_ce' ); ?></p>
+<?php } ?>
 						</td>
 					</tr>
 

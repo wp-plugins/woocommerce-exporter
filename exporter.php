@@ -3,7 +3,7 @@
 Plugin Name: WooCommerce - Store Exporter
 Plugin URI: http://www.visser.com.au/woocommerce/plugins/exporter/
 Description: Export store details out of WooCommerce into a CSV-formatted file.
-Version: 1.3.3
+Version: 1.3.4
 Author: Visser Labs
 Author URI: http://www.visser.com.au/about/
 License: GPL2
@@ -30,6 +30,7 @@ if( is_admin() ) {
 
 	/* Start of: WordPress Administration */
 
+	// Add Settings link to Plugins screen
 	function woo_ce_add_settings_link( $links, $file ) {
 
 		static $this_plugin;
@@ -43,20 +44,20 @@ if( is_admin() ) {
 	}
 	add_filter( 'plugin_action_links', 'woo_ce_add_settings_link', 10, 2 );
 
+	// Load CSS and jQuery scripts for Store Exporter screen
 	function woo_ce_enqueue_scripts( $hook ) {
 
-		/* Export */
 		$page = 'woocommerce_page_woo_ce';
 		if( $page == $hook ) {
-			/* Date Picker */
+			// Date Picker
 			wp_enqueue_script( 'jquery-ui-datepicker' );
 			wp_enqueue_style( 'jquery-ui-datepicker', plugins_url( '/templates/admin/jquery-ui-datepicker.css', __FILE__ ) );
 
-			/* Chosen */
+			// Chosen
 			wp_enqueue_script( 'jquery-chosen', plugins_url( '/js/chosen.jquery.js', __FILE__ ), array( 'jquery' ) );
 			wp_enqueue_style( 'jquery-chosen', plugins_url( '/templates/admin/chosen.css', __FILE__ ) );
 
-			/* Common */
+			// Common
 			wp_enqueue_style( 'woo_ce_styles', plugins_url( '/templates/admin/woo-admin_ce-export.css', __FILE__ ) );
 			wp_enqueue_script( 'woo_ce_scripts', plugins_url( '/templates/admin/woo-admin_ce-export.js', __FILE__ ), array( 'jquery' ) );
 		}
@@ -64,6 +65,7 @@ if( is_admin() ) {
 	}
 	add_action( 'admin_enqueue_scripts', 'woo_ce_enqueue_scripts' );
 
+	// Initial scripts and export process
 	function woo_ce_admin_init() {
 
 		global $woo_ce, $export, $wp_roles;
@@ -212,8 +214,7 @@ if( is_admin() ) {
 						woo_ce_export_dataset( $dataset, $args );
 					} else {
 
-						/* Generate CSV contents */
-
+						// Generate CSV contents
 						$bits = woo_ce_export_dataset( $dataset, $args );
 						if( !$bits ) {
 							wp_redirect( add_query_arg( 'empty', true ) );
@@ -221,16 +222,14 @@ if( is_admin() ) {
 						}
 						if( isset( $export->delete_temporary_csv ) && $export->delete_temporary_csv ) {
 
-							/* Print to browser */
-
+							// Print to browser
 							woo_ce_generate_csv_header( $export->type );
 							echo $bits;
 							exit();
 
 						} else {
 
-							/* Save to file and insert to WordPress Media */
-
+							// Save to file and insert to WordPress Media
 							if( $export->filename && $bits ) {
 								$post_ID = woo_ce_save_csv_file_attachment( $export->filename );
 								$upload = wp_upload_bits( $export->filename, null, $bits );
@@ -261,6 +260,7 @@ if( is_admin() ) {
 	}
 	add_action( 'admin_init', 'woo_ce_admin_init' );
 
+	// HTML templates and form processor for Store Exporter screen
 	function woo_ce_html_page() {
 
 		global $wpdb, $woo_ce, $export;
@@ -327,6 +327,7 @@ if( is_admin() ) {
 
 	}
 
+	// HTML template for Export screen
 	function woo_ce_manage_form() {
 
 		global $woo_ce;

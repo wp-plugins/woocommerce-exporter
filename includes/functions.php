@@ -3,7 +3,7 @@ if( is_admin() ) {
 
 	/* Start of: WordPress Administration */
 
-	/* WordPress Administration menu */
+	// Add Store Export to WordPress Administration menu
 	function woo_ce_admin_menu() {
 
 		add_submenu_page( 'woocommerce', __( 'Store Exporter', 'woo_ce' ), __( 'Store Export', 'woo_ce' ), 'manage_woocommerce', 'woo_ce', 'woo_ce_html_page' );
@@ -11,6 +11,7 @@ if( is_admin() ) {
 	}
 	add_action( 'admin_menu', 'woo_ce_admin_menu' );
 
+	// HTML template header on Store Exporter screen
 	function woo_ce_template_header( $title = '', $icon = 'woocommerce' ) {
 
 		global $woo_ce;
@@ -28,11 +29,13 @@ if( is_admin() ) {
 <?php
 	}
 
+	// HTML template footer on Store Exporter screen
 	function woo_ce_template_footer() { ?>
 </div>
 <?php
 	}
 
+	// HTML template for header prompt on Store Exporter screen
 	function woo_ce_support_donate() {
 
 		global $woo_ce;
@@ -58,6 +61,7 @@ if( is_admin() ) {
 
 	}
 
+	// Saves the state of Export fields for next export
 	function woo_ce_save_fields( $dataset, $fields = array() ) {
 
 		if( $dataset && !empty( $fields ) ) {
@@ -67,6 +71,7 @@ if( is_admin() ) {
 
 	}
 
+	// File output header for CSV file
 	function woo_ce_generate_csv_header( $dataset = '' ) {
 
 		$filename = woo_ce_generate_csv_filename( $dataset );
@@ -80,6 +85,7 @@ if( is_admin() ) {
 
 	}
 
+	// Function to generate filename of CSV file based on the Export type
 	function woo_ce_generate_csv_filename( $dataset = '' ) {
 
 		$date = date( 'Ymd' );
@@ -93,6 +99,7 @@ if( is_admin() ) {
 
 	}
 
+	// HTML template for disabled Filter Orders by Date widget on Store Exporter screen
 	function woo_ce_orders_filter_by_date() {
 
 		$current_month = date( 'F' );
@@ -125,6 +132,7 @@ if( is_admin() ) {
 
 	}
 
+	// HTML template for disabled Filter Orders by Customer widget on Store Exporter screen
 	function woo_ce_orders_filter_by_customer() {
 
 		ob_start(); ?>
@@ -141,6 +149,7 @@ if( is_admin() ) {
 
 	}
 
+	// HTML template for disabled Filter Orders by Order Status widget on Store Exporter screen
 	function woo_ce_orders_filter_by_status() {
 
 		$order_statuses = woo_ce_get_order_statuses();
@@ -160,6 +169,7 @@ if( is_admin() ) {
 
 	}
 
+	// Add Store Export to filter types on the WordPress Media screen
 	function woo_ce_add_post_mime_type( $post_mime_types = array() ) {
 
 		$post_mime_types['text/csv'] = array( __( 'Store Exports', 'woo_ce' ), __( 'Manage Store Exports', 'woo_ce' ), _n_noop( 'Store Export <span class="count">(%s)</span>', 'Store Exports <span class="count">(%s)</span>' ) );
@@ -168,6 +178,7 @@ if( is_admin() ) {
 	}
 	add_filter( 'post_mime_types', 'woo_ce_add_post_mime_type' );
 
+	// In-line display of CSV file when viewed via WordPress Media screen
 	function woo_ce_read_csv_file( $post = null ) {
 
 		if( $post->post_type != 'attachment' )
@@ -194,6 +205,7 @@ if( is_admin() ) {
 			<!-- .inside -->
 		</div>
 		<!-- .postbox -->
+
 	</div>
 	<!-- .postbox-container -->
 <?php
@@ -202,6 +214,7 @@ if( is_admin() ) {
 	}
 	add_action( 'edit_form_after_editor', 'woo_ce_read_csv_file' );
 
+	// List of Export types used on Store Exporter screen
 	function woo_ce_return_export_types() {
 
 		$export_types = array();
@@ -211,10 +224,12 @@ if( is_admin() ) {
 		$export_types['orders'] = __( 'Orders', 'woo_ce' );
 		$export_types['customers'] = __( 'Customers', 'woo_ce' );
 		$export_types['coupons'] = __( 'Coupons', 'woo_ce' );
+		$export_types = apply_filters( 'woo_ce_export_types', $export_types );
 		return $export_types;
 
 	}
 
+	// Returns label of Export type slug used on Store Exporter screen
 	function woo_ce_export_type_label( $export_type = '', $echo = false ) {
 
 		$output = '';
@@ -230,6 +245,7 @@ if( is_admin() ) {
 
 	}
 
+	// Returns number of an Export type prior to export, used on Store Exporter screen
 	function woo_ce_return_count( $dataset ) {
 
 		global $wpdb;
@@ -332,26 +348,7 @@ if( is_admin() ) {
 
 	}
 
-	function woo_ce_count_object( $object = 0, $exclude_post_types = array() ) {
-	
-		$count = 0;
-		if( is_object( $object ) ) {
-			if( $exclude_post_types ) {
-				$size = count( $exclude_post_types );
-				for( $i = 0; $i < $size; $i++ ) {
-					if( isset( $object->$exclude_post_types[$i] ) )
-						unset( $object->$exclude_post_types[$i] );
-				}
-			}
-			foreach( $object as $key => $item )
-				$count = $item + $count;
-		} else {
-			$count = $object;
-		}
-		return $count;
-
-	}
-
+	// Export process for CSV file
 	function woo_ce_export_dataset( $dataset, $args = array() ) {
 
 		global $wpdb, $woo_ce, $export;
@@ -482,6 +479,7 @@ if( is_admin() ) {
 
 	/* Products */
 
+	// Returns a list of WooCommerce Products to export process
 	function woo_ce_get_products( $args = array() ) {
 
 		$limit_volume = -1;
@@ -630,6 +628,7 @@ if( is_admin() ) {
 
 	}
 
+	// Returns Product Categories associated to a specific Product
 	function woo_ce_get_product_assoc_categories( $product_id = 0 ) {
 
 		global $export;
@@ -669,6 +668,7 @@ if( is_admin() ) {
 
 	}
 
+	// Returns Product Tags associated to a specific Product
 	function woo_ce_get_product_assoc_tags( $product_id = 0 ) {
 
 		global $export;
@@ -688,6 +688,7 @@ if( is_admin() ) {
 
 	}
 
+	// Returns the Featured Image associated to a specific Product
 	function woo_ce_get_product_assoc_featured_image( $product_id = 0 ) {
 
 		$output = '';
@@ -703,6 +704,7 @@ if( is_admin() ) {
 
 	}
 
+	// Returns the Product Galleries associated to a specific Product
 	function woo_ce_get_product_assoc_product_gallery( $product_id = 0 ) {
 
 		global $export;
@@ -719,6 +721,7 @@ if( is_admin() ) {
 
 	}
 
+	// Returns the Product Type of a specific Product
 	function woo_ce_get_product_assoc_type( $product_id = 0 ) {
 
 		global $export;
@@ -738,6 +741,7 @@ if( is_admin() ) {
 
 	}
 
+	// Returns Product Attributes associated to a specific Product
 	function woo_ce_get_product_assoc_attributes( $product_id = 0, $attribute = array() ) {
 
 		global $export;
@@ -758,6 +762,7 @@ if( is_admin() ) {
 
 	}
 
+	// Returns File Downloads associated to a specific Product
 	function woo_ce_get_product_assoc_file_downloads( $product_id = 0 ) {
 
 		global $export;
@@ -776,6 +781,7 @@ if( is_admin() ) {
 
 	}
 
+	// Returns a list of allowed Export type statuses, can be overridden on a per-Export type basis
 	function woo_ce_post_statuses( $extra_status = array(), $override = false ) {
 
 		$output = array(
@@ -796,6 +802,7 @@ if( is_admin() ) {
 
 	}
 
+	// Returns a list of Product export columns
 	function woo_ce_get_product_fields( $format = 'full' ) {
 
 		$fields = array();
@@ -1089,6 +1096,7 @@ if( is_admin() ) {
 
 	}
 
+	// Returns the export column header label based on an export column slug
 	function woo_ce_get_product_field( $name = null, $format = 'name' ) {
 
 		$output = '';
@@ -1118,6 +1126,7 @@ if( is_admin() ) {
 
 	/* Categories */
 
+	// Returns a list of WooCommerce Product Categories to export process
 	function woo_ce_get_product_categories() {
 
 		$output = '';
@@ -1132,6 +1141,7 @@ if( is_admin() ) {
 
 	}
 
+	// Returns a list of WooCommerce Product Types to export process
 	function woo_ce_get_product_types() {
 
 		$output = '';
@@ -1153,6 +1163,7 @@ if( is_admin() ) {
 
 	/* Tags */
 
+	// Returns a list of WooCommerce Product Tags to export process
 	function woo_ce_get_product_tags() {
 
 		$output = '';
@@ -1169,6 +1180,7 @@ if( is_admin() ) {
 
 	/* Orders */
 
+	// Returns a list of WooCommerce Product Categories to export process
 	function woo_ce_get_product_attributes() {
 
 		global $wpdb;
@@ -1182,6 +1194,7 @@ if( is_admin() ) {
 
 	}
 
+	// Returns a list of Order export columns
 	function woo_ce_get_order_fields( $format = 'full' ) {
 
 		$fields = array();
@@ -1192,7 +1205,7 @@ if( is_admin() ) {
 		);
 		$fields[] = array(
 			'name' => 'purchase_total',
-			'label' => __( 'Purchase Total', 'woo_ce' ),
+			'label' => __( 'Order Total', 'woo_ce' ),
 			'default' => 1
 		);
 		$fields[] = array(
@@ -1200,9 +1213,33 @@ if( is_admin() ) {
 			'label' => __( 'Order Discount', 'woo_ce' ),
 			'default' => 1
 		);
+/*
+		$fields[] = array(
+			'name' => 'order_incl_tax',
+			'label' => __( 'Order Incl. Tax', 'woo_ce' ),
+			'default' => ''
+		);
+*/
+		$fields[] = array(
+			'name' => 'order_excl_tax',
+			'label' => __( 'Order Excl. Tax', 'woo_ce' ),
+			'default' => ''
+		);
+/*
+		$fields[] = array(
+			'name' => 'order_tax_rate',
+			'label' => __( 'Order Tax Rate', 'woo_ce' ),
+			'default' => ''
+		);
+*/
+		$fields[] = array(
+			'name' => 'order_sales_tax',
+			'label' => __( 'Sales Tax Total', 'woo_ce' ),
+			'default' => 1
+		);
 		$fields[] = array(
 			'name' => 'order_shipping_tax',
-			'label' => __( 'Order Shipping Tax', 'woo_ce' ),
+			'label' => __( 'Shipping Tax Total', 'woo_ce' ),
 			'default' => 1
 		);
 		$fields[] = array(
@@ -1228,6 +1265,11 @@ if( is_admin() ) {
 		$fields[] = array(
 			'name' => 'purchase_date',
 			'label' => __( 'Purchase Date', 'woo_ce' ),
+			'default' => 1
+		);
+		$fields[] = array(
+			'name' => 'purchase_time',
+			'label' => __( 'Purchase Time', 'woo_ce' ),
 			'default' => 1
 		);
 		$fields[] = array(
@@ -1472,6 +1514,7 @@ if( is_admin() ) {
 
 	}
 
+	// Returns the export column header label based on an export column slug
 	function woo_ce_get_order_field( $name = null, $format = 'name' ) {
 
 		$output = '';
@@ -1512,6 +1555,7 @@ if( is_admin() ) {
 
 	/* Customers */
 
+	// Returns a list of Customer export columns
 	function woo_ce_get_customer_fields( $format = 'full' ) {
 
 		$fields = array();
@@ -1687,6 +1731,7 @@ if( is_admin() ) {
 
 	}
 
+	// Returns the export column header label based on an export column slug
 	function woo_ce_get_customer_field( $name = null, $format = 'name' ) {
 
 		$output = '';
@@ -1716,6 +1761,7 @@ if( is_admin() ) {
 
 	/* Coupons */
 
+	// Returns a list of Coupon export columns
 	function woo_ce_get_coupon_fields( $format = 'full' ) {
 
 		$fields = array();
@@ -1834,6 +1880,7 @@ if( is_admin() ) {
 
 	}
 
+	// Returns the export column header label based on an export column slug
 	function woo_ce_get_coupon_field( $name = null, $format = 'name' ) {
 
 		$output = '';
@@ -1863,6 +1910,7 @@ if( is_admin() ) {
 
 	/* Export */
 
+	// HTML active class for the currently selected tab on the Store Exporter screen
 	function woo_ce_admin_active_tab( $tab_name = null, $tab = null ) {
 
 		if( isset( $_GET['tab'] ) && !$tab )
@@ -1879,6 +1927,7 @@ if( is_admin() ) {
 
 	}
 
+	// HTML template for each tab on the Store Exporter screen
 	function woo_ce_tab_template( $tab = '' ) {
 
 		global $woo_ce;
@@ -1934,7 +1983,9 @@ if( is_admin() ) {
 				$offset = woo_ce_get_option( 'offset' );
 				$timeout = woo_ce_get_option( 'timeout', 0 );
 				$delete_csv = woo_ce_get_option( 'delete_csv', 0 );
-				$file_encodings = mb_list_encodings();
+				$file_encodings = false;
+				if( function_exists( 'mb_list_encodings' ) )
+					$file_encodings = mb_list_encodings();
 				break;
 
 			case 'tools':
@@ -1962,6 +2013,7 @@ if( is_admin() ) {
 
 	}
 
+	// Returns the Post object of the CSV file saved as an attachment to the WordPress Media library
 	function woo_ce_save_csv_file_attachment( $filename = '' ) {
 
 		$output = 0;
@@ -1979,17 +2031,21 @@ if( is_admin() ) {
 
 	}
 
-	function woo_ce_save_csv_file_guid( $post_ID, $export_type, $upload_url ) {
+	// Updates the GUID of the CSV file attachment to match the correct CSV URL
+	function woo_ce_save_csv_file_guid( $post_ID, $export_type, $upload_url = '' ) {
 
 		add_post_meta( $post_ID, '_woo_export_type', $export_type );
-		$object = array(
-			'ID' => $post_ID,
-			'guid' => $upload_url
-		);
-		wp_update_post( $object );
+		if( !empty( $upload_url ) ) {
+			$object = array(
+				'ID' => $post_ID,
+				'guid' => $upload_url
+			);
+			wp_update_post( $object );
+		}
 
 	}
 
+	// Returns a list of WooCommerce Order statuses
 	function woo_ce_get_order_statuses() {
 
 		$args = array(
@@ -2000,6 +2056,7 @@ if( is_admin() ) {
 
 	}
 
+	// Displays a HTML notice where the memory allocated to WordPress falls below 64MB
 	function woo_ce_memory_prompt() {
 
 		if( !woo_ce_get_option( 'dismiss_memory_prompt', 0 ) ) {
@@ -2022,6 +2079,7 @@ if( is_admin() ) {
 
 	}
 
+	// Displays a HTML notice when a WordPress or Store Exporter error is encountered
 	function woo_ce_fail_notices() {
 
 		$message = false;
@@ -2041,6 +2099,7 @@ if( is_admin() ) {
 		}
 	}
 
+	// Returns a list of archived exports
 	function woo_ce_get_archive_files() {
 
 		$args = array(
@@ -2060,6 +2119,7 @@ if( is_admin() ) {
 
 	}
 
+	// Returns an archived export with additional details
 	function woo_ce_get_archive_file( $file = '' ) {
 
 		$wp_upload_dir = wp_upload_dir();
@@ -2086,6 +2146,7 @@ if( is_admin() ) {
 
 	}
 
+	// HTML template for displaying the current export type filter on the Archives screen
 	function woo_ce_archives_quicklink_current( $current = '' ) {
 
 		$output = '';
@@ -2100,6 +2161,7 @@ if( is_admin() ) {
 
 	}
 
+	// HTML template for displaying the number of each export type filter on the Archives screen
 	function woo_ce_archives_quicklink_count( $type = '' ) {
 
 		$output = '0';

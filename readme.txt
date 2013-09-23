@@ -5,7 +5,7 @@ Donate link: http://www.visser.com.au/#donations
 Tags: e-commerce, woocommerce, shop, cart, ecommerce, export, csv
 Requires at least: 2.9.2
 Tested up to: 3.7
-Stable tag: 1.3.3
+Stable tag: 1.3.4
 
 == Description ==
 
@@ -62,6 +62,14 @@ http://www.visser.com.au/woocommerce/forums/
 4. A range of global export options are included.
 
 == Changelog ==
+
+= 1.3.4 =
+* Added: Total incl. GST
+* Added: Total excl. GST
+* Added: Purchase Time
+* Changed: Moved woo_ce_count_object() to formatting.php
+* Added: Commenting to each function
+* Fixed: PHP 4 support for missing mb_list_encodings()
 
 = 1.3.3 =
 * Added: New Product filter 'woo_ce_product_item'
