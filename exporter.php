@@ -3,7 +3,7 @@
 Plugin Name: WooCommerce - Store Exporter
 Plugin URI: http://www.visser.com.au/woocommerce/plugins/exporter/
 Description: Export store details out of WooCommerce into a CSV-formatted file.
-Version: 1.3.4
+Version: 1.3.6
 Author: Visser Labs
 Author URI: http://www.visser.com.au/about/
 License: GPL2
@@ -49,6 +49,10 @@ if( is_admin() ) {
 
 		$page = 'woocommerce_page_woo_ce';
 		if( $page == $hook ) {
+			// WooCommerce
+			global $woocommerce;
+			wp_enqueue_style( 'woocommerce_admin_styles', $woocommerce->plugin_url() . '/assets/css/admin.css' );
+
 			// Date Picker
 			wp_enqueue_script( 'jquery-ui-datepicker' );
 			wp_enqueue_style( 'jquery-ui-datepicker', plugins_url( '/templates/admin/jquery-ui-datepicker.css', __FILE__ ) );
@@ -83,6 +87,8 @@ if( is_admin() ) {
 
 			case 'export':
 				$export = new stdClass();
+				$export->start_time = time();
+				$export->idle_memory_start = woo_ce_current_memory_usage();
 				$export->delimiter = $_POST['delimiter'];
 				if( $export->delimiter <> woo_ce_get_option( 'delimiter' ) )
 					woo_ce_update_option( 'delimiter', $export->delimiter );
@@ -211,11 +217,16 @@ if( is_admin() ) {
 					woo_ce_save_fields( $dataset, $export->fields );
 					$export->filename = woo_ce_generate_csv_filename( $export->type );
 					if( isset( $woo_ce['debug'] ) && $woo_ce['debug'] ) {
+
 						woo_ce_export_dataset( $dataset, $args );
+						$export->idle_memory_end = woo_ce_current_memory_usage();
+						$export->end_time = time();
+
 					} else {
 
 						// Generate CSV contents
 						$bits = woo_ce_export_dataset( $dataset, $args );
+						unset( $export->fields );
 						if( !$bits ) {
 							wp_redirect( add_query_arg( 'empty', true ) );
 							exit();
@@ -235,10 +246,24 @@ if( is_admin() ) {
 								$upload = wp_upload_bits( $export->filename, null, $bits );
 								$attach_data = wp_generate_attachment_metadata( $post_ID, $upload['file'] );
 								wp_update_attachment_metadata( $post_ID, $attach_data );
-								if( $post_ID )
+								if( $post_ID ) {
 									woo_ce_save_csv_file_guid( $post_ID, $export->type, $upload['url'] );
-								woo_ce_generate_csv_header( $export->type );
+									woo_ce_save_csv_file_details( $post_ID );
+								}
+								$export_type = $export->type;
+								woo_ce_unload_export_global();
+
+								// The end memory usage and time is collected at the very last opportunity prior to the CSV header being rendered to the screen
+								woo_ce_update_csv_file_detail( $post_ID, '_woo_idle_memory_end', woo_ce_current_memory_usage() );
+								woo_ce_update_csv_file_detail( $post_ID, '_woo_end_time', time() );
+
+								// Generate CSV header
+								woo_ce_generate_csv_header( $export_type );
+								unset( $export_type );
+
+								// Print file contents to screen
 								readfile( $upload['file'] );
+								unset( $upload );
 							} else {
 								wp_redirect( add_query_arg( 'failed', true ) );
 							}
@@ -277,6 +302,8 @@ if( is_admin() ) {
 				if( isset( $woo_ce['debug'] ) && $woo_ce['debug'] ) {
 					if( !isset( $woo_ce['debug_log'] ) )
 						$woo_ce['debug_log'] = __( 'No export entries were found, please try again with different export filters.', 'woo_ce' );
+					$output .= '<h3>' . __( 'Export Details' ) . '</h3>';
+					$output .= '<textarea id="export_log">' . print_r( $export, true ) . '</textarea><hr />';
 					$output .= '<h3>' . sprintf( __( 'Export Log: %s', 'woo_ce' ), $export->filename ) . '</h3>';
 					$output .= '<textarea id="export_log">' . $woo_ce['debug_log'] . '</textarea>';
 				}

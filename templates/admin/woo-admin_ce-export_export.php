@@ -133,23 +133,31 @@
 
 					<p><label><input type="checkbox" id="products-filters-categories" /> <?php _e( 'Filter Products by Product Categories', 'woo_ce' ); ?></label></p>
 					<div id="export-products-filters-categories" class="separator">
+<?php if( $product_categories ) { ?>
 						<ul>
-<?php foreach( $product_categories as $product_category ) { ?>
+	<?php foreach( $product_categories as $product_category ) { ?>
 							<li><label><input type="checkbox" name="product_filter_categories[<?php echo $product_category->term_id; ?>]" value="<?php echo $product_category->term_id; ?>" /> <?php echo $product_category->name; ?> (#<?php echo $product_category->term_id; ?>)</label></li>
-<?php } ?>
+	<?php } ?>
 						</ul>
 						<p class="description"><?php _e( 'Select the Product Categories you want to filter exported Products by. Default is to include all Product Categories.', 'woo_ce' ); ?></p>
+<?php } else { ?>
+						<p><?php _e( 'No Product Categories have been found.', 'woo_ce' ); ?></p>
+<?php } ?>
 					</div>
 					<!-- #export-products-filters-categories -->
 
 					<p><label><input type="checkbox" id="products-filters-tags" /> <?php _e( 'Filter Products by Product Tags', 'woo_ce' ); ?></label></p>
 					<div id="export-products-filters-tags" class="separator">
+<?php if( $product_tags ) { ?>
 						<ul>
-<?php foreach( $product_tags as $product_tag ) { ?>
+	<?php foreach( $product_tags as $product_tag ) { ?>
 							<li><label><input type="checkbox" name="product_filter_tags[<?php echo $product_tag->term_id; ?>]" value="<?php echo $product_tag->term_id; ?>" /> <?php echo $product_tag->name; ?> (#<?php echo $product_tag->term_id; ?>)</label></li>
-<?php } ?>
+	<?php } ?>
 						</ul>
 						<p class="description"><?php _e( 'Select the Product Tags you want to filter exported Products by. Default is to include all Product Tags.', 'woo_ce' ); ?></p>
+<?php } else { ?>
+						<p><?php _e( 'No Product Tags have been found.', 'woo_ce' ); ?></p>
+<?php } ?>
 					</div>
 					<!-- #export-products-filters-tags -->
 

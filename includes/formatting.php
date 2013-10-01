@@ -24,6 +24,37 @@ if( !function_exists( 'escape_csv_value' ) ) {
 	}
 }
 
+function woo_ce_display_memory( $memory = 0 ) {
+
+	$output = '-';
+	if( !empty( $output ) )
+		$output = sprintf( __( '%s MB', 'woo_ce' ), $memory );
+	echo $output;
+
+}
+
+function woo_ce_display_time_elapsed( $from, $to ) {
+
+	$output = __( '1 second', 'woo_ce' );
+	$time = $to - $from;
+	$tokens = array (
+		31536000 => __( 'year', 'woo_ce' ),
+		2592000 => __( 'month', 'woo_ce' ),
+		604800 => __( 'week', 'woo_ce' ),
+		86400 => __( 'day', 'woo_ce' ),
+		3600 => __( 'hour', 'woo_ce' ),
+		60 => __( 'minute', 'woo_ce' ),
+		1 => __( 'second', 'woo_ce' )
+	);
+	foreach ($tokens as $unit => $text) {
+		if ($time < $unit) continue;
+		$numberOfUnits = floor($time / $unit);
+		$output = $numberOfUnits.' '.$text.(($numberOfUnits>1)?'s':'');
+	}
+	return $output;
+
+}
+
 function woo_ce_escape_csv_value( $value = '', $delimiter = ',', $format = 'all' ) {
 
 	$output = $value;
