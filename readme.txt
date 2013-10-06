@@ -56,10 +56,13 @@ http://www.visser.com.au/woocommerce/forums/
 
 == Screenshots ==
 
-1. Select the data type you wish to export, default is Products.
+1. The overview screen for Store Exporter
 2. Select the data fields to be included in the export, selections are remembered for next export.
-3. Filter the exported data by date, status, customer and more.
-4. A range of global export options are included.
+3. Each dataset (e.g. Products, Orders, etc.) include filter options to filter by date, status, type, customer and more.
+4. A range of export options can be adjusted to suit different languages and file formatting requirements.
+5. Export a list of WooCommerce Product Categories into a CSV file.
+6. Export a list of WooCommerce Product Tags into a CSV file.
+7. Download achived copies of previous exports
 
 == Changelog ==
 
