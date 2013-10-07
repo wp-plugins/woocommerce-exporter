@@ -276,7 +276,7 @@ if( is_admin() ) {
 		$count_sql = null;
 		switch( $dataset ) {
 
-			/* WooCommerce */
+			// WooCommerce
 
 			case 'products':
 				$post_type = 'product';
@@ -2054,9 +2054,10 @@ if( is_admin() ) {
 
 		$output = 0;
 		if( !empty( $filename ) ) {
+			$post_type = 'woo-export';
 			$object = array(
 				'post_title' => $filename,
-				'post_type' => 'woo-export',
+				'post_type' => $post_type,
 				'post_mime_type' => 'text/csv'
 			);
 			$post_ID = wp_insert_attachment( $object, $filename );

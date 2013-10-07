@@ -30,14 +30,17 @@ if( is_admin() ) {
 
 	/* Start of: WordPress Administration */
 
-	// Add Settings link to Plugins screen
+	// Add Export and Docs links to the Plugins screen
 	function woo_ce_add_settings_link( $links, $file ) {
 
 		static $this_plugin;
 		if( !$this_plugin ) $this_plugin = plugin_basename( __FILE__ );
 		if( $file == $this_plugin ) {
-			$settings_link = sprintf( '<a href="%s">' . __( 'Export', 'woo_ce' ) . '</a>', add_query_arg( 'page', 'woo_ce', 'admin.php' ) );
-			array_unshift( $links, $settings_link );
+			$docs_url = 'http://www.visser.com.au/docs/';
+			$docs_link = sprintf( '<a href="%s" target="_blank">' . __( 'Docs', 'woo_ce' ) . '</a>', $docs_url );
+			$export_link = sprintf( '<a href="%s">' . __( 'Export', 'woo_ce' ) . '</a>', add_query_arg( 'page', 'woo_ce', 'admin.php' ) );
+			array_unshift( $links, $docs_link );
+			array_unshift( $links, $export_link );
 		}
 		return $links;
 
