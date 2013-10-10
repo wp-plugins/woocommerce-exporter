@@ -195,24 +195,56 @@
 		<div class="postbox" id="export-categories">
 			<h3 class="hndle"><?php _e( 'Category Fields', 'woo_ce' ); ?></h3>
 			<div class="inside">
-				<p><?php _e( 'This export type has no options.', 'woo_ce' ); ?></p>
+				<p class="description"><?php _e( 'Select the Category fields you would like to export.', 'woo_ce' ); ?></p>
+				<p><a href="javascript:void(0)" id="categories-checkall" class="checkall"><?php _e( 'Check All', 'woo_ce' ); ?></a> | <a href="javascript:void(0)" id="categories-uncheckall" class="uncheckall"><?php _e( 'Uncheck All', 'woo_ce' ); ?></a></p>
+				<table>
+
+	<?php foreach( $category_fields as $category_field ) { ?>
+					<tr>
+						<td>
+							<label>
+								<input type="checkbox" name="category_fields[<?php echo $category_field['name']; ?>]" class="category_field"<?php checked( $category_field['default'], 1 ); ?><?php disabled( $category_field['disabled'], 1 ); ?> />
+								<?php echo $category_field['label']; ?>
+							</label>
+						</td>
+					</tr>
+
+	<?php } ?>
+				</table>
 				<p class="submit">
 					<input type="submit" id="export_categories" value="<?php _e( 'Export Categories', 'woo_ce' ); ?> " class="button-primary" />
 				</p>
+				<p class="description"><?php _e( 'Can\'t find a particular Category field in the above export list? <a href="' . $troubleshooting_url . '" target="_blank">Get in touch</a>.', 'woo_ce' ); ?></p>
 			</div>
 		</div>
-		<!-- .postbox -->
+		<!-- #export-categories -->
 
 		<div class="postbox" id="export-tags">
 			<h3 class="hndle"><?php _e( 'Tag Fields', 'woo_ce' ); ?></h3>
 			<div class="inside">
-				<p><?php _e( 'This export type has no options.', 'woo_ce' ); ?></p>
+				<p class="description"><?php _e( 'Select the Tag fields you would like to export.', 'woo_ce' ); ?></p>
+				<p><a href="javascript:void(0)" id="tags-checkall" class="checkall"><?php _e( 'Check All', 'woo_ce' ); ?></a> | <a href="javascript:void(0)" id="tags-uncheckall" class="uncheckall"><?php _e( 'Uncheck All', 'woo_ce' ); ?></a></p>
+				<table>
+
+	<?php foreach( $tag_fields as $tag_field ) { ?>
+					<tr>
+						<td>
+							<label>
+								<input type="checkbox" name="tag_fields[<?php echo $tag_field['name']; ?>]" class="tag_field"<?php checked( $tag_field['default'], 1 ); ?><?php disabled( $tag_field['disabled'], 1 ); ?> />
+								<?php echo $tag_field['label']; ?>
+							</label>
+						</td>
+					</tr>
+
+	<?php } ?>
+				</table>
 				<p class="submit">
 					<input type="submit" id="export_tags" value="<?php _e( 'Export Tags', 'woo_ce' ); ?> " class="button-primary" />
 				</p>
+				<p class="description"><?php _e( 'Can\'t find a particular Product Tag field in the above export list? <a href="' . $troubleshooting_url . '" target="_blank">Get in touch</a>.', 'woo_ce' ); ?></p>
 			</div>
 		</div>
-		<!-- .postbox -->
+		<!-- #export-tags -->
 
 <?php if( $order_fields ) { ?>
 		<div id="export-orders">

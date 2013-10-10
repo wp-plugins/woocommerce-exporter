@@ -386,7 +386,7 @@ if( is_admin() ) {
 			$csv = '';
 			switch( $datatype ) {
 
-				/* Products */
+				// Products
 				case 'products':
 					$fields = woo_ce_get_product_fields( 'summary' );
 					if( $export->fields = array_intersect_assoc( $fields, $export->fields ) ) {
@@ -431,67 +431,75 @@ if( is_admin() ) {
 					$export->data_memory_end = woo_ce_current_memory_usage();
 					break;
 
-				/* Categories */
+				// Categories
 				case 'categories':
-					$columns = array(
-						__( 'Category', 'woo_ce' )
-					);
-					$size = count( $columns );
-					$export->total_columns = $size;
-					for( $i = 0; $i < $size; $i++ ) {
-						if( $i == ( $size - 1 ) )
-							$csv .= woo_ce_escape_csv_value( $columns[$i], $export->delimiter, $export->escape_formatting ) . "\n";
-						else
-							$csv .= woo_ce_escape_csv_value( $columns[$i], $export->delimiter, $export->escape_formatting ) . $separator;
+					$fields = woo_ce_get_category_fields( 'summary' );
+					if( $export->fields = array_intersect_assoc( $fields, $export->fields ) ) {
+						foreach( $export->fields as $key => $field )
+							$export->columns[] = woo_ce_get_category_field( $key );
 					}
-					unset( $export->columns );
 					$export->data_memory_start = woo_ce_current_memory_usage();
 					if( $categories = woo_ce_get_product_categories() ) {
 						$export->total_rows = count( $categories );
+						$size = count( $export->columns );
+						$export->total_columns = $size;
+						for( $i = 0; $i < $size; $i++ ) {
+							if( $i == ( $size - 1 ) )
+								$csv .= woo_ce_escape_csv_value( $export->columns[$i], $export->delimiter, $export->escape_formatting ) . "\n";
+							else
+								$csv .= woo_ce_escape_csv_value( $export->columns[$i], $export->delimiter, $export->escape_formatting ) . $separator;
+						}
+						unset( $export->columns );
 						foreach( $categories as $category ) {
-							$csv .= 
-								$category->name
-								 . 
-							"\n";
+							foreach( $export->fields as $key => $field ) {
+								if( isset( $category->$key ) )
+									$csv .= woo_ce_escape_csv_value( $category->$key, $export->delimiter, $export->escape_formatting );
+								$csv .= $separator;
+							}
+							$csv = substr( $csv, 0, -1 ) . "\n";
 						}
 						unset( $categories, $category );
 					}
 					$export->data_memory_end = woo_ce_current_memory_usage();
 					break;
 
-				/* Tags */
+				// Tags
 				case 'tags':
-					$columns = array(
-						__( 'Tags', 'woo_ce' )
-					);
-					$size = count( $columns );
-					$export->total_columns = $size;
-					for( $i = 0; $i < $size; $i++ ) {
-						if( $i == ( $size - 1 ) )
-							$csv .= woo_ce_escape_csv_value( $columns[$i], $export->delimiter, $export->escape_formatting ) . "\n";
-						else
-							$csv .= woo_ce_escape_csv_value( $columns[$i], $export->delimiter, $export->escape_formatting ) . $separator;
+					$fields = woo_ce_get_tag_fields( 'summary' );
+					if( $export->fields = array_intersect_assoc( $fields, $export->fields ) ) {
+						foreach( $export->fields as $key => $field )
+							$export->columns[] = woo_ce_get_tag_field( $key );
 					}
-					unset( $export->columns );
 					$export->data_memory_start = woo_ce_current_memory_usage();
 					if( $tags = woo_ce_get_product_tags() ) {
 						$export->total_rows = count( $tags );
+						$size = count( $export->columns );
+						$export->total_columns = $size;
+						for( $i = 0; $i < $size; $i++ ) {
+							if( $i == ( $size - 1 ) )
+								$csv .= woo_ce_escape_csv_value( $export->columns[$i], $export->delimiter, $export->escape_formatting ) . "\n";
+							else
+								$csv .= woo_ce_escape_csv_value( $export->columns[$i], $export->delimiter, $export->escape_formatting ) . $separator;
+						}
+						unset( $export->columns );
 						foreach( $tags as $tag ) {
-							$csv .= 
-								$tag->name
-								 . 
-							"\n";
+							foreach( $export->fields as $key => $field ) {
+								if( isset( $tag->$key ) )
+									$csv .= woo_ce_escape_csv_value( $tag->$key, $export->delimiter, $export->escape_formatting );
+								$csv .= $separator;
+							}
+							$csv = substr( $csv, 0, -1 ) . "\n";
 						}
 						unset( $tags, $tag );
 					}
 					$export->data_memory_end = woo_ce_current_memory_usage();
 					break;
 
-				/* Orders */
+				// Orders
 				case 'orders':
-				/* Customers */
+				// Customers
 				case 'customers':
-				/* Coupons */
+				// Coupons
 				case 'coupons':
 					$csv = apply_filters( 'woo_ce_export_dataset', $datatype, $export );
 					break;
@@ -510,8 +518,6 @@ if( is_admin() ) {
 		}
 
 	}
-
-	/* Products */
 
 	// Returns a list of WooCommerce Products to export process
 	function woo_ce_get_products( $args = array() ) {
@@ -1099,7 +1105,7 @@ if( is_admin() ) {
 		);
 */
 
-		/* Allow Plugin/Theme authors to add support for additional Product columns */
+		// Allow Plugin/Theme authors to add support for additional Product columns
 		$fields = apply_filters( 'woo_ce_product_fields', $fields );
 
 		$remember = woo_ce_get_option( 'products_fields' );
@@ -1158,8 +1164,6 @@ if( is_admin() ) {
 
 	}
 
-	/* Categories */
-
 	// Returns a list of WooCommerce Product Categories to export process
 	function woo_ce_get_product_categories() {
 
@@ -1171,6 +1175,94 @@ if( is_admin() ) {
 		$categories = get_terms( $term_taxonomy, $args );
 		if( $categories )
 			$output = $categories;
+		return $output;
+
+	}
+
+
+	// Returns a list of Category export columns
+	function woo_ce_get_category_fields( $format = 'full' ) {
+
+		$fields = array();
+		$fields[] = array(
+			'name' => 'term_id',
+			'label' => __( 'Term ID', 'woo_ce' ),
+			'default' => 1
+		);
+		$fields[] = array(
+			'name' => 'name',
+			'label' => __( 'Category Name', 'woo_ce' ),
+			'default' => 1
+		);
+		$fields[] = array(
+			'name' => 'slug',
+			'label' => __( 'Category Slug', 'woo_ce' ),
+			'default' => 1
+		);
+
+/*
+		$fields[] = array(
+			'name' => '',
+			'label' => __( '', 'woo_ce' ),
+			'default' => 1
+		);
+*/
+
+		// Allow Plugin/Theme authors to add support for additional Category columns
+		$fields = apply_filters( 'woo_ce_category_fields', $fields );
+
+		$remember = woo_ce_get_option( 'categories_fields' );
+		if( $remember ) {
+			$remember = maybe_unserialize( $remember );
+			$size = count( $fields );
+			for( $i = 0; $i < $size; $i++ ) {
+				if( !array_key_exists( $fields[$i]['name'], $remember ) )
+					$fields[$i]['default'] = 0;
+			}
+		}
+
+		switch( $format ) {
+
+			case 'summary':
+				$output = array();
+				$size = count( $fields );
+				for( $i = 0; $i < $size; $i++ )
+					$output[$fields[$i]['name']] = 'on';
+				return $output;
+				break;
+
+			case 'full':
+			default:
+				return $fields;
+
+		}
+
+	}
+
+	// Returns the export column header label based on an export column slug
+	function woo_ce_get_category_field( $name = null, $format = 'name' ) {
+
+		$output = '';
+		if( $name ) {
+			$fields = woo_ce_get_category_fields();
+			$size = count( $fields );
+			for( $i = 0; $i < $size; $i++ ) {
+				if( $fields[$i]['name'] == $name ) {
+					switch( $format ) {
+
+						case 'name':
+							$output = $fields[$i]['label'];
+							break;
+
+						case 'full':
+							$output = $fields[$i];
+							break;
+
+					}
+					$i = $size;
+				}
+			}
+		}
 		return $output;
 
 	}
@@ -1195,8 +1287,6 @@ if( is_admin() ) {
 
 	}
 
-	/* Tags */
-
 	// Returns a list of WooCommerce Product Tags to export process
 	function woo_ce_get_product_tags() {
 
@@ -1212,7 +1302,92 @@ if( is_admin() ) {
 
 	}
 
-	/* Orders */
+	// Returns a list of Product Tag export columns
+	function woo_ce_get_tag_fields( $format = 'full' ) {
+
+		$fields = array();
+		$fields[] = array(
+			'name' => 'term_id',
+			'label' => __( 'Term ID', 'woo_ce' ),
+			'default' => 1
+		);
+		$fields[] = array(
+			'name' => 'name',
+			'label' => __( 'Tag Name', 'woo_ce' ),
+			'default' => 1
+		);
+		$fields[] = array(
+			'name' => 'slug',
+			'label' => __( 'Tag Slug', 'woo_ce' ),
+			'default' => 1
+		);
+
+/*
+		$fields[] = array(
+			'name' => '',
+			'label' => __( '', 'woo_ce' ),
+			'default' => 1
+		);
+*/
+
+		// Allow Plugin/Theme authors to add support for additional Product Tag columns
+		$fields = apply_filters( 'woo_ce_tag_fields', $fields );
+
+		$remember = woo_ce_get_option( 'categories_fields' );
+		if( $remember ) {
+			$remember = maybe_unserialize( $remember );
+			$size = count( $fields );
+			for( $i = 0; $i < $size; $i++ ) {
+				if( !array_key_exists( $fields[$i]['name'], $remember ) )
+					$fields[$i]['default'] = 0;
+			}
+		}
+
+		switch( $format ) {
+
+			case 'summary':
+				$output = array();
+				$size = count( $fields );
+				for( $i = 0; $i < $size; $i++ )
+					$output[$fields[$i]['name']] = 'on';
+				return $output;
+				break;
+
+			case 'full':
+			default:
+				return $fields;
+
+		}
+
+	}
+
+	// Returns the export column header label based on an export column slug
+	function woo_ce_get_tag_field( $name = null, $format = 'name' ) {
+
+		$output = '';
+		if( $name ) {
+			$fields = woo_ce_get_tag_fields();
+			$size = count( $fields );
+			for( $i = 0; $i < $size; $i++ ) {
+				if( $fields[$i]['name'] == $name ) {
+					switch( $format ) {
+
+						case 'name':
+							$output = $fields[$i]['label'];
+							break;
+
+						case 'full':
+							$output = $fields[$i];
+							break;
+
+					}
+					$i = $size;
+				}
+			}
+		}
+		return $output;
+
+	}
 
 	// Returns a list of WooCommerce Product Categories to export process
 	function woo_ce_get_product_attributes() {
@@ -1517,7 +1692,7 @@ if( is_admin() ) {
 		);
 */
 
-		/* Allow Plugin/Theme authors to add support for additional Order columns */
+		// Allow Plugin/Theme authors to add support for additional Order columns
 		$fields = apply_filters( 'woo_ce_order_fields', $fields );
 
 		$remember = woo_ce_get_option( 'orders_fields' );
@@ -1588,8 +1763,6 @@ if( is_admin() ) {
 
 		}
 	}
-
-	/* Customers */
 
 	// Returns a list of Customer export columns
 	function woo_ce_get_customer_fields( $format = 'full' ) {
@@ -1736,7 +1909,7 @@ if( is_admin() ) {
 			'default' => 1
 		);
 
-		/* Allow Plugin/Theme authors to add support for additional Customer columns */
+		// Allow Plugin/Theme authors to add support for additional Customer columns
 		$fields = apply_filters( 'woo_ce_customer_fields', $fields );
 
 		$remember = woo_ce_get_option( 'customers_fields' );
@@ -1794,8 +1967,6 @@ if( is_admin() ) {
 		return $output;
 
 	}
-
-	/* Coupons */
 
 	// Returns a list of Coupon export columns
 	function woo_ce_get_coupon_fields( $format = 'full' ) {
@@ -1885,7 +2056,7 @@ if( is_admin() ) {
 		);
 */
 
-		/* Allow Plugin/Theme authors to add support for additional Coupon columns */
+		// Allow Plugin/Theme authors to add support for additional Coupon columns
 		$fields = apply_filters( 'woo_ce_coupon_fields', $fields );
 
 		$remember = woo_ce_get_option( 'coupons_fields' );
@@ -1944,8 +2115,6 @@ if( is_admin() ) {
 
 	}
 
-	/* Export */
-
 	// HTML active class for the currently selected tab on the Store Exporter screen
 	function woo_ce_admin_active_tab( $tab_name = null, $tab = null ) {
 
@@ -1971,7 +2140,7 @@ if( is_admin() ) {
 		if( !$tab )
 			$tab = 'overview';
 
-		/* Store Exporter Deluxe */
+		// Store Exporter Deluxe
 		$woo_cd_exists = false;
 		if( !function_exists( 'woo_cd_admin_init' ) ) {
 			$woo_cd_url = 'http://www.visser.com.au/woocommerce/plugins/exporter-deluxe/';
@@ -2007,6 +2176,8 @@ if( is_admin() ) {
 					$product_statuses['trash'] = __( 'Trash', 'woo_ce' );
 					$product_types = woo_ce_get_product_types();
 				}
+				$category_fields = woo_ce_get_category_fields();
+				$tag_fields = woo_ce_get_tag_fields();
 				$order_fields = woo_ce_get_order_fields();
 				$customer_fields = woo_ce_get_customer_fields();
 				$coupon_fields = woo_ce_get_coupon_fields();
@@ -2025,7 +2196,7 @@ if( is_admin() ) {
 				break;
 
 			case 'tools':
-				/* Product Importer Deluxe */
+				// Product Importer Deluxe
 				if( function_exists( 'woo_pd_init' ) ) {
 					$woo_pd_url = add_query_arg( 'page', 'woo_pd' );
 					$woo_pd_target = false;

@@ -5,7 +5,7 @@ Donate link: http://www.visser.com.au/#donations
 Tags: e-commerce, woocommerce, shop, cart, ecommerce, export, csv
 Requires at least: 2.9.2
 Tested up to: 3.7
-Stable tag: 1.3.6
+Stable tag: 1.3.7
 
 == Description ==
 
@@ -65,6 +65,11 @@ http://www.visser.com.au/woocommerce/forums/
 7. Download achived copies of previous exports
 
 == Changelog ==
+
+= 1.3.7 =
+* Added: Additional Category column support
+* Added: Additional Tag column support
+* Fixed: HTML entities now print in plain-text
 
 = 1.3.6 =
 * Fixed: PHP error for missing function within Store Exporter Deluxe
