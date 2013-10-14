@@ -119,7 +119,7 @@
 					<p class="submit">
 						<input type="submit" id="export_products" value="<?php _e( 'Export Products', 'woo_ce' ); ?> " class="button-primary" />
 					</p>
-					<p class="description"><?php _e( 'Can\'t find a particular Product field in the above export list? <a href="' . $troubleshooting_url . '" target="_blank">Get in touch</a>.', 'woo_ce' ); ?></p>
+					<p class="description"><?php _e( 'Can\'t find a particular Product field in the above export list?', 'woo_ce' ); ?> <a href="<?php echo $troubleshooting_url; ?>" target="_blank"><?php _e( 'Get in touch', 'woo_ce' ); ?></a></p>
 	<?php } else { ?>
 					<p><?php _e( 'No Products have been found.', 'woo_ce' ); ?></p>
 	<?php } ?>
@@ -214,7 +214,7 @@
 				<p class="submit">
 					<input type="submit" id="export_categories" value="<?php _e( 'Export Categories', 'woo_ce' ); ?> " class="button-primary" />
 				</p>
-				<p class="description"><?php _e( 'Can\'t find a particular Category field in the above export list? <a href="' . $troubleshooting_url . '" target="_blank">Get in touch</a>.', 'woo_ce' ); ?></p>
+				<p class="description"><?php _e( 'Can\'t find a particular Category field in the above export list?', 'woo_ce' ); ?> <a href="<?php echo $troubleshooting_url; ?>" target="_blank"><?php _e( 'Get in touch', 'woo_ce' ); ?></a>.</p>
 			</div>
 		</div>
 		<!-- #export-categories -->
@@ -241,7 +241,7 @@
 				<p class="submit">
 					<input type="submit" id="export_tags" value="<?php _e( 'Export Tags', 'woo_ce' ); ?> " class="button-primary" />
 				</p>
-				<p class="description"><?php _e( 'Can\'t find a particular Product Tag field in the above export list? <a href="' . $troubleshooting_url . '" target="_blank">Get in touch</a>.', 'woo_ce' ); ?></p>
+				<p class="description"><?php _e( 'Can\'t find a particular Product Tag field in the above export list?', 'woo_ce' ); ?> <a href="<?php echo $troubleshooting_url; ?>" target="_blank"><?php _e( 'Get in touch', 'woo_ce' ); ?></a>.</p>
 			</div>
 		</div>
 		<!-- #export-tags -->
@@ -277,7 +277,7 @@
 						<input type="button" class="button button-disabled" value="<?php _e( 'Export Orders', 'woo_ce' ); ?>" />
 		<?php } ?>
 					</p>
-					<p class="description"><?php _e( 'Can\'t find a particular Order field in the above export list? <a href="' . $troubleshooting_url . '" target="_blank">Get in touch</a>.', 'woo_ce' ); ?></p>
+					<p class="description"><?php _e( 'Can\'t find a particular Order field in the above export list?', 'woo_ce' ); ?> <a href="<?php echo $troubleshooting_url; ?>" target="_blank"><?php _e( 'Get in touch', 'woo_ce' ); ?></a>.</p>
 	<?php } else { ?>
 					<p><?php _e( 'No Orders have been found.', 'woo_ce' ); ?></p>
 	<?php } ?>
@@ -335,7 +335,7 @@
 					<input type="button" class="button button-disabled" value="<?php _e( 'Export Customers', 'woo_ce' ); ?>" />
 		<?php } ?>
 				</p>
-					<p class="description"><?php _e( 'Can\'t find a particular Customer field in the above export list? <a href="' . $troubleshooting_url . '" target="_blank">Get in touch</a>.', 'woo_ce' ); ?></p>
+					<p class="description"><?php _e( 'Can\'t find a particular Customer field in the above export list?', 'woo_ce' ); ?> <a href="<?php echo $troubleshooting_url; ?>" target="_blank"><?php _e( 'Get in touch', 'woo_ce' ); ?></a>.</p>
 	<?php } else { ?>
 				<p><?php _e( 'No Customers have been found.', 'woo_ce' ); ?></p>
 	<?php } ?>
@@ -372,7 +372,7 @@
 					<input type="button" class="button button-disabled" value="<?php _e( 'Export Coupons', 'woo_ce' ); ?>" />
 		<?php } ?>
 				</p>
-				<p class="description"><?php _e( 'Can\'t find a particular Coupon field in the above export list? <a href="' . $troubleshooting_url . '" target="_blank">Get in touch</a>.', 'woo_ce' ); ?></p>
+				<p class="description"><?php _e( 'Can\'t find a particular Coupon field in the above export list?', 'woo_ce' ); ?> <a href="<?php echo $troubleshooting_url; ?>" target="_blank"><?php _e( 'Get in touch', 'woo_ce' ); ?></a>.</p>
 	<?php } else { ?>
 				<p><?php _e( 'No Coupons have been found.', 'woo_ce' ); ?></p>
 	<?php } ?>
@@ -457,15 +457,14 @@
 							<label for="encoding"><?php _e( 'Character encoding', 'woo_ce' ); ?>: </label>
 						</th>
 						<td>
+<?php if( $file_encodings ) { ?>
 							<select id="encoding" name="encoding">
 								<option><?php _e( 'System default', 'woo_ce' ); ?></option>
-<?php if( $file_encodings ) { ?>
 	<?php foreach( $file_encodings as $key => $chr ) { ?>
 								<option value="<?php echo $chr; ?>"><?php echo $chr; ?></option>
 	<?php } ?>
-<?php } ?>
-<?php if( !$file_encodings ) { ?>
 							</select>
+<?php } else { ?>
 							<p class="description"><?php _e( 'Character encoding options are unavailable in PHP 4, contact your hosting provider to update your site install to use PHP 5 or higher.', 'woo_ce' ); ?></p>
 <?php } ?>
 						</td>

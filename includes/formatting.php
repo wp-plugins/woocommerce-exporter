@@ -69,7 +69,7 @@ function woo_ce_escape_csv_value( $value = '', $delimiter = ',', $format = 'all'
 			case 'all':
 				$output = '"' . $output . '"';
 				break;
-	
+
 			case 'excel':
 				if( strstr( $output, $delimiter ) !== false || strstr( $output, "\r\n" ) !== false )
 					$output = '"' . $output . '"';

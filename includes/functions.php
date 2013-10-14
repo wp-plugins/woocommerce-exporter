@@ -316,6 +316,7 @@ if( is_admin() ) {
 						'post_type' => $post_type,
 						'numberposts' => -1,
 						'post_status' => woo_ce_post_statuses(),
+						'cache_results' => false,
 						'tax_query' => array(
 							array(
 								'taxonomy' => 'shop_order_status',
@@ -547,7 +548,8 @@ if( is_admin() ) {
 			'offset' => $offset,
 			'orderby' => 'ID',
 			'order' => 'ASC',
-			'post_status' => woo_ce_post_statuses()
+			'post_status' => woo_ce_post_statuses(),
+			'cache_results' => false
 		);
 		if( $product_categories ) {
 			$args['tax_query'] = array(
@@ -593,9 +595,13 @@ if( is_admin() ) {
 				$products[$key]->parent_id = '';
 				$products[$key]->parent_sku = '';
 				if( $product->post_type == 'product_variation' ) {
-					$products[$key]->parent_id = $product->post_parent;
-					$products[$key]->parent_sku = get_post_meta( $product->post_parent, '_sku', true );
+					// Assign Parent ID for Variants then check if Parent exists
+					if( $products[$key]->parent_id = $product->post_parent ) {
+						if( !get_posts( 'p=' . $products[$key]->parent_id ) )
+							unset( $products[$key] );
+					}
 				}
+				$products[$key]->parent_sku = get_post_meta( $product->post_parent, '_sku', true );
 				$products[$key]->product_id = $product->ID;
 				$products[$key]->sku = get_post_meta( $product->ID, '_sku', true );
 				$products[$key]->name = get_the_title( $product->ID );
@@ -1178,7 +1184,6 @@ if( is_admin() ) {
 		return $output;
 
 	}
-
 
 	// Returns a list of Category export columns
 	function woo_ce_get_category_fields( $format = 'full' ) {

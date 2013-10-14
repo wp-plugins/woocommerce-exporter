@@ -5,7 +5,7 @@ Donate link: http://www.visser.com.au/#donations
 Tags: e-commerce, woocommerce, shop, cart, ecommerce, export, csv
 Requires at least: 2.9.2
 Tested up to: 3.7
-Stable tag: 1.3.7
+Stable tag: 1.3.8
 
 == Description ==
 
@@ -65,6 +65,12 @@ http://www.visser.com.au/woocommerce/forums/
 7. Download achived copies of previous exports
 
 == Changelog ==
+
+= 1.3.8 =
+* Fixed: PHP 4 notices for File Encoding dropdown
+* Fixed: Translation string on Export screen
+* Added: WordPress get_posts() optimisation
+* Fixed: Ignore Variant Products without Base Products (ala 'phantom Posts')
 
 = 1.3.7 =
 * Added: Additional Category column support
