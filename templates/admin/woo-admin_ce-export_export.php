@@ -100,7 +100,7 @@
 				<h3 class="hndle"><?php _e( 'Product Fields', 'woo_ce' ); ?></h3>
 				<div class="inside">
 	<?php if( $products ) { ?>
-					<p class="description"><?php _e( 'Select the Product fields you would like to export.', 'woo_ce' ); ?></p>
+					<p class="description"><?php _e( 'Select the Product fields you would like to export, your field selection is saved for future exports.', 'woo_ce' ); ?></p>
 					<p><a href="javascript:void(0)" id="products-checkall" class="checkall"><?php _e( 'Check All', 'woo_ce' ); ?></a> | <a href="javascript:void(0)" id="products-uncheckall" class="uncheckall"><?php _e( 'Uncheck All', 'woo_ce' ); ?></a></p>
 					<table>
 
@@ -119,7 +119,7 @@
 					<p class="submit">
 						<input type="submit" id="export_products" value="<?php _e( 'Export Products', 'woo_ce' ); ?> " class="button-primary" />
 					</p>
-					<p class="description"><?php _e( 'Can\'t find a particular Product field in the above export list?', 'woo_ce' ); ?> <a href="<?php echo $troubleshooting_url; ?>" target="_blank"><?php _e( 'Get in touch', 'woo_ce' ); ?></a></p>
+					<p class="description"><?php _e( 'Can\'t find a particular Product field in the above export list?', 'woo_ce' ); ?> <a href="<?php echo $troubleshooting_url; ?>" target="_blank"><?php _e( 'Get in touch', 'woo_ce' ); ?></a>.</p>
 	<?php } else { ?>
 					<p><?php _e( 'No Products have been found.', 'woo_ce' ); ?></p>
 	<?php } ?>
@@ -182,6 +182,23 @@
 						<p class="description"><?php _e( 'Select the Product Type\'s you want to filter exported Products by. Default is to include all Product Types and Variations.', 'woo_ce' ); ?></p>
 					</div>
 					<!-- #export-products-filters-type -->
+
+					<p><label><?php _e( 'Product Sorting', 'woo_ce' ); ?></label></p>
+					<div>
+						<select name="product_orderby">
+							<option value="ID"<?php selected( 'ID', $product_orderby ); ?>><?php _e( 'Product ID', 'woo_ce' ); ?></option>
+							<option value="title"<?php selected( 'title', $product_orderby ); ?>><?php _e( 'Product Name', 'woo_ce' ); ?></option>
+							<option value="date"<?php selected( 'date', $product_orderby ); ?>><?php _e( 'Date Created', 'woo_ce' ); ?></option>
+							<option value="modified"<?php selected( 'modified', $product_orderby ); ?>><?php _e( 'Date Modified', 'woo_ce' ); ?></option>
+							<option value="rand"<?php selected( 'rand', $product_orderby ); ?>><?php _e( 'Random', 'woo_ce' ); ?></option>
+							<option value="menu_order"<?php selected( 'menu_order', $product_orderby ); ?>><?php _e( 'Menu Order', 'woo_ce' ); ?></option>
+						</select>
+						<select name="product_order">
+							<option value="ASC"<?php selected( 'ASC', $product_order ); ?>><?php _e( 'Ascending', 'woo_ce' ); ?></option>
+							<option value="DESC"<?php selected( 'DESC', $product_order ); ?>><?php _e( 'Descending', 'woo_ce' ); ?></option>
+						</select>
+						<p class="description"><?php _e( 'Select the sorting of Products within the exported file. By default this is set to export Products by Product ID in Desending order.', 'woo_ce' ); ?></p>
+					</div>
 
 				</div>
 				<!-- .inside -->
@@ -410,19 +427,6 @@
 
 					<tr>
 						<th>
-							<label for="bom"><?php _e( 'Add BOM character', 'woo_ce' ); ?>: </label>
-						</th>
-						<td>
-							<select id="bom" name="bom">
-								<option value="1"<?php selected( $bom, 1 ); ?>><?php _e( 'Yes', 'woo_ce' ); ?></option>
-								<option value="0"<?php selected( $bom, 0 ); ?>><?php _e( 'No', 'woo_ce' ); ?></option>
-							</select>
-							<p class="description"><?php _e( 'Mark the CSV file as UTF8 by adding a byte order mark (BOM) to the export, useful for non-English character sets.', 'woo_ce' ); ?></p>
-						</td>
-					</tr>
-
-					<tr>
-						<th>
 							<label for="escape_formatting"><?php _e( 'Field escape formatting', 'woo_ce' ); ?>: </label>
 						</th>
 						<td>
@@ -454,6 +458,19 @@
 
 					<tr>
 						<th>
+							<label for="bom"><?php _e( 'Add BOM character', 'woo_ce' ); ?>: </label>
+						</th>
+						<td>
+							<select id="bom" name="bom">
+								<option value="1"<?php selected( $bom, 1 ); ?>><?php _e( 'Yes', 'woo_ce' ); ?></option>
+								<option value="0"<?php selected( $bom, 0 ); ?>><?php _e( 'No', 'woo_ce' ); ?></option>
+							</select>
+							<p class="description"><?php _e( 'Mark the CSV file as UTF8 by adding a byte order mark (BOM) to the export, useful for non-English character sets.', 'woo_ce' ); ?></p>
+						</td>
+					</tr>
+
+					<tr>
+						<th>
 							<label for="encoding"><?php _e( 'Character encoding', 'woo_ce' ); ?>: </label>
 						</th>
 						<td>
@@ -461,7 +478,7 @@
 							<select id="encoding" name="encoding">
 								<option><?php _e( 'System default', 'woo_ce' ); ?></option>
 	<?php foreach( $file_encodings as $key => $chr ) { ?>
-								<option value="<?php echo $chr; ?>"><?php echo $chr; ?></option>
+								<option value="<?php echo $chr; ?>"<?php selected( $chr, $encoding ); ?>><?php echo $chr; ?></option>
 	<?php } ?>
 							</select>
 <?php } else { ?>

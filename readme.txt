@@ -4,8 +4,8 @@ Contributors: visser
 Donate link: http://www.visser.com.au/#donations
 Tags: e-commerce, woocommerce, shop, cart, ecommerce, export, csv
 Requires at least: 2.9.2
-Tested up to: 3.7
-Stable tag: 1.3.8
+Tested up to: 3.8
+Stable tag: 1.4
 
 == Description ==
 
@@ -27,7 +27,7 @@ Features include:
 * Export Coupons (**)
 * Toggle and save export fields
 
-(*) Compatible with Product Importer Deluxe, All in One SEO Pack, Advanced Google Product Feed and more.
+(*) Compatible with Product Importer Deluxe, All in One SEO Pack, Advanced Google Product Feed, Product Addons, Sequential Order Number Pro, WooCommerce Checkout Manager and more.
 (**) Requries the Pro upgrade to enable additional store export functionality.
 
 For more information visit: http://www.visser.com.au/woocommerce/
@@ -65,6 +65,20 @@ http://www.visser.com.au/woocommerce/forums/
 7. Download achived copies of previous exports
 
 == Changelog ==
+
+= 1.4 =
+* Added: File encoding for datasets
+* Changed: Default file encoding to UTF-8
+* Added: Product sorting and ordering
+* Changed: Ordering of Export Options
+
+= 1.3.9 =
+* Added: Payment Gateway ID to Orders export
+* Added: Shipping Method ID to Orders export
+* Added: Shipping Cost to Orders export
+* Added: Checkout IP Address to Orders export
+* Added: User Role to Orders export
+* Changed: Removed encoding changes to Description and Excerpt
 
 = 1.3.8 =
 * Fixed: PHP 4 notices for File Encoding dropdown

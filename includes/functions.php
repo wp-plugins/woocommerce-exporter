@@ -74,10 +74,13 @@ if( is_admin() ) {
 	// File output header for CSV file
 	function woo_ce_generate_csv_header( $dataset = '' ) {
 
+		global $export;
+
 		$filename = woo_ce_generate_csv_filename( $dataset );
 		if( $filename ) {
-			header( 'Content-Encoding: UTF-8' );
-			header( 'Content-Type: text/csv; charset=UTF-8' );
+			header( sprintf( 'Content-Encoding: %s', $export->encoding ) );
+			header( sprintf( 'Content-Type: text/csv; charset=%s', $export->encoding ) );
+			header( 'Content-Transfer-Encoding: binary' );
 			header( 'Content-Disposition: attachment; filename=' . $filename );
 			header( 'Pragma: no-cache' );
 			header( 'Expires: 0' );
@@ -89,9 +92,9 @@ if( is_admin() ) {
 	function woo_ce_generate_csv_filename( $dataset = '' ) {
 
 		$date = date( 'Ymd' );
-		$output = 'woo-export_default-' . $date . '.csv';
+		$output = sprintf( 'woo-export_default-%s.csv', $date );
 		if( $dataset ) {
-			$filename = 'woo-export_' . $dataset . '-' . $date . '.csv';
+			$filename = sprintf( 'woo-export_%s-%s.csv', $dataset, $date );
 			if( $filename )
 				$output = $filename;
 		}
@@ -169,6 +172,26 @@ if( is_admin() ) {
 <?php } ?>
 	</ul>
 	<p class="description"><?php _e( 'Select the Order Status you want to filter exported Orders by. Default is to include all Order Status options.', 'woo_ce' ); ?></p>
+</div>
+<!-- #export-orders-filters-status -->
+<?php
+		ob_end_flush();
+
+	}
+
+	// HTML template for disabled Filter Orders by User Role widget on Store Exporter screen
+	function woo_ce_orders_filter_by_user_role() {
+
+		$user_roles = woo_ce_get_user_roles();
+		ob_start(); ?>
+<p><label><input type="checkbox" id="orders-filters-user_role" /> <?php _e( 'Filter Orders by User Role', 'woo_ce' ); ?></label></p>
+<div id="export-orders-filters-user_role" class="separator">
+	<ul>
+<?php foreach( $user_roles as $key => $user_role ) { ?>
+		<li><label><input type="checkbox" name="order_filter_user_role[<?php echo $key; ?>]" value="<?php echo $key; ?>" disabled="disabled" /> <?php echo ucfirst( $user_role['name'] ); ?></label></li>
+<?php } ?>
+	</ul>
+	<p class="description"><?php _e( 'Select the User Roles you want to filter exported Orders by. Default is to include all User Role options.', 'woo_ce' ); ?></p>
 </div>
 <!-- #export-orders-filters-status -->
 <?php
@@ -276,8 +299,6 @@ if( is_admin() ) {
 		$count_sql = null;
 		switch( $dataset ) {
 
-			// WooCommerce
-
 			case 'products':
 				$post_type = 'product';
 				$count = wp_count_posts( $post_type );
@@ -298,7 +319,7 @@ if( is_admin() ) {
 				$count = wp_count_posts( $post_type );
 				$exclude_post_types = array( 'auto-draft' );
 				if( woo_ce_count_object( $count, $exclude_post_types ) > 100 ) {
-					$count = '~' . woo_ce_count_object( $count, $exclude_post_types ) . ' *';
+					$count = sprintf( '~%s *', woo_ce_count_object( $count, $exclude_post_types ) );
 				} else {
 					$count = woo_ce_count_object( $count, $exclude_post_types );
 				}
@@ -309,7 +330,7 @@ if( is_admin() ) {
 				$count = wp_count_posts( $post_type );
 				$exclude_post_types = array( 'auto-draft' );
 				if( woo_ce_count_object( $count, $exclude_post_types ) > 100 ) {
-						$count = '~' . woo_ce_count_object( $count, $exclude_post_types ) . ' *';
+					$count = sprintf( '~%s *', woo_ce_count_object( $count, $exclude_post_types ) );
 				} else {
 					$count = 0;
 					$args = array(
@@ -345,6 +366,7 @@ if( is_admin() ) {
 								$count++;
 							}
 						}
+						unset( $orders, $order );
 					}
 				}
 				break;
@@ -540,14 +562,16 @@ if( is_admin() ) {
 				$product_status = $args['product_status'];
 			if( !empty( $args['product_type'] ) )
 				$product_type = $args['product_type'];
+			$orderby = $args['product_orderby'];
+			$order = $args['product_order'];
 		}
 		$post_type = array( 'product', 'product_variation' );
 		$args = array(
 			'post_type' => $post_type,
 			'numberposts' => $limit_volume,
+			'orderby' => $orderby,
+			'order' => $order,
 			'offset' => $offset,
-			'orderby' => 'ID',
-			'order' => 'ASC',
 			'post_status' => woo_ce_post_statuses(),
 			'cache_results' => false
 		);
@@ -600,11 +624,11 @@ if( is_admin() ) {
 						if( !get_posts( 'p=' . $products[$key]->parent_id ) )
 							unset( $products[$key] );
 					}
+					$products[$key]->parent_sku = woo_ce_clean_html( get_post_meta( $product->post_parent, '_sku', true ) );
 				}
-				$products[$key]->parent_sku = get_post_meta( $product->post_parent, '_sku', true );
 				$products[$key]->product_id = $product->ID;
-				$products[$key]->sku = get_post_meta( $product->ID, '_sku', true );
-				$products[$key]->name = get_the_title( $product->ID );
+				$products[$key]->sku = woo_ce_clean_html( get_post_meta( $product->ID, '_sku', true ) );
+				$products[$key]->name = woo_ce_clean_html( get_the_title( $product->ID ) );
 				$products[$key]->description = woo_ce_clean_html( $product->post_content );
 				$products[$key]->regular_price = get_post_meta( $product->ID, '_regular_price', true );
 				$products[$key]->price = get_post_meta( $product->ID, '_price', true );
@@ -631,8 +655,8 @@ if( is_admin() ) {
 				$products[$key]->width_unit = $width_unit;
 				$products[$key]->length = get_post_meta( $product->ID, '_length', true );
 				$products[$key]->length_unit = $length_unit;
-				$products[$key]->category = woo_ce_get_product_assoc_categories( $product->ID );
-				$products[$key]->tag = woo_ce_get_product_assoc_tags( $product->ID );
+				$products[$key]->category = woo_ce_clean_html( woo_ce_get_product_assoc_categories( $product->ID ) );
+				$products[$key]->tag = woo_ce_clean_html( woo_ce_get_product_assoc_tags( $product->ID ) );
 				$products[$key]->manage_stock = woo_ce_format_switch( get_post_meta( $product->ID, '_manage_stock', true ) );
 				$products[$key]->allow_backorders = woo_ce_format_switch( get_post_meta( $product->ID, '_backorders', true ) );
 				$products[$key]->sold_individually = woo_ce_format_switch( get_post_meta( $product->ID, '_sold_individually', true ) );
@@ -649,7 +673,7 @@ if( is_admin() ) {
 				$products[$key]->file_download = woo_ce_get_product_assoc_file_downloads( $product->ID );
 				$products[$key]->download_limit = get_post_meta( $product->ID, '_download_limit', true );
 				$products[$key]->download_expiry = get_post_meta( $product->ID, '_download_expiry', true );
-				$products[$key]->purchase_note = get_post_meta( $product->ID, '_purchase_note', true );
+				$products[$key]->purchase_note = woo_ce_clean_html( get_post_meta( $product->ID, '_purchase_note', true ) );
 				$products[$key]->product_status = woo_ce_format_product_status( $product->post_status );
 				$products[$key]->comment_status = woo_ce_format_comment_status( $product->comment_status );
 				if( $attributes = woo_ce_get_product_attributes() ) {
@@ -740,11 +764,8 @@ if( is_admin() ) {
 		$output = '';
 		if( $product_id ) {
 			$thumbnail_id = get_post_meta( $product_id, '_thumbnail_id', true );
-			if( $thumbnail_id ) {
-				$thumbnail_post = get_post( $thumbnail_id );
-				if( $thumbnail_post )
-					$output = $thumbnail_post->guid;
-			}
+			if( $thumbnail_id )
+				$output = wp_get_attachment_url( $thumbnail_id );
 		}
 		return $output;
 
@@ -1459,13 +1480,28 @@ if( is_admin() ) {
 			'default' => 1
 		);
 		$fields[] = array(
+			'name' => 'payment_gateway_id',
+			'label' => __( 'Payment Gateway ID', 'woo_ce' ),
+			'default' => 1
+		);
+		$fields[] = array(
 			'name' => 'payment_gateway',
 			'label' => __( 'Payment Gateway', 'woo_ce' ),
 			'default' => 1
 		);
 		$fields[] = array(
+			'name' => 'shipping_method_id',
+			'label' => __( 'Shipping Method ID', 'woo_ce' ),
+			'default' => 1
+		);
+		$fields[] = array(
 			'name' => 'shipping_method',
 			'label' => __( 'Shipping Method', 'woo_ce' ),
+			'default' => 1
+		);
+		$fields[] = array(
+			'name' => 'shipping_cost',
+			'label' => __( 'Shipping Cost', 'woo_ce' ),
 			'default' => 1
 		);
 		$fields[] = array(
@@ -1506,6 +1542,21 @@ if( is_admin() ) {
 		$fields[] = array(
 			'name' => 'user_name',
 			'label' => __( 'Username', 'woo_ce' ),
+			'default' => 1
+		);
+		$fields[] = array(
+			'name' => 'user_role',
+			'label' => __( 'User Role', 'woo_ce' ),
+			'default' => 1
+		);
+		$fields[] = array(
+			'name' => 'ip_address',
+			'label' => __( 'Checkout IP Address', 'woo_ce' ),
+			'default' => 1
+		);
+		$fields[] = array(
+			'name' => 'browser_agent',
+			'label' => __( 'Checkout Browser Agent', 'woo_ce' ),
 			'default' => 1
 		);
 		$fields[] = array(
@@ -1781,6 +1832,11 @@ if( is_admin() ) {
 		$fields[] = array(
 			'name' => 'user_name',
 			'label' => __( 'Username', 'woo_ce' ),
+			'default' => 1
+		);
+		$fields[] = array(
+			'name' => 'user_role',
+			'label' => __( 'User Role', 'woo_ce' ),
 			'default' => 1
 		);
 		$fields[] = array(
@@ -2180,6 +2236,8 @@ if( is_admin() ) {
 					$product_statuses = get_post_statuses();
 					$product_statuses['trash'] = __( 'Trash', 'woo_ce' );
 					$product_types = woo_ce_get_product_types();
+					$product_orderby = woo_ce_get_option( 'product_orderby', 'ID' );
+					$product_order = woo_ce_get_option( 'product_order', 'DESC' );
 				}
 				$category_fields = woo_ce_get_category_fields();
 				$tag_fields = woo_ce_get_tag_fields();
@@ -2198,6 +2256,7 @@ if( is_admin() ) {
 				$file_encodings = false;
 				if( function_exists( 'mb_list_encodings' ) )
 					$file_encodings = mb_list_encodings();
+				$encoding = woo_ce_get_option( 'encoding', 'UTF8' );
 				break;
 
 			case 'tools':
@@ -2288,6 +2347,15 @@ if( is_admin() ) {
 		);
 		$terms = get_terms( 'shop_order_status', $args );
 		return $terms;
+
+	}
+
+	// Returns a list of WordPress User Roles
+	function woo_ce_get_user_roles() {
+
+		global $wp_roles;
+		$user_roles = $wp_roles->roles;
+		return $user_roles;
 
 	}
 

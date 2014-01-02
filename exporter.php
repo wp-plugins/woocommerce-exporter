@@ -3,7 +3,7 @@
 Plugin Name: WooCommerce - Store Exporter
 Plugin URI: http://www.visser.com.au/woocommerce/plugins/exporter/
 Description: Export store details out of WooCommerce into a CSV-formatted file.
-Version: 1.3.8
+Version: 1.4
 Author: Visser Labs
 Author URI: http://www.visser.com.au/about/
 License: GPL2
@@ -122,7 +122,12 @@ if( is_admin() ) {
 					if( $export->limit_volume <> woo_ce_get_option( 'delete_csv' ) )
 						woo_ce_update_option( 'delete_csv', $export->delete_temporary_csv );
 				}
-				$export->encoding = $_POST['encoding'];
+				$export->encoding = 'UTF-8';
+				if( !empty( $_POST['encoding'] ) ) {
+					$export->encoding = (string)$_POST['encoding'];
+					if( $export->encoding <> woo_ce_get_option( 'encoding' ) )
+						woo_ce_update_option( 'encoding', $export->encoding );
+				}
 				$export->order_dates_filter = false;
 				$export->order_dates_from = '';
 				$export->order_dates_to = '';
@@ -146,6 +151,12 @@ if( is_admin() ) {
 						$export->product_tags = ( isset( $_POST['product_filter_tags'] ) ) ? woo_ce_format_product_filters( $_POST['product_filter_tags'] ) : false;
 						$export->product_status = ( isset( $_POST['product_filter_status'] ) ) ? woo_ce_format_product_filters( $_POST['product_filter_status'] ) : false;
 						$export->product_type = ( isset( $_POST['product_filter_type'] ) ) ? woo_ce_format_product_filters( $_POST['product_filter_type'] ) : false;
+						$export->product_orderby = ( isset( $_POST['product_orderby'] ) ) ? $_POST['product_orderby'] : false;
+						if( $export->product_orderby <> woo_ce_get_option( 'product_orderby' ) )
+							woo_ce_update_option( 'product_orderby', $export->product_orderby );
+						$export->product_order = ( isset( $_POST['product_order'] ) ) ? $_POST['product_order'] : false;
+						if( $export->product_order <> woo_ce_get_option( 'product_order' ) )
+							woo_ce_update_option( 'product_order', $export->product_order );
 						break;
 
 					case 'categories':
@@ -212,6 +223,8 @@ if( is_admin() ) {
 						'product_tags' => $export->product_tags,
 						'product_status' => $export->product_status,
 						'product_type' => $export->product_type,
+						'product_orderby' => $export->product_orderby,
+						'product_order' => $export->product_order,
 						'order_status' => $export->order_status,
 						'order_dates_filter' => $export->order_dates_filter,
 						'order_dates_from' => woo_ce_format_order_date( $export->order_dates_from ),

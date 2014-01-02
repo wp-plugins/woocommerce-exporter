@@ -1,15 +1,18 @@
 <?php
 function woo_ce_clean_html( $content ) {
 
+	global $export;
+
 	if( function_exists( 'mb_convert_encoding' ) ) {
-		$output_encoding = 'ISO-8859-1';
-		$content = mb_convert_encoding( trim( $content ), 'UTF-8', $output_encoding );
+		$to_encoding = $export->encoding;
+		// $from_encoding = 'auto';
+		$from_encoding = 'ISO-8859-1';
+		$content = mb_convert_encoding( trim( $content ), $to_encoding, $from_encoding );
 	} else {
 		$content = trim( $content );
 	}
 	// $content = str_replace( ',', '&#44;', $content );
 	// $content = str_replace( "\n", '<br />', $content );
-
 	return $content;
 
 }
