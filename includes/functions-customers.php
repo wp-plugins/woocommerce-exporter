@@ -149,6 +149,14 @@ function woo_ce_get_customer_fields( $format = 'full' ) {
 		'default' => 1
 	);
 
+/*
+	$fields[] = array(
+		'name' => '',
+		'label' => __( '', 'woo_ce' ),
+		'default' => 1
+	);
+*/
+
 	// Allow Plugin/Theme authors to add support for additional Customer columns
 	$fields = apply_filters( 'woo_ce_customer_fields', $fields );
 
