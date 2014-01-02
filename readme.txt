@@ -5,7 +5,7 @@ Donate link: http://www.visser.com.au/#donations
 Tags: e-commerce, woocommerce, shop, cart, ecommerce, export, csv
 Requires at least: 2.9.2
 Tested up to: 3.8
-Stable tag: 1.4
+Stable tag: 1.4.1
 
 == Description ==
 
@@ -65,6 +65,13 @@ http://www.visser.com.au/woocommerce/forums/
 7. Download achived copies of previous exports
 
 == Changelog ==
+
+= 1.4.1 =
+* Fixed: Default file encoding can trigger PHP warning
+* Added: File encoding support for Categories and Tags
+* Added: Product Tags sorting export support
+* Added: Category sorting export support
+* Added: Separate files for each dataset
 
 = 1.4 =
 * Added: File encoding for datasets

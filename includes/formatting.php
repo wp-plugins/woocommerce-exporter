@@ -1,5 +1,5 @@
 <?php
-function woo_ce_clean_html( $content ) {
+function woo_ce_clean_html( $content = '' ) {
 
 	global $export;
 
@@ -7,7 +7,8 @@ function woo_ce_clean_html( $content ) {
 		$to_encoding = $export->encoding;
 		// $from_encoding = 'auto';
 		$from_encoding = 'ISO-8859-1';
-		$content = mb_convert_encoding( trim( $content ), $to_encoding, $from_encoding );
+		if( !empty( $to_encoding ) )
+			$content = mb_convert_encoding( trim( $content ), $to_encoding, $from_encoding );
 	} else {
 		$content = trim( $content );
 	}
@@ -95,8 +96,10 @@ function woo_ce_count_object( $object = 0, $exclude_post_types = array() ) {
 					unset( $object->$exclude_post_types[$i] );
 			}
 		}
-		foreach( $object as $key => $item )
-			$count = $item + $count;
+		if( !empty( $object ) ) {
+			foreach( $object as $key => $item )
+				$count = $item + $count;
+		}
 	} else {
 		$count = $object;
 	}

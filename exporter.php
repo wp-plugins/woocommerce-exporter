@@ -3,7 +3,7 @@
 Plugin Name: WooCommerce - Store Exporter
 Plugin URI: http://www.visser.com.au/woocommerce/plugins/exporter/
 Description: Export store details out of WooCommerce into a CSV-formatted file.
-Version: 1.4
+Version: 1.4.1
 Author: Visser Labs
 Author URI: http://www.visser.com.au/about/
 License: GPL2
@@ -162,11 +162,23 @@ if( is_admin() ) {
 					case 'categories':
 						$dataset[] = 'categories';
 						$export->fields = ( isset( $_POST['category_fields'] ) ) ? $_POST['category_fields'] : false;
+						$export->category_orderby = ( isset( $_POST['category_orderby'] ) ) ? $_POST['category_orderby'] : false;
+						if( $export->category_orderby <> woo_ce_get_option( 'category_orderby' ) )
+							woo_ce_update_option( 'category_orderby', $export->category_orderby );
+						$export->category_order = ( isset( $_POST['category_order'] ) ) ? $_POST['category_order'] : false;
+						if( $export->category_order <> woo_ce_get_option( 'category_order' ) )
+							woo_ce_update_option( 'category_order', $export->category_order );
 						break;
 
 					case 'tags':
 						$dataset[] = 'tags';
 						$export->fields = ( isset( $_POST['tag_fields'] ) ) ? $_POST['tag_fields'] : false;
+						$export->tag_orderby = ( isset( $_POST['tag_orderby'] ) ) ? $_POST['tag_orderby'] : false;
+						if( $export->tag_orderby <> woo_ce_get_option( 'tag_orderby' ) )
+							woo_ce_update_option( 'tag_orderby', $export->tag_orderby );
+						$export->tag_order = ( isset( $_POST['tag_order'] ) ) ? $_POST['tag_order'] : false;
+						if( $export->tag_order <> woo_ce_get_option( 'tag_order' ) )
+							woo_ce_update_option( 'tag_order', $export->tag_order );
 						break;
 
 					case 'orders':
@@ -225,6 +237,10 @@ if( is_admin() ) {
 						'product_type' => $export->product_type,
 						'product_orderby' => $export->product_orderby,
 						'product_order' => $export->product_order,
+						'category_orderby' => $export->category_orderby,
+						'category_order' => $export->category_order,
+						'tag_orderby' => $export->tag_orderby,
+						'tag_order' => $export->tag_order,
 						'order_status' => $export->order_status,
 						'order_dates_filter' => $export->order_dates_filter,
 						'order_dates_from' => woo_ce_format_order_date( $export->order_dates_from ),

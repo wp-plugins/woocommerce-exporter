@@ -209,57 +209,112 @@
 		<!-- #export-products -->
 
 <?php } ?>
-		<div class="postbox" id="export-categories">
-			<h3 class="hndle"><?php _e( 'Category Fields', 'woo_ce' ); ?></h3>
-			<div class="inside">
-				<p class="description"><?php _e( 'Select the Category fields you would like to export.', 'woo_ce' ); ?></p>
-				<p><a href="javascript:void(0)" id="categories-checkall" class="checkall"><?php _e( 'Check All', 'woo_ce' ); ?></a> | <a href="javascript:void(0)" id="categories-uncheckall" class="uncheckall"><?php _e( 'Uncheck All', 'woo_ce' ); ?></a></p>
-				<table>
+		<div id="export-categories">
 
-	<?php foreach( $category_fields as $category_field ) { ?>
-					<tr>
-						<td>
-							<label>
-								<input type="checkbox" name="category_fields[<?php echo $category_field['name']; ?>]" class="category_field"<?php checked( $category_field['default'], 1 ); ?><?php disabled( $category_field['disabled'], 1 ); ?> />
-								<?php echo $category_field['label']; ?>
-							</label>
-						</td>
-					</tr>
+			<div class="postbox">
+				<h3 class="hndle"><?php _e( 'Category Fields', 'woo_ce' ); ?></h3>
+				<div class="inside">
+					<p class="description"><?php _e( 'Select the Category fields you would like to export.', 'woo_ce' ); ?></p>
+					<p><a href="javascript:void(0)" id="categories-checkall" class="checkall"><?php _e( 'Check All', 'woo_ce' ); ?></a> | <a href="javascript:void(0)" id="categories-uncheckall" class="uncheckall"><?php _e( 'Uncheck All', 'woo_ce' ); ?></a></p>
+					<table>
 
-	<?php } ?>
-				</table>
-				<p class="submit">
-					<input type="submit" id="export_categories" value="<?php _e( 'Export Categories', 'woo_ce' ); ?> " class="button-primary" />
-				</p>
-				<p class="description"><?php _e( 'Can\'t find a particular Category field in the above export list?', 'woo_ce' ); ?> <a href="<?php echo $troubleshooting_url; ?>" target="_blank"><?php _e( 'Get in touch', 'woo_ce' ); ?></a>.</p>
+		<?php foreach( $category_fields as $category_field ) { ?>
+						<tr>
+							<td>
+								<label>
+									<input type="checkbox" name="category_fields[<?php echo $category_field['name']; ?>]" class="category_field"<?php checked( $category_field['default'], 1 ); ?><?php disabled( $category_field['disabled'], 1 ); ?> />
+									<?php echo $category_field['label']; ?>
+								</label>
+							</td>
+						</tr>
+
+		<?php } ?>
+					</table>
+					<p class="submit">
+						<input type="submit" id="export_categories" value="<?php _e( 'Export Categories', 'woo_ce' ); ?> " class="button-primary" />
+					</p>
+					<p class="description"><?php _e( 'Can\'t find a particular Category field in the above export list?', 'woo_ce' ); ?> <a href="<?php echo $troubleshooting_url; ?>" target="_blank"><?php _e( 'Get in touch', 'woo_ce' ); ?></a>.</p>
+				</div>
 			</div>
+			<!-- .postbox -->
+
+			<div id="export-categories-filters" class="postbox">
+				<h3 class="hndle"><?php _e( 'Category Filters', 'woo_ce' ); ?></h3>
+				<div class="inside">
+
+					<p><label><?php _e( 'Category Sorting', 'woo_ce' ); ?></label></p>
+					<div>
+						<select name="category_orderby">
+							<option value="id"<?php selected( 'id', $category_orderby ); ?>><?php _e( 'Term ID', 'woo_ce' ); ?></option>
+							<option value="name"<?php selected( 'name', $category_orderby ); ?>><?php _e( 'Category Name', 'woo_ce' ); ?></option>
+						</select>
+						<select name="category_order">
+							<option value="ASC"<?php selected( 'ASC', $category_order ); ?>><?php _e( 'Ascending', 'woo_ce' ); ?></option>
+							<option value="DESC"<?php selected( 'DESC', $category_order ); ?>><?php _e( 'Descending', 'woo_ce' ); ?></option>
+						</select>
+						<p class="description"><?php _e( 'Select the sorting of Categories within the exported file. By default this is set to export Categories by Term ID in Desending order.', 'woo_ce' ); ?></p>
+					</div>
+
+				</div>
+				<!-- .inside -->
+			</div>
+			<!-- #export-categories-filters -->
+
 		</div>
 		<!-- #export-categories -->
 
-		<div class="postbox" id="export-tags">
-			<h3 class="hndle"><?php _e( 'Tag Fields', 'woo_ce' ); ?></h3>
-			<div class="inside">
-				<p class="description"><?php _e( 'Select the Tag fields you would like to export.', 'woo_ce' ); ?></p>
-				<p><a href="javascript:void(0)" id="tags-checkall" class="checkall"><?php _e( 'Check All', 'woo_ce' ); ?></a> | <a href="javascript:void(0)" id="tags-uncheckall" class="uncheckall"><?php _e( 'Uncheck All', 'woo_ce' ); ?></a></p>
-				<table>
+		<div id="export-tags">
+
+			<div class="postbox">
+				<h3 class="hndle"><?php _e( 'Tag Fields', 'woo_ce' ); ?></h3>
+				<div class="inside">
+					<p class="description"><?php _e( 'Select the Tag fields you would like to export.', 'woo_ce' ); ?></p>
+					<p><a href="javascript:void(0)" id="tags-checkall" class="checkall"><?php _e( 'Check All', 'woo_ce' ); ?></a> | <a href="javascript:void(0)" id="tags-uncheckall" class="uncheckall"><?php _e( 'Uncheck All', 'woo_ce' ); ?></a></p>
+					<table>
 
 	<?php foreach( $tag_fields as $tag_field ) { ?>
-					<tr>
-						<td>
-							<label>
-								<input type="checkbox" name="tag_fields[<?php echo $tag_field['name']; ?>]" class="tag_field"<?php checked( $tag_field['default'], 1 ); ?><?php disabled( $tag_field['disabled'], 1 ); ?> />
-								<?php echo $tag_field['label']; ?>
-							</label>
-						</td>
-					</tr>
+						<tr>
+							<td>
+								<label>
+									<input type="checkbox" name="tag_fields[<?php echo $tag_field['name']; ?>]" class="tag_field"<?php checked( $tag_field['default'], 1 ); ?><?php disabled( $tag_field['disabled'], 1 ); ?> />
+									<?php echo $tag_field['label']; ?>
+								</label>
+							</td>
+						</tr>
 
 	<?php } ?>
-				</table>
-				<p class="submit">
-					<input type="submit" id="export_tags" value="<?php _e( 'Export Tags', 'woo_ce' ); ?> " class="button-primary" />
-				</p>
-				<p class="description"><?php _e( 'Can\'t find a particular Product Tag field in the above export list?', 'woo_ce' ); ?> <a href="<?php echo $troubleshooting_url; ?>" target="_blank"><?php _e( 'Get in touch', 'woo_ce' ); ?></a>.</p>
+					</table>
+					<p class="submit">
+						<input type="submit" id="export_tags" value="<?php _e( 'Export Tags', 'woo_ce' ); ?> " class="button-primary" />
+					</p>
+					<p class="description"><?php _e( 'Can\'t find a particular Tag field in the above export list?', 'woo_ce' ); ?> <a href="<?php echo $troubleshooting_url; ?>" target="_blank"><?php _e( 'Get in touch', 'woo_ce' ); ?></a>.</p>
+				</div>
+				<!-- .inside -->
 			</div>
+			<!-- .postbox -->
+
+			<div id="export-tags-filters" class="postbox">
+				<h3 class="hndle"><?php _e( 'Tag Filters', 'woo_ce' ); ?></h3>
+				<div class="inside">
+
+					<p><label><?php _e( 'Tag Sorting', 'woo_ce' ); ?></label></p>
+					<div>
+						<select name="tag_orderby">
+							<option value="id"<?php selected( 'id', $tag_orderby ); ?>><?php _e( 'Term ID', 'woo_ce' ); ?></option>
+							<option value="name"<?php selected( 'name', $tag_orderby ); ?>><?php _e( 'Tag Name', 'woo_ce' ); ?></option>
+						</select>
+						<select name="tag_order">
+							<option value="ASC"<?php selected( 'ASC', $tag_order ); ?>><?php _e( 'Ascending', 'woo_ce' ); ?></option>
+							<option value="DESC"<?php selected( 'DESC', $tag_order ); ?>><?php _e( 'Descending', 'woo_ce' ); ?></option>
+						</select>
+						<p class="description"><?php _e( 'Select the sorting of Tags within the exported file. By default this is set to export Tags by Term ID in Desending order.', 'woo_ce' ); ?></p>
+					</div>
+
+				</div>
+				<!-- .inside -->
+			</div>
+			<!-- #export-tags-filters -->
+
 		</div>
 		<!-- #export-tags -->
 
@@ -476,7 +531,7 @@
 						<td>
 <?php if( $file_encodings ) { ?>
 							<select id="encoding" name="encoding">
-								<option><?php _e( 'System default', 'woo_ce' ); ?></option>
+								<option value=""><?php _e( 'System default', 'woo_ce' ); ?></option>
 	<?php foreach( $file_encodings as $key => $chr ) { ?>
 								<option value="<?php echo $chr; ?>"<?php selected( $chr, $encoding ); ?>><?php echo $chr; ?></option>
 	<?php } ?>
