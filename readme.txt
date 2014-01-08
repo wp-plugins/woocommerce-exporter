@@ -54,7 +54,7 @@ Done!
 
 == Support ==
 
-If you have any problems, questions or suggestions please join the members discussion on my WooCommerce dedicated forum.
+If you have any problems, questions or suggestions please join the members discussion on our WooCommerce dedicated forum.
 
 http://www.visser.com.au/woocommerce/forums/
 
