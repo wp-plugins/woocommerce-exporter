@@ -10,6 +10,79 @@ if( is_admin() ) {
 
 	/* Start of: WordPress Administration */
 
+	function woo_ce_detect_non_woo_install() {
+
+		if( !woo_is_woo_activated() && ( woo_is_jigo_activated() || woo_is_wpsc_activated() ) ) {
+			$troubleshooting_url = 'http://www.visser.com.au/documentation/store-exporter-deluxe/usage/';
+			$message = __( 'We have detected another e-Commerce Plugin than WooCommerce activated, please check that you are using Store Exporter Deluxe for the correct platform.', 'woo_ce' ) . '<a href="' . $troubleshooting_url . '" target="_blank">' . __( 'Need help?', 'woo_ce' ) . '</a>';
+			woo_ce_admin_notice( $message, 'error', 'plugins.php' );
+		}
+		woo_ce_plugin_page_notices();
+
+	}
+
+	function woo_ce_plugin_page_notices() {
+
+		global $pagenow;
+
+		if( $pagenow == 'plugins.php' ) {
+			if( woo_is_jigo_activated() || woo_is_wpsc_activated() ) {
+				add_action( 'admin_notices', 'woo_ce_detect_non_woo_install' );
+				$r_plugins = array(
+					'woocommerce-exporter/exporter.php'
+				);
+				$i_plugins = get_plugins();
+				foreach( $r_plugins as $path ) {
+					if( isset( $i_plugins[$path] ) ) {
+						add_action( 'after_plugin_row_' . $path, 'woo_ce_plugin_page_notice', 10, 3 );
+						break;
+					}
+				}
+			}
+		}
+	}
+
+	function woo_ce_plugin_page_notice( $file, $data, $context ) {
+
+		if( is_plugin_active( $file ) ) { ?>
+<tr class='plugin-update-tr su-plugin-notice'>
+	<td colspan='3' class='plugin-update colspanchange'>
+		<div class='update-message'>
+			<?php printf( __( '%1$s is intended to be used with a WooCommerce store, please check that you are using Store Exporter with the correct e-Commerce platform.', 'woo_ce' ), $data['Name'] ); ?>
+		</div>
+	</td>
+</tr>
+<?php
+		}
+
+	}
+
+	// Display admin notice on screen load
+	function woo_ce_admin_notice( $message = '', $priority = 'updated', $screen = '' ) {
+
+		if( empty( $priority ) )
+			$priority = 'updated';
+		if( !empty( $message ) )
+			add_action( 'admin_notices', woo_ce_admin_notice_html( $message, $priority, $screen ) );
+
+	}
+
+	// HTML template for admin notice
+	function woo_ce_admin_notice_html( $message = '', $priority = 'updated', $screen = '' ) {
+
+		// Display admin notice on specific screen
+		if( !empty( $screen ) ) {
+			global $pagenow;
+			if( $pagenow <> $screen )
+				return;
+		} ?>
+<div id="message" class="<?php echo $priority; ?>">
+	<p><?php echo $message; ?></p>
+</div>
+<?php
+
+	}
+
 	// Add Store Export to WordPress Administration menu
 	function woo_ce_admin_menu() {
 
@@ -393,7 +466,7 @@ if( is_admin() ) {
 						foreach( $categories as $category ) {
 							foreach( $export->fields as $key => $field ) {
 								if( isset( $category->$key ) )
-									$csv .= woo_ce_escape_csv_value( woo_ce_clean_html( $category->$key ), $export->delimiter, $export->escape_formatting );
+									$csv .= woo_ce_escape_csv_value( $category->$key, $export->delimiter, $export->escape_formatting );
 								$csv .= $separator;
 							}
 							$csv = substr( $csv, 0, -1 ) . "\n";
@@ -425,7 +498,7 @@ if( is_admin() ) {
 						foreach( $tags as $tag ) {
 							foreach( $export->fields as $key => $field ) {
 								if( isset( $tag->$key ) )
-									$csv .= woo_ce_escape_csv_value( woo_ce_clean_html( $tag->$key ), $export->delimiter, $export->escape_formatting );
+									$csv .= woo_ce_escape_csv_value( $tag->$key, $export->delimiter, $export->escape_formatting );
 								$csv .= $separator;
 							}
 							$csv = substr( $csv, 0, -1 ) . "\n";
@@ -446,6 +519,7 @@ if( is_admin() ) {
 
 			}
 			if( $csv ) {
+				$csv = woo_ce_file_encoding( $csv );
 				$csv = utf8_decode( $csv );
 				if( isset( $woo_ce['debug'] ) && $woo_ce['debug'] )
 					$woo_ce['debug_log'] = $csv;
@@ -569,6 +643,7 @@ if( is_admin() ) {
 				if( function_exists( 'mb_list_encodings' ) )
 					$file_encodings = mb_list_encodings();
 				$encoding = woo_ce_get_option( 'encoding', 'UTF-8' );
+				$date_format = woo_ce_get_option( 'date_format', 'm/d/Y' );
 				break;
 
 			case 'tools':

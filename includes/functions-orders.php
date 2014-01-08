@@ -488,4 +488,28 @@ function woo_ce_orders_filter_by_user_role() {
 	ob_end_flush();
 
 }
+
+// HTML template for disabled Order Sorting widget on Store Exporter screen
+function woo_ce_orders_order_sorting() {
+
+	ob_start(); ?>
+<p><label><?php _e( 'Order Sorting', 'woo_ce' ); ?></label></p>
+<div>
+	<select name="order_orderby" disabled="disabled">
+		<option value="ID"><?php _e( 'Order ID', 'woo_ce' ); ?></option>
+		<option value="title"><?php _e( 'Order Name', 'woo_ce' ); ?></option>
+		<option value="date"><?php _e( 'Date Created', 'woo_ce' ); ?></option>
+		<option value="modified"><?php _e( 'Date Modified', 'woo_ce' ); ?></option>
+		<option value="rand"><?php _e( 'Random', 'woo_ce' ); ?></option>
+	</select>
+	<select name="order_order" disabled="disabled">
+		<option value="ASC"><?php _e( 'Ascending', 'woo_ce' ); ?></option>
+		<option value="DESC"><?php _e( 'Descending', 'woo_ce' ); ?></option>
+	</select>
+	<p class="description"><?php _e( 'Select the sorting of Orders within the exported file. By default this is set to export Orders by Product ID in Desending order.', 'woo_ce' ); ?></p>
+</div>
+<?php
+	ob_end_flush();
+	
+}
 ?>

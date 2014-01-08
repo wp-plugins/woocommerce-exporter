@@ -78,15 +78,17 @@ function woo_ce_get_products( $args = array() ) {
 			if( $product->post_type == 'product_variation' ) {
 				// Assign Parent ID for Variants then check if Parent exists
 				if( $products[$key]->parent_id = $product->post_parent ) {
+/*
 					if( !get_posts( 'p=' . $products[$key]->parent_id ) )
 						unset( $products[$key] );
+*/
 				}
-				$products[$key]->parent_sku = woo_ce_clean_html( get_post_meta( $product->post_parent, '_sku', true ) );
+				$products[$key]->parent_sku = get_post_meta( $product->post_parent, '_sku', true );
 			}
 			$products[$key]->product_id = $product->ID;
-			$products[$key]->sku = woo_ce_clean_html( get_post_meta( $product->ID, '_sku', true ) );
-			$products[$key]->name = woo_ce_clean_html( get_the_title( $product->ID ) );
-			$products[$key]->description = woo_ce_clean_html( $product->post_content );
+			$products[$key]->sku = get_post_meta( $product->ID, '_sku', true );
+			$products[$key]->name = get_the_title( $product->ID );
+			$products[$key]->description = $product->post_content;
 			$products[$key]->regular_price = get_post_meta( $product->ID, '_regular_price', true );
 			$products[$key]->price = get_post_meta( $product->ID, '_price', true );
 			if( !empty( $products[$key]->regular_price ) && ( $products[$key]->regular_price <> $products[$key]->price ) )
@@ -96,7 +98,9 @@ function woo_ce_get_products( $args = array() ) {
 			$products[$key]->sale_price_dates_to = woo_ce_format_sale_price_dates( get_post_meta( $product->ID, '_sale_price_dates_to', true ) );
 			$products[$key]->slug = $product->post_name;
 			$products[$key]->permalink = get_permalink( $product->ID );
-			$products[$key]->excerpt = woo_ce_clean_html( $product->post_excerpt );
+			$products[$key]->excerpt = $product->post_excerpt;
+			$products[$key]->post_date = woo_ce_format_date( $product->post_date );
+			$products[$key]->post_modified = woo_ce_format_date( $product->post_modified );
 			$products[$key]->type = woo_ce_get_product_assoc_type( $product->ID );
 			if( $product->post_type == 'product_variation' )
 				$products[$key]->type = __( 'Variation', 'woo_ce' );
@@ -112,8 +116,8 @@ function woo_ce_get_products( $args = array() ) {
 			$products[$key]->width_unit = $width_unit;
 			$products[$key]->length = get_post_meta( $product->ID, '_length', true );
 			$products[$key]->length_unit = $length_unit;
-			$products[$key]->category = woo_ce_clean_html( woo_ce_get_product_assoc_categories( $product->ID ) );
-			$products[$key]->tag = woo_ce_clean_html( woo_ce_get_product_assoc_tags( $product->ID ) );
+			$products[$key]->category = woo_ce_get_product_assoc_categories( $product->ID );
+			$products[$key]->tag = woo_ce_get_product_assoc_tags( $product->ID );
 			$products[$key]->manage_stock = woo_ce_format_switch( get_post_meta( $product->ID, '_manage_stock', true ) );
 			$products[$key]->allow_backorders = woo_ce_format_switch( get_post_meta( $product->ID, '_backorders', true ) );
 			$products[$key]->sold_individually = woo_ce_format_switch( get_post_meta( $product->ID, '_sold_individually', true ) );
@@ -130,7 +134,7 @@ function woo_ce_get_products( $args = array() ) {
 			$products[$key]->file_download = woo_ce_get_product_assoc_file_downloads( $product->ID );
 			$products[$key]->download_limit = get_post_meta( $product->ID, '_download_limit', true );
 			$products[$key]->download_expiry = get_post_meta( $product->ID, '_download_expiry', true );
-			$products[$key]->purchase_note = woo_ce_clean_html( get_post_meta( $product->ID, '_purchase_note', true ) );
+			$products[$key]->purchase_note = get_post_meta( $product->ID, '_purchase_note', true );
 			$products[$key]->product_status = woo_ce_format_product_status( $product->post_status );
 			$products[$key]->comment_status = woo_ce_format_comment_status( $product->comment_status );
 			if( $attributes = woo_ce_get_product_attributes() ) {
@@ -352,6 +356,16 @@ function woo_ce_get_product_fields( $format = 'full' ) {
 	$fields[] = array(
 		'name' => 'excerpt',
 		'label' => __( 'Excerpt', 'woo_ce' ),
+		'default' => 1
+	);
+	$fields[] = array(
+		'name' => 'post_date',
+		'label' => __( 'Product Published', 'woo_ce' ),
+		'default' => 1
+	);
+	$fields[] = array(
+		'name' => 'post_modified',
+		'label' => __( 'Product Modified', 'woo_ce' ),
 		'default' => 1
 	);
 	$fields[] = array(
@@ -662,5 +676,4 @@ function woo_ce_get_product_attributes() {
 	return $output;
 
 }
-
 ?>

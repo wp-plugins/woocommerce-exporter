@@ -51,7 +51,7 @@ function woo_ce_get_tag_fields( $format = 'full' ) {
 	// Allow Plugin/Theme authors to add support for additional Product Tag columns
 	$fields = apply_filters( 'woo_ce_tag_fields', $fields );
 
-	$remember = woo_ce_get_option( 'categories_fields' );
+	$remember = woo_ce_get_option( 'tags_fields' );
 	if( $remember ) {
 		$remember = maybe_unserialize( $remember );
 		$size = count( $fields );

@@ -14,6 +14,11 @@ function woo_ce_get_product_categories( $args = array() ) {
 		'hide_empty' => 0
 	);
 	$categories = get_terms( $term_taxonomy, $args );
+	if( $categories ) {
+		foreach( $categories as $key => $category ) {
+			$categories[$key]->parent_id = $category->parent;
+		}
+	}
 	if( $categories )
 		$output = $categories;
 	return $output;
@@ -37,6 +42,11 @@ function woo_ce_get_category_fields( $format = 'full' ) {
 	$fields[] = array(
 		'name' => 'slug',
 		'label' => __( 'Category Slug', 'woo_ce' ),
+		'default' => 1
+	);
+	$fields[] = array(
+		'name' => 'parent_id',
+		'label' => __( 'Parent Term ID', 'woo_ce' ),
 		'default' => 1
 	);
 
@@ -106,5 +116,4 @@ function woo_ce_get_category_field( $name = null, $format = 'name' ) {
 	return $output;
 
 }
-
 ?>

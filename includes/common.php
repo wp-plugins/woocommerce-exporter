@@ -5,7 +5,9 @@ Filename: common.php
 Description: common.php loads commonly accessed functions across the Visser Labs suite.
 
 - woo_get_action
-
+- woo_is_wpsc_activated
+- woo_is_woo_activated
+- woo_is_jigo_activated
 */
 
 if( is_admin() ) {
@@ -19,7 +21,6 @@ if( is_admin() ) {
 }
 
 if( !function_exists( 'woo_get_action' ) ) {
-
 	function woo_get_action( $switch = false ) {
 
 		if( $switch ) {
@@ -44,6 +45,32 @@ if( !function_exists( 'woo_get_action' ) ) {
 		return $action;
 
 	}
+}
 
+if( !function_exists( 'woo_is_wpsc_activated' ) ) {
+	function woo_is_wpsc_activated() {
+
+		if( class_exists( 'WP_eCommerce' ) )
+			return true;
+
+	}
+}
+
+if( !function_exists( 'woo_is_woo_activated' ) ) {
+	function woo_is_woo_activated() {
+
+		if( class_exists( 'Woocommerce' ) )
+			return true;
+
+	}
+}
+
+if( !function_exists( 'woo_is_jigo_activated' ) ) {
+	function woo_is_jigo_activated() {
+
+		if( function_exists( 'jigoshop_init' ) )
+			return true;
+
+	}
 }
 ?>

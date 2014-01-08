@@ -218,7 +218,7 @@
 					<p><a href="javascript:void(0)" id="categories-checkall" class="checkall"><?php _e( 'Check All', 'woo_ce' ); ?></a> | <a href="javascript:void(0)" id="categories-uncheckall" class="uncheckall"><?php _e( 'Uncheck All', 'woo_ce' ); ?></a></p>
 					<table>
 
-		<?php foreach( $category_fields as $category_field ) { ?>
+<?php foreach( $category_fields as $category_field ) { ?>
 						<tr>
 							<td>
 								<label>
@@ -228,13 +228,14 @@
 							</td>
 						</tr>
 
-		<?php } ?>
+<?php } ?>
 					</table>
 					<p class="submit">
 						<input type="submit" id="export_categories" value="<?php _e( 'Export Categories', 'woo_ce' ); ?> " class="button-primary" />
 					</p>
 					<p class="description"><?php _e( 'Can\'t find a particular Category field in the above export list?', 'woo_ce' ); ?> <a href="<?php echo $troubleshooting_url; ?>" target="_blank"><?php _e( 'Get in touch', 'woo_ce' ); ?></a>.</p>
 				</div>
+				<!-- .inside -->
 			</div>
 			<!-- .postbox -->
 
@@ -272,7 +273,7 @@
 					<p><a href="javascript:void(0)" id="tags-checkall" class="checkall"><?php _e( 'Check All', 'woo_ce' ); ?></a> | <a href="javascript:void(0)" id="tags-uncheckall" class="uncheckall"><?php _e( 'Uncheck All', 'woo_ce' ); ?></a></p>
 					<table>
 
-	<?php foreach( $tag_fields as $tag_field ) { ?>
+<?php foreach( $tag_fields as $tag_field ) { ?>
 						<tr>
 							<td>
 								<label>
@@ -282,7 +283,7 @@
 							</td>
 						</tr>
 
-	<?php } ?>
+<?php } ?>
 					</table>
 					<p class="submit">
 						<input type="submit" id="export_tags" value="<?php _e( 'Export Tags', 'woo_ce' ); ?> " class="button-primary" />
@@ -570,6 +571,23 @@
 						</td>
 					</tr>
 <?php } ?>
+
+					<tr>
+						<th><?php _e( 'Date Format', 'woo_ce' ); ?></th>
+						<td>
+							<fieldset>
+								<label title="F j, Y"><input type="radio" name="date_format" value="F j, Y"<?php checked( $date_format, 'F j, Y' ); ?>> <span><?php echo date( 'F j, Y' ); ?></span></label><br>
+								<label title="Y/m/d"><input type="radio" name="date_format" value="Y/m/d"<?php checked( $date_format, 'Y/m/d' ); ?>> <span><?php echo date( 'Y/m/d' ); ?></span></label><br>
+								<label title="m/d/Y"><input type="radio" name="date_format" value="m/d/Y"<?php checked( $date_format, 'm/d/Y' ); ?>> <span><?php echo date( 'm/d/Y' ); ?></span></label><br>
+								<label title="d/m/Y"><input type="radio" name="date_format" value="d/m/Y"<?php checked( $date_format, 'd/m/Y' ); ?>> <span><?php echo date( 'd/m/Y' ); ?></span></label><br>
+<!--
+								<label><input type="radio" name="date_format" id="date_format_custom_radio" value="\c\u\s\t\o\m"> Custom: </label><input type="text" name="date_format_custom" value="F j, Y" class="small-text"> <span class="example"> January 6, 2014</span> <span class="spinner"></span>
+								<p><a href="http://codex.wordpress.org/Formatting_Date_and_Time"><?php _e( 'Documentation on date and time formatting', 'woo_ce' ); ?></a>.</p>
+-->
+							</fieldset>
+							<p class="description"><?php _e( 'The date format option affects how date\'s are presented within your CSV file. Default is set to DD/MM/YYYY.', 'woo_ce' ); ?></p>
+						</td>
+					</tr>
 
 					<?php do_action( 'woo_ce_export_options_after' ); ?>
 

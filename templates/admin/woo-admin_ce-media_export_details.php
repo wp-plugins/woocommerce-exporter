@@ -2,7 +2,7 @@
 	<thead>
 
 		<tr>
-			<th colspan="2">Export Details</th>
+			<th colspan="2"><?php _e( 'Export Details', 'woo_ce' ); ?></th>
 		</tr>
 
 	</thead>

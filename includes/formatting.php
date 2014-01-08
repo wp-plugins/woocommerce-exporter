@@ -1,5 +1,5 @@
 <?php
-function woo_ce_clean_html( $content = '' ) {
+function woo_ce_file_encoding( $content = '' ) {
 
 	global $export;
 
@@ -9,9 +9,14 @@ function woo_ce_clean_html( $content = '' ) {
 		$from_encoding = 'ISO-8859-1';
 		if( !empty( $to_encoding ) )
 			$content = mb_convert_encoding( trim( $content ), $to_encoding, $from_encoding );
-	} else {
-		$content = trim( $content );
 	}
+	return $content;
+
+}
+
+function woo_ce_clean_html( $content = '' ) {
+
+	$content = trim( $content );
 	// $content = str_replace( ',', '&#44;', $content );
 	// $content = str_replace( "\n", '<br />', $content );
 	return $content;
@@ -65,7 +70,7 @@ function woo_ce_escape_csv_value( $value = '', $delimiter = ',', $format = 'all'
 	$output = $value;
 	if( !empty( $output ) ) {
 		$output = str_replace( '"', '""', $output );
-		// output = str_replace( PHP_EOL, ' ', $output );
+		// $output = str_replace( PHP_EOL, ' ', $output );
 		$output = wp_specialchars_decode( $output );
 		$output = str_replace( PHP_EOL, "\r\n", $output );
 		switch( $format ) {
@@ -154,23 +159,25 @@ function woo_ce_format_visibility( $visibility = '' ) {
 
 }
 
-function woo_ce_format_product_status( $product_status ) {
+function woo_ce_format_product_status( $product_status = '' ) {
 
 	$output = $product_status;
-	switch( $product_status ) {
+	if( $product_status ) {
+		switch( $product_status ) {
 
-		case 'publish':
-			$output = __( 'Publish', 'woo_ce' );
-			break;
+			case 'publish':
+				$output = __( 'Publish', 'woo_ce' );
+				break;
 
-		case 'draft':
-			$output = __( 'Draft', 'woo_ce' );
-			break;
+			case 'draft':
+				$output = __( 'Draft', 'woo_ce' );
+				break;
 
-		case 'trash':
-			$output = __( 'Trash', 'woo_ce' );
-			break;
+			case 'trash':
+				$output = __( 'Trash', 'woo_ce' );
+				break;
 
+		}
 	}
 	return $output;
 
@@ -364,7 +371,16 @@ function woo_ce_format_sale_price_dates( $sale_date = '' ) {
 
 	$output = $sale_date;
 	if( $sale_date )
-		$output = date( 'd/m/Y', $sale_date );
+		$output = woo_ce_format_date( date( 'Y-m-d H:i:s', $sale_date ) );
+	return $output;
+
+}
+
+function woo_ce_format_date( $date = '' ) {
+
+	$output = '';
+	if( $date )
+		$output = mysql2date( woo_ce_get_option( 'date_format', 'd/m/Y' ), $date );
 	return $output;
 
 }

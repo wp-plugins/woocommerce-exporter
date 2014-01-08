@@ -2,10 +2,10 @@
 
 Contributors: visser
 Donate link: http://www.visser.com.au/#donations
-Tags: e-commerce, woocommerce, shop, cart, ecommerce, export, csv
+Tags: e-commerce, woocommerce, shop, cart, ecommerce, export, csv, customers, products, sales, coupons
 Requires at least: 2.9.2
 Tested up to: 3.8
-Stable tag: 1.4.1
+Stable tag: 1.4.2
 
 == Description ==
 
@@ -27,7 +27,7 @@ Features include:
 * Export Coupons (**)
 * Toggle and save export fields
 
-(*) Compatible with Product Importer Deluxe, All in One SEO Pack, Advanced Google Product Feed, Product Addons, Sequential Order Number Pro, WooCommerce Checkout Manager and more.
+(*) Compatible with Product Importer Deluxe, All in One SEO Pack, Advanced Google Product Feed, Product Addons, Sequential Order Number Pro, WooCommerce Checkout Manager, Cost of Goods, Per-Product Shipping and more.
 (**) Requries the Pro upgrade to enable additional store export functionality.
 
 For more information visit: http://www.visser.com.au/woocommerce/
@@ -35,6 +35,7 @@ For more information visit: http://www.visser.com.au/woocommerce/
 == Installation ==
 
 1. Upload the folder 'woocommerce-exporter' to the '/wp-content/plugins/' directory
+
 2. Activate 'WooCommerce - Exporter' through the 'Plugins' menu in WordPress
 
 That's it!
@@ -42,8 +43,11 @@ That's it!
 == Usage ==
 
 1. Open WooCommerce > Store Export from the WordPress Administration
+
 2. Select the Export tab on the Store Exporter screen
+
 3. Select which data type and WooCommerce details you would like to export and click Export
+
 4. Download archived copies of previous exports from the Archives tab
 
 Done!
@@ -65,6 +69,10 @@ http://www.visser.com.au/woocommerce/forums/
 7. Download achived copies of previous exports
 
 == Changelog ==
+
+= 1.4.2 =
+* Added: Product Published and Product Modified dates to Products export
+* Added: Date formatting independant of WordPress > Settings > General
 
 = 1.4.1 =
 * Fixed: Default file encoding can trigger PHP warning

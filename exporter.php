@@ -3,13 +3,11 @@
 Plugin Name: WooCommerce - Store Exporter
 Plugin URI: http://www.visser.com.au/woocommerce/plugins/exporter/
 Description: Export store details out of WooCommerce into a CSV-formatted file.
-Version: 1.4.1
+Version: 1.4.2
 Author: Visser Labs
 Author URI: http://www.visser.com.au/about/
 License: GPL2
 */
-
-load_plugin_textdomain( 'woo_ce', null, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
 
 $woo_ce = array(
 	'filename' => basename( __FILE__ ),
@@ -19,12 +17,19 @@ $woo_ce = array(
 );
 
 $woo_ce['prefix'] = 'woo_ce';
-$woo_ce['name'] = __( 'WooCommerce Exporter', 'woo_ce' );
 $woo_ce['menu'] = __( 'Store Export', 'woo_ce' );
+$woo_ce['debug'] = false;
 
 include_once( $woo_ce['abspath'] . '/includes/functions.php' );
 include_once( $woo_ce['abspath'] . '/includes/functions-alternatives.php' );
 include_once( $woo_ce['abspath'] . '/includes/common.php' );
+
+function woo_ce_i18n() {
+
+	load_plugin_textdomain( 'woo_ce', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
+
+}
+add_action( 'init', 'woo_ce_i18n' );
 
 if( is_admin() ) {
 
@@ -128,6 +133,11 @@ if( is_admin() ) {
 					if( $export->encoding <> woo_ce_get_option( 'encoding' ) )
 						woo_ce_update_option( 'encoding', $export->encoding );
 				}
+				if( !empty( $_POST['date_format'] ) ) {
+					$export->date_format = (string)$_POST['date_format'];
+					if( $export->date_format <> woo_ce_get_option( 'date_format' ) )
+						woo_ce_update_option( 'date_format', $export->date_format );
+				}
 				$export->order_dates_filter = false;
 				$export->order_dates_from = '';
 				$export->order_dates_to = '';
@@ -139,6 +149,8 @@ if( is_admin() ) {
 				$export->product_type = false;
 				$export->order_customer = false;
 				$export->order_items = 'combined';
+				$export->order_orderby = false;
+				$export->order_order = false;
 
 				$dataset = array();
 				$export->type = $_POST['dataset'];
@@ -199,6 +211,12 @@ if( is_admin() ) {
 							if( $export->max_order_items <> woo_ce_get_option( 'max_order_items' ) )
 								woo_ce_update_option( 'max_order_items', $export->max_order_items );
 						}
+						$export->order_orderby = ( isset( $_POST['order_orderby'] ) ) ? $_POST['order_orderby'] : false;
+						if( $export->order_orderby <> woo_ce_get_option( 'order_orderby' ) )
+							woo_ce_update_option( 'order_orderby', $export->order_orderby );
+						$export->order_order = ( isset( $_POST['order_order'] ) ) ? $_POST['order_order'] : false;
+						if( $export->order_order <> woo_ce_get_option( 'order_order' ) )
+							woo_ce_update_option( 'order_order', $export->order_order );
 						break;
 
 					case 'customers':
@@ -231,6 +249,7 @@ if( is_admin() ) {
 						'limit_volume' => $export->limit_volume,
 						'offset' => $export->offset,
 						'encoding' => $export->encoding,
+						'date_format' => $export->date_format,
 						'product_categories' => $export->product_categories,
 						'product_tags' => $export->product_tags,
 						'product_status' => $export->product_status,
@@ -246,7 +265,9 @@ if( is_admin() ) {
 						'order_dates_from' => woo_ce_format_order_date( $export->order_dates_from ),
 						'order_dates_to' => woo_ce_format_order_date( $export->order_dates_to ),
 						'order_customer' => $export->order_customer,
-						'order_items' => $export->order_items
+						'order_items' => $export->order_items,
+						'order_orderby' => $export->order_orderby,
+						'order_order' => $export->order_order
 					);
 					woo_ce_save_fields( $dataset, $export->fields );
 					$export->filename = woo_ce_generate_csv_filename( $export->type );
@@ -309,9 +330,12 @@ if( is_admin() ) {
 				break;
 
 			default:
+				// Detect other platform versions
+				woo_ce_detect_non_woo_install();
 				add_action( 'woo_ce_export_order_options_before_table', 'woo_ce_orders_filter_by_date' );
 				add_action( 'woo_ce_export_order_options_before_table', 'woo_ce_orders_filter_by_status' );
 				add_action( 'woo_ce_export_order_options_before_table', 'woo_ce_orders_filter_by_customer' );
+				add_action( 'woo_ce_export_order_options_after_table', 'woo_ce_orders_order_sorting' );
 				break;
 
 		}
