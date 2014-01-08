@@ -162,22 +162,20 @@ function woo_ce_format_visibility( $visibility = '' ) {
 function woo_ce_format_product_status( $product_status = '' ) {
 
 	$output = $product_status;
-	if( $product_status ) {
-		switch( $product_status ) {
+	switch( $product_status ) {
 
-			case 'publish':
-				$output = __( 'Publish', 'woo_ce' );
-				break;
+		case 'publish':
+			$output = __( 'Publish', 'woo_ce' );
+			break;
 
-			case 'draft':
-				$output = __( 'Draft', 'woo_ce' );
-				break;
+		case 'draft':
+			$output = __( 'Draft', 'woo_ce' );
+			break;
 
-			case 'trash':
-				$output = __( 'Trash', 'woo_ce' );
-				break;
+		case 'trash':
+			$output = __( 'Trash', 'woo_ce' );
+			break;
 
-		}
 	}
 	return $output;
 

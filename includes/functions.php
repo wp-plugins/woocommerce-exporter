@@ -27,7 +27,6 @@ if( is_admin() ) {
 
 		if( $pagenow == 'plugins.php' ) {
 			if( woo_is_jigo_activated() || woo_is_wpsc_activated() ) {
-				add_action( 'admin_notices', 'woo_ce_detect_non_woo_install' );
 				$r_plugins = array(
 					'woocommerce-exporter/exporter.php'
 				);

@@ -33,18 +33,20 @@ function woo_ce_get_products( $args = array() ) {
 		'cache_results' => false
 	);
 	if( $product_categories ) {
+		$term_taxonomy = 'product_cat';
 		$args['tax_query'] = array(
 			array(
-				'taxonomy' => 'product_cat',
+				'taxonomy' => $term_taxonomy,
 				'field' => 'id',
 				'terms' => $product_categories
 			)
 		);
 	}
 	if( $product_tags ) {
+		$term_taxonomy = 'product_tag';
 		$args['tax_query'] = array(
 			array(
-				'taxonomy' => 'product_tag',
+				'taxonomy' => $term_taxonomy,
 				'field' => 'id',
 				'terms' => $product_tags
 			)
@@ -666,7 +668,7 @@ function woo_ce_get_product_attributes() {
 
 	global $wpdb;
 
-	$output = '';
+	$output = array();
 	$attributes_sql = "SELECT * FROM " . $wpdb->prefix . "woocommerce_attribute_taxonomies";
 	$attributes = $wpdb->get_results( $attributes_sql );
 	$wpdb->flush();
