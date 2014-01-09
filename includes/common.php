@@ -8,6 +8,7 @@ Description: common.php loads commonly accessed functions across the Visser Labs
 - woo_is_wpsc_activated
 - woo_is_woo_activated
 - woo_is_jigo_activated
+
 */
 
 if( is_admin() ) {
