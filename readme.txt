@@ -5,7 +5,7 @@ Donate link: http://www.visser.com.au/#donations
 Tags: e-commerce, woocommerce, shop, cart, ecommerce, export, csv, customers, products, sales, coupons
 Requires at least: 2.9.2
 Tested up to: 3.8
-Stable tag: 1.4.2
+Stable tag: 1.4.3
 
 == Description ==
 
@@ -69,6 +69,10 @@ http://www.visser.com.au/woocommerce/forums/
 7. Download achived copies of previous exports
 
 == Changelog ==
+
+= 1.4.3 =
+* Fixed: Export Orders by User Role
+* Added: Formatting of User Role
 
 = 1.4.2 =
 * Added: Product Published and Product Modified dates to Products export

@@ -3,7 +3,7 @@
 Plugin Name: WooCommerce - Store Exporter
 Plugin URI: http://www.visser.com.au/woocommerce/plugins/exporter/
 Description: Export store details out of WooCommerce into a CSV-formatted file.
-Version: 1.4.2
+Version: 1.4.3
 Author: Visser Labs
 Author URI: http://www.visser.com.au/about/
 License: GPL2
@@ -138,16 +138,17 @@ if( is_admin() ) {
 					if( $export->date_format <> woo_ce_get_option( 'date_format' ) )
 						woo_ce_update_option( 'date_format', $export->date_format );
 				}
-				$export->order_dates_filter = false;
-				$export->order_dates_from = '';
-				$export->order_dates_to = '';
-				$export->order_status = false;
 				$export->fields = false;
 				$export->product_categories = false;
 				$export->product_tags = false;
 				$export->product_status = false;
 				$export->product_type = false;
+				$export->order_dates_filter = false;
+				$export->order_dates_from = '';
+				$export->order_dates_to = '';
+				$export->order_status = false;
 				$export->order_customer = false;
+				$export->order_user_roles = false;
 				$export->order_items = 'combined';
 				$export->order_orderby = false;
 				$export->order_order = false;
@@ -196,11 +197,12 @@ if( is_admin() ) {
 					case 'orders':
 						$dataset[] = 'orders';
 						$export->fields = ( isset( $_POST['order_fields'] ) ) ? $_POST['order_fields'] : false;
-						$export->order_status = ( isset( $_POST['order_filter_status'] ) ) ? woo_ce_format_product_filters( $_POST['order_filter_status'] ) : false;
 						$export->order_dates_filter = ( isset( $_POST['order_dates_filter'] ) ) ? $_POST['order_dates_filter'] : false;
 						$export->order_dates_from = $_POST['order_dates_from'];
 						$export->order_dates_to = $_POST['order_dates_to'];
+						$export->order_status = ( isset( $_POST['order_filter_status'] ) ) ? woo_ce_format_product_filters( $_POST['order_filter_status'] ) : false;
 						$export->order_customer = ( isset( $_POST['order_customer'] ) ) ? $_POST['order_customer'] : false;
+						$export->order_user_roles = ( isset( $_POST['order_filter_user_role'] ) ) ? woo_ce_format_user_role_filters( $_POST['order_filter_user_role'] ) : false;
 						if( isset( $_POST['order_items'] ) ) {
 							$export->order_items = $_POST['order_items'];
 							if( $export->order_items <> woo_ce_get_option( 'order_items_formatting' ) )
@@ -265,6 +267,7 @@ if( is_admin() ) {
 						'order_dates_from' => woo_ce_format_order_date( $export->order_dates_from ),
 						'order_dates_to' => woo_ce_format_order_date( $export->order_dates_to ),
 						'order_customer' => $export->order_customer,
+						'order_user_roles' => $export->order_user_roles,
 						'order_items' => $export->order_items,
 						'order_orderby' => $export->order_orderby,
 						'order_order' => $export->order_order
