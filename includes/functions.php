@@ -642,7 +642,7 @@ if( is_admin() ) {
 				if( function_exists( 'mb_list_encodings' ) )
 					$file_encodings = mb_list_encodings();
 				$encoding = woo_ce_get_option( 'encoding', 'UTF-8' );
-				$date_format = woo_ce_get_option( 'date_format', 'm/d/Y' );
+				$date_format = woo_ce_get_option( 'date_format', 'd/m/Y' );
 				break;
 
 			case 'tools':

@@ -506,7 +506,7 @@ function woo_ce_orders_order_sorting() {
 		<option value="ASC"><?php _e( 'Ascending', 'woo_ce' ); ?></option>
 		<option value="DESC"><?php _e( 'Descending', 'woo_ce' ); ?></option>
 	</select>
-	<p class="description"><?php _e( 'Select the sorting of Orders within the exported file. By default this is set to export Orders by Product ID in Desending order.', 'woo_ce' ); ?></p>
+	<p class="description"><?php _e( 'Select the sorting of Orders within the exported file. By default this is set to export Orders by Order ID in Desending order.', 'woo_ce' ); ?></p>
 </div>
 <?php
 	ob_end_flush();
