@@ -15,19 +15,19 @@
 		<li>
 			<a href="<?php echo add_query_arg( 'tab', 'export' ); ?>#export-orders"><?php _e( 'Export Orders', 'woo_ce' ); ?></a>
 <?php if( !function_exists( 'woo_cd_admin_init' ) ) { ?>
-			<span class="description">(<?php echo sprintf( __( 'available in %s', 'woo_ce' ), $woo_cd_link ); ?>)</span>
+			<span class="description">(<?php printf( __( 'available in %s', 'woo_ce' ), $woo_cd_link ); ?>)</span>
 <?php } ?>
 		</li>
 		<li>
 			<a href="<?php echo add_query_arg( 'tab', 'export' ); ?>#export-customers"><?php _e( 'Export Customers', 'woo_ce' ); ?></a>
 <?php if( !function_exists( 'woo_cd_admin_init' ) ) { ?>
-			<span class="description">(<?php echo sprintf( __( 'available in %s', 'woo_ce' ), $woo_cd_link ); ?>)</span>
+			<span class="description">(<?php printf( __( 'available in %s', 'woo_ce' ), $woo_cd_link ); ?>)</span>
 <?php } ?>
 		</li>
 		<li>
 			<a href="<?php echo add_query_arg( 'tab', 'export' ); ?>#export-coupons"><?php _e( 'Export Coupons', 'woo_ce' ); ?></a>
 <?php if( !function_exists( 'woo_cd_admin_init' ) ) { ?>
-			<span class="description">(<?php echo sprintf( __( 'available in %s', 'woo_ce' ), $woo_cd_link ); ?>)</span>
+			<span class="description">(<?php printf( __( 'available in %s', 'woo_ce' ), $woo_cd_link ); ?>)</span>
 <?php } ?>
 		</li>
 	</ul>

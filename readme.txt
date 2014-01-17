@@ -5,7 +5,7 @@ Donate link: http://www.visser.com.au/#donations
 Tags: e-commerce, woocommerce, shop, cart, ecommerce, export, csv, customers, products, sales, coupons
 Requires at least: 2.9.2
 Tested up to: 3.8
-Stable tag: 1.4.4
+Stable tag: 1.4.5
 
 == Description ==
 
@@ -69,6 +69,11 @@ http://www.visser.com.au/woocommerce/forums/
 7. Download achived copies of previous exports
 
 == Changelog ==
+
+= 1.4.5 =
+* Added: Custom Product fields
+* Added: Memory optimisations for get_posts()
+* Changed: Standard admin notices
 
 = 1.4.4 =
 * Changed: Default Date Format to d/m/Y

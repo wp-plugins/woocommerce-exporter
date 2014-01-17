@@ -52,7 +52,7 @@
 						<td>
 							<span class="description">(<?php echo $orders; ?>)</span>
 <?php if( !function_exists( 'woo_cd_admin_init' ) ) { ?>
-							<span class="description"> - <?php echo sprintf( __( 'available in %s', 'woo_ce' ), $woo_cd_link ); ?></span>
+							<span class="description"> - <?php printf( __( 'available in %s', 'woo_ce' ), $woo_cd_link ); ?></span>
 <?php } ?>
 						</td>
 					</tr>
@@ -65,7 +65,7 @@
 						<td>
 							<span class="description">(<?php echo $customers; ?>)</span>
 <?php if( !function_exists( 'woo_cd_admin_init' ) ) { ?>
-							<span class="description"> - <?php echo sprintf( __( 'available in %s', 'woo_ce' ), $woo_cd_link ); ?></span>
+							<span class="description"> - <?php printf( __( 'available in %s', 'woo_ce' ), $woo_cd_link ); ?></span>
 <?php } ?>
 						</td>
 					</tr>
@@ -78,7 +78,7 @@
 						<td>
 							<span class="description">(<?php echo $coupons; ?>)</span>
 <?php if( !function_exists( 'woo_cd_admin_init' ) ) { ?>
-							<span class="description"> - <?php echo sprintf( __( 'available in %s', 'woo_ce' ), $woo_cd_link ); ?></span>
+							<span class="description"> - <?php printf( __( 'available in %s', 'woo_ce' ), $woo_cd_link ); ?></span>
 <?php } ?>
 						</td>
 					</tr>
@@ -562,9 +562,9 @@
 						</th>
 						<td>
 							<select id="timeout" name="timeout">
-								<option value="600"<?php selected( $timeout, 600 ); ?>><?php echo sprintf( __( '%s minutes', 'woo_ce' ), 10 ); ?></option>
-								<option value="1800"<?php selected( $timeout, 1800 ); ?>><?php echo sprintf( __( '%s minutes', 'woo_ce' ), 30 ); ?></option>
-								<option value="3600"<?php selected( $timeout, 3600 ); ?>><?php echo sprintf( __( '%s hour', 'woo_ce' ), 1 ); ?></option>
+								<option value="600"<?php selected( $timeout, 600 ); ?>><?php printf( __( '%s minutes', 'woo_ce' ), 10 ); ?></option>
+								<option value="1800"<?php selected( $timeout, 1800 ); ?>><?php printf( __( '%s minutes', 'woo_ce' ), 30 ); ?></option>
+								<option value="3600"<?php selected( $timeout, 3600 ); ?>><?php printf( __( '%s hour', 'woo_ce' ), 1 ); ?></option>
 								<option value="0"<?php selected( $timeout, 0 ); ?>><?php _e( 'Unlimited', 'woo_ce' ); ?></option>
 							</select>
 							<p class="description"><?php _e( 'Script timeout defines how long WooCommerce Exporter is \'allowed\' to process your CSV file, once the time limit is reached the export process halts.', 'woo_ce' ); ?></p>

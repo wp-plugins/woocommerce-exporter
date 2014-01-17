@@ -67,8 +67,7 @@ function woo_ce_get_products( $args = array() ) {
 			);
 		}
 	}
-	$products = get_posts( $args );
-	if( $products ) {
+	if( $products = get_posts( $args ) ) {
 		$weight_unit = get_option( 'woocommerce_weight_unit' );
 		$dimension_unit = get_option( 'woocommerce_dimension_unit' );
 		$height_unit = $dimension_unit;
@@ -80,10 +79,10 @@ function woo_ce_get_products( $args = array() ) {
 			if( $product->post_type == 'product_variation' ) {
 				// Assign Parent ID for Variants then check if Parent exists
 				if( $products[$key]->parent_id = $product->post_parent ) {
-/*
-					if( !get_posts( 'p=' . $products[$key]->parent_id ) )
+					if( !get_posts( 'p=' . $products[$key]->parent_id ) ) {
 						unset( $products[$key] );
-*/
+						continue;
+					}
 				}
 				$products[$key]->parent_sku = get_post_meta( $product->post_parent, '_sku', true );
 			}

@@ -1,10 +1,10 @@
 <?php
-include_once( $woo_ce['abspath'] . '/includes/functions-products.php' );
-include_once( $woo_ce['abspath'] . '/includes/functions-categories.php' );
-include_once( $woo_ce['abspath'] . '/includes/functions-tags.php' );
-include_once( $woo_ce['abspath'] . '/includes/functions-orders.php' );
-include_once( $woo_ce['abspath'] . '/includes/functions-coupons.php' );
-include_once( $woo_ce['abspath'] . '/includes/functions-customers.php' );
+include_once( WOO_CE_PATH . 'includes/functions-products.php' );
+include_once( WOO_CE_PATH . 'includes/functions-categories.php' );
+include_once( WOO_CE_PATH . 'includes/functions-tags.php' );
+include_once( WOO_CE_PATH . 'includes/functions-orders.php' );
+include_once( WOO_CE_PATH . 'includes/functions-coupons.php' );
+include_once( WOO_CE_PATH . 'includes/functions-customers.php' );
 
 if( is_admin() ) {
 
@@ -327,6 +327,7 @@ if( is_admin() ) {
 						'numberposts' => -1,
 						'post_status' => woo_ce_post_statuses(),
 						'cache_results' => false,
+						'no_found_rows' => false,
 						'tax_query' => array(
 							array(
 								'taxonomy' => 'shop_order_status',
@@ -741,17 +742,9 @@ if( is_admin() ) {
 			$memory_limit = (int)( ini_get( 'memory_limit' ) );
 			$minimum_memory_limit = 64;
 			if( $memory_limit < $minimum_memory_limit ) {
-				ob_start();
 				$memory_url = add_query_arg( 'action', 'dismiss_memory_prompt' );
-				$message = sprintf( __( 'We recommend setting memory to at least %dMB, your site has %dMB currently allocated. See: <a href="%s" target="_blank">Increasing memory allocated to PHP</a>', 'woo_ce' ), $minimum_memory_limit, $memory_limit, 'http://codex.wordpress.org/Editing_wp-config.php#Increasing_memory_allocated_to_PHP' ); ?>
-<div class="error settings-error">
-	<p>
-		<strong><?php echo $message; ?></strong>
-		<span style="float:right;"><a href="<?php echo $memory_url; ?>"><?php _e( 'Dismiss', 'woo_ce' ); ?></a></span>
-	</p>
-</div>
-<?php
-				ob_end_flush();
+				$message = '<strong>' . sprintf( __( 'We recommend setting memory to at least %dMB, your site has only %dMB allocated to it. See: <a href="%s" target="_blank">Increasing memory allocated to PHP</a>', 'woo_ce' ), $minimum_memory_limit, $memory_limit, 'http://codex.wordpress.org/Editing_wp-config.php#Increasing_memory_allocated_to_PHP' ) . '</strong><span style="float:right;"><a href="' . $memory_url . '">' . __( 'Dismiss', 'woo_ce' ) . '</a></span>';
+				woo_ce_admin_notice( $message, 'error' );
 			}
 		}
 
@@ -760,20 +753,14 @@ if( is_admin() ) {
 	// Displays a HTML notice when a WordPress or Store Exporter error is encountered
 	function woo_ce_fail_notices() {
 
-		$message = false;
-		if( isset( $_GET['failed'] ) )
+		woo_ce_memory_prompt();
+		if( isset( $_GET['failed'] ) ) {
 			$message = __( 'A WordPress error caused the exporter to fail, please get in touch.', 'woo_ce' );
-		if( isset( $_GET['empty'] ) )
+			woo_ce_admin_notice( $message, 'error' );
+		}
+		if( isset( $_GET['empty'] ) ) {
 			$message = __( 'No export entries were found, please try again with different export filters.', 'woo_ce' );
-		if( $message ) {
-			ob_start(); ?>
-<div class="updated settings-error">
-	<p>
-		<strong><?php echo $message; ?></strong>
-	</p>
-</div>
-<?php
-			ob_end_flush();
+			woo_ce_admin_notice( $message );
 		}
 	}
 
@@ -785,7 +772,9 @@ if( is_admin() ) {
 			'post_mime_type' => 'text/csv',
 			'meta_key' => '_woo_export_type',
 			'meta_value' => null,
-			'posts_per_page' => -1
+			'posts_per_page' => -1,
+			'cache_results' => false,
+			'no_found_rows' => false
 		);
 		if( isset( $_GET['filter'] ) ) {
 			$filter = $_GET['filter'];
@@ -843,11 +832,14 @@ if( is_admin() ) {
 	function woo_ce_archives_quicklink_count( $type = '' ) {
 
 		$output = '0';
+		$post_type = 'attachment';
 		$args = array(
-			'post_type' => 'attachment',
+			'post_type' => $post_type,
 			'meta_key' => '_woo_export_type',
 			'meta_value' => null,
-			'numberposts' => -1
+			'numberposts' => -1,
+			'cache_results' => false,
+			'no_found_rows' => false
 		);
 		if( $type )
 			$args['meta_value'] = $type;

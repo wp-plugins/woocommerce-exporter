@@ -3,7 +3,7 @@
 Plugin Name: WooCommerce - Store Exporter
 Plugin URI: http://www.visser.com.au/woocommerce/plugins/exporter/
 Description: Export store details out of WooCommerce into a CSV-formatted file.
-Version: 1.4.4
+Version: 1.4.5
 Author: Visser Labs
 Author URI: http://www.visser.com.au/about/
 License: GPL2
@@ -15,14 +15,16 @@ $woo_ce = array(
 	'abspath' => dirname( __FILE__ ),
 	'relpath' => basename( dirname( __FILE__ ) ) . '/' . basename( __FILE__ )
 );
+define( 'WOO_CE_PATH', plugin_dir_path( __FILE__ ) );
 
 $woo_ce['prefix'] = 'woo_ce';
 $woo_ce['menu'] = __( 'Store Export', 'woo_ce' );
 $woo_ce['debug'] = false;
 
-include_once( $woo_ce['abspath'] . '/includes/functions.php' );
-include_once( $woo_ce['abspath'] . '/includes/functions-alternatives.php' );
-include_once( $woo_ce['abspath'] . '/includes/common.php' );
+
+include_once( WOO_CE_PATH . 'includes/functions.php' );
+include_once( WOO_CE_PATH . 'includes/functions-alternatives.php' );
+include_once( WOO_CE_PATH . 'includes/common.php' );
 
 function woo_ce_i18n() {
 
@@ -91,6 +93,7 @@ if( is_admin() ) {
 				woo_ce_update_option( 'dismiss_memory_prompt', 1 );
 				$url = add_query_arg( 'action', null );
 				wp_redirect( $url );
+				exit();
 				break;
 
 			case 'export':
@@ -374,6 +377,18 @@ if( is_admin() ) {
 				break;
 
 			case 'update':
+				// Save Custom Product Meta
+				if( isset( $_POST['custom_products'] ) ) {
+					$custom_products = $_POST['custom_products'];
+					$custom_products = explode( "\n", trim( $custom_products ) );
+					$size = count( $custom_products );
+					if( $size ) {
+						for( $i = 0; $i < $size; $i++ )
+							$custom_products[$i] = trim( $custom_products[$i] );
+						woo_ce_update_option( 'custom_products', $custom_products );
+					}
+				}
+				// Save Custom Order Meta
 				if( isset( $_POST['custom_orders'] ) ) {
 					$custom_orders = $_POST['custom_orders'];
 					$custom_orders = explode( "\n", trim( $custom_orders ) );
@@ -384,6 +399,7 @@ if( is_admin() ) {
 						woo_ce_update_option( 'custom_orders', $custom_orders );
 					}
 				}
+				// Save Custom Order Item Meta
 				if( isset( $_POST['custom_order_items'] ) ) {
 					$custom_order_items = $_POST['custom_order_items'];
 					if( !empty( $custom_order_items ) ) {
@@ -398,11 +414,8 @@ if( is_admin() ) {
 						woo_ce_update_option( 'custom_order_items', '' );
 					}
 				}
-
-				$message = __( 'Custom Fields saved.', 'woo_ce' );
-				$output = '<div class="updated settings-error"><p><strong>' . $message . '</strong></p></div>';
-				echo $output;
-
+				$message = '<strong>' . __( 'Custom Fields saved.', 'woo_ce' ) . '</strong>';
+				woo_ce_admin_notice( $message );
 				woo_ce_manage_form();
 				break;
 
@@ -424,9 +437,8 @@ if( is_admin() ) {
 		if( isset( $_GET['tab'] ) )
 			$tab = $_GET['tab'];
 		$url = add_query_arg( 'page', 'woo_ce' );
-		woo_ce_memory_prompt();
 		woo_ce_fail_notices();
-		include_once( 'templates/admin/woo-admin_ce-export.php' );
+		include_once( WOO_CE_PATH . 'templates/admin/woo-admin_ce-export.php' );
 
 	}
 
