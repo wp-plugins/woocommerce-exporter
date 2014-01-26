@@ -1,19 +1,5 @@
-function showProgress() {
-	window.scrollTo(0,0);
-	document.getElementById('progress').style.display = 'block';
-	document.getElementById('content').style.display = 'none';
-	document.getElementById('support-donate_rate').style.display = 'none';
-}
-
 var $j = jQuery.noConflict();
 $j(function() {
-
-	$j('#postform').submit(function() {
-		if( $j('#delete_temporary_csv').val() == 1 ) {
-			showProgress();
-			return false;
-		}
-	});
 
 	// Date Picker
 	$j('.datepicker').datepicker({

@@ -545,13 +545,14 @@
 
 					<tr>
 						<th>
-							<label for="delete_temporary_csv"><?php _e( 'Delete temporary CSV after export', 'woo_ce' ); ?></label>
+							<label for="delete_temporary_csv"><?php _e( 'Enable Archives', 'woo_ce' ); ?></label>
 						</th>
 						<td>
 							<select id="delete_temporary_csv" name="delete_temporary_csv">
-								<option value="1"<?php selected( $delete_csv, 1 ); ?>><?php _e( 'Yes', 'woo_ce' ); ?></option>
-								<option value="0"<?php selected( $delete_csv, 0 ); ?>><?php _e( 'No', 'woo_ce' ); ?></option>
+								<option value="0"<?php selected( $delete_csv, 0 ); ?>><?php _e( 'Yes', 'woo_ce' ); ?></option>
+								<option value="1"<?php selected( $delete_csv, 1 ); ?>><?php _e( 'No', 'woo_ce' ); ?></option>
 							</select>
+							<p class="description"><?php _e( 'Save copies of CSV exports to the WordPress Media for downloading later. By default this option is turned on.', 'woo_ce' ); ?></p>
 						</td>
 					</tr>
 

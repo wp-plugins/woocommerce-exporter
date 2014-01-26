@@ -60,7 +60,7 @@ if( !function_exists( 'woo_vm_dashboard_setup' ) ) {
 
 		$plugin_slug = $woo_ce['dirname'];
 
-		if( current_user_can( 'manage_options' ) ) {
+		if( current_user_can( 'update_plugins' ) ) {
 			wp_add_dashboard_widget( 'woo_vm_status_widget', __( 'WooCommerce Plugins - by Visser Labs', 'woo_vm' ), 'woo_vm_status_widget' );
 			if( file_exists( STYLESHEETPATH . '/woo-admin_dashboard_vm-plugins.css' ) )
 				wp_enqueue_style( 'woo_vm_styles', get_bloginfo( 'stylesheet_directory' ) . '/woo-admin_dashboard_vm-plugins.css', false );

@@ -85,7 +85,7 @@ if( is_admin() ) {
 	// Add Store Export to WordPress Administration menu
 	function woo_ce_admin_menu() {
 
-		add_submenu_page( 'woocommerce', __( 'Store Exporter', 'woo_ce' ), __( 'Store Export', 'woo_ce' ), 'manage_woocommerce', 'woo_ce', 'woo_ce_html_page' );
+		add_submenu_page( 'woocommerce', __( 'Store Exporter', 'woo_ce' ), __( 'Store Export', 'woo_ce' ), 'export', 'woo_ce', 'woo_ce_html_page' );
 
 	}
 	add_action( 'admin_menu', 'woo_ce_admin_menu' );
@@ -178,13 +178,6 @@ if( is_admin() ) {
 				$output = $filename;
 		}
 		return $output;
-
-	}
-
-	function woo_ce_unload_export_global() {
-
-		global $export;
-		unset( $export );
 
 	}
 
@@ -658,6 +651,10 @@ if( is_admin() ) {
 				break;
 
 			case 'archive':
+				if( isset( $_GET['deleted'] ) ) {
+					$message = __( 'Archived export has been deleted.', 'woo_ce' );
+					woo_ce_admin_notice( $message );
+				}
 				$files = woo_ce_get_archive_files();
 				if( $files ) {
 					foreach( $files as $key => $file )
@@ -677,12 +674,12 @@ if( is_admin() ) {
 		$output = 0;
 		if( !empty( $filename ) ) {
 			$post_type = 'woo-export';
-			$object = array(
+			$args = array(
 				'post_title' => $filename,
 				'post_type' => $post_type,
 				'post_mime_type' => 'text/csv'
 			);
-			$post_ID = wp_insert_attachment( $object, $filename );
+			$post_ID = wp_insert_attachment( $args, $filename );
 			if( $post_ID )
 				$output = $post_ID;
 		}
@@ -695,11 +692,11 @@ if( is_admin() ) {
 
 		add_post_meta( $post_ID, '_woo_export_type', $export_type );
 		if( !empty( $upload_url ) ) {
-			$object = array(
+			$args = array(
 				'ID' => $post_ID,
 				'guid' => $upload_url
 			);
-			wp_update_post( $object );
+			wp_update_post( $args );
 		}
 
 	}
@@ -743,7 +740,8 @@ if( is_admin() ) {
 			$minimum_memory_limit = 64;
 			if( $memory_limit < $minimum_memory_limit ) {
 				$memory_url = add_query_arg( 'action', 'dismiss_memory_prompt' );
-				$message = '<strong>' . sprintf( __( 'We recommend setting memory to at least %dMB, your site has only %dMB allocated to it. See: <a href="%s" target="_blank">Increasing memory allocated to PHP</a>', 'woo_ce' ), $minimum_memory_limit, $memory_limit, 'http://codex.wordpress.org/Editing_wp-config.php#Increasing_memory_allocated_to_PHP' ) . '</strong><span style="float:right;"><a href="' . $memory_url . '">' . __( 'Dismiss', 'woo_ce' ) . '</a></span>';
+				$troubleshooting_url = 'http://www.visser.com.au/documentation/store-exporter-deluxe/usage/';
+				$message = sprintf( __( 'We recommend setting memory to at least %dMB, your site has only %dMB allocated to it. See: <a href="%s" target="_blank">Increasing memory allocated to PHP</a>', 'woo_ce' ), $minimum_memory_limit, $memory_limit, $troubleshooting_url ) . '<span style="float:right;"><a href="' . $memory_url . '">' . __( 'Dismiss', 'woo_ce' ) . '</a></span>';
 				woo_ce_admin_notice( $message, 'error' );
 			}
 		}
@@ -755,12 +753,19 @@ if( is_admin() ) {
 
 		woo_ce_memory_prompt();
 		if( isset( $_GET['failed'] ) ) {
-			$message = __( 'A WordPress error caused the exporter to fail, please get in touch.', 'woo_ce' );
+			$message = '';
+			if( isset( $_GET['message'] ) )
+				$message = urldecode( $_GET['message'] );
+			$troubleshooting_url = 'http://www.visser.com.au/documentation/store-exporter-deluxe/usage/';
+			if( $message )
+				$message = __( 'A WordPress or server error caused the exporter to fail, the exporter was provided with a reason: ', 'woo_ce' ) . '<em>' . $message . '</em>' . ' (<a href="' . $troubleshooting_url . '" target="_blank">' . __( 'Need help?', 'woo_ce' ) . '</a>)';
+			else
+				$message = __( 'A WordPress or server error caused the exporter to fail, no reason was provided, please get in touch so we can reproduce and resolve this.', 'woo_ce' ) . ' (<a href="' . $troubleshooting_url . '" target="_blank">' . __( 'Need help?', 'woo_ce' ) . '</a>)';
 			woo_ce_admin_notice( $message, 'error' );
 		}
 		if( isset( $_GET['empty'] ) ) {
 			$message = __( 'No export entries were found, please try again with different export filters.', 'woo_ce' );
-			woo_ce_admin_notice( $message );
+			woo_ce_admin_notice( $message, 'error' );
 		}
 	}
 

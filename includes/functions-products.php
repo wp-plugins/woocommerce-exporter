@@ -564,17 +564,7 @@ function woo_ce_get_product_fields( $format = 'full' ) {
 		'label' => __( 'Comment Status', 'woo_ce' ),
 		'default' => 1
 	);
-	if( $attributes = woo_ce_get_product_attributes() ) {
-		foreach( $attributes as $attribute ) {
-			if( empty( $attribute->attribute_label ) )
-				$attribute->attribute_label = $attribute->attribute_name;
-			$fields[] = array(
-				'name' => sprintf( 'attribute_%s', $attribute->attribute_name ),
-				'label' => sprintf( __( 'Attribute: %s', 'woo_ce' ), ucwords( $attribute->attribute_label ) ),
-				'default' => 1
-			);
-		}
-	}
+
 /*
 	$fields[] = array(
 		'name' => '',
@@ -613,6 +603,24 @@ function woo_ce_get_product_fields( $format = 'full' ) {
 	}
 
 }
+
+function woo_ce_extend_product_fields( $fields ) {
+
+	if( $attributes = woo_ce_get_product_attributes() ) {
+		foreach( $attributes as $attribute ) {
+			if( empty( $attribute->attribute_label ) )
+				$attribute->attribute_label = $attribute->attribute_name;
+			$fields[] = array(
+				'name' => sprintf( 'attribute_%s', $attribute->attribute_name ),
+				'label' => sprintf( __( 'Attribute: %s', 'woo_ce' ), ucwords( $attribute->attribute_label ) ),
+				'default' => 1
+			);
+		}
+	}
+	return $fields;
+
+}
+add_filter( 'woo_ce_product_fields', 'woo_ce_extend_product_fields' );
 
 // Returns the export column header label based on an export column slug
 function woo_ce_get_product_field( $name = null, $format = 'name' ) {

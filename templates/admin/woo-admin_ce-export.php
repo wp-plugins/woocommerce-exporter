@@ -1,12 +1,3 @@
-<script type="text/javascript">
-	function showProgress() {
-		window.scrollTo(0,0);
-		document.getElementById('progress').style.display = 'block';
-		document.getElementById('content').style.display = 'none';
-		document.getElementById('support-donate_rate').style.display = 'none';
-	}
-</script>
-
 <div id="content">
 
 	<h2 class="nav-tab-wrapper">
@@ -19,10 +10,3 @@
 
 </div>
 <!-- #content -->
-
-<div id="progress" style="display:none;">
-	<p><?php _e( 'Chosen WooCommerce details are being exported, this process can take awhile. Time for a beer?', 'woo_ce' ); ?></p>
-	<img src="<?php echo plugins_url( '/templates/admin/images/progress.gif', $woo_ce['relpath'] ); ?>" alt="" />
-	<p><?php _e( 'When the download is complete, return to <a href="' . $url . '">WooCommerce Exporter</a>.', 'woo_ce' ); ?>
-</div>
-<!-- #progress -->

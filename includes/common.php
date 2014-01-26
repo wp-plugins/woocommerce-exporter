@@ -1,14 +1,14 @@
 <?php
-/*
-
-Filename: common.php
-Description: common.php loads commonly accessed functions across the Visser Labs suite.
-
-- woo_get_action
-- woo_is_wpsc_activated
-- woo_is_woo_activated
-- woo_is_jigo_activated
-
+/**
+*
+* Filename: common.php
+* Description: common.php loads commonly accessed functions across the Visser Labs suite.
+*
+* - woo_get_action
+* - woo_is_wpsc_activated
+* - woo_is_woo_activated
+* - woo_is_jigo_activated
+*
 */
 
 if( is_admin() ) {

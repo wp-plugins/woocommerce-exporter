@@ -3,7 +3,7 @@
 Plugin Name: WooCommerce - Store Exporter
 Plugin URI: http://www.visser.com.au/woocommerce/plugins/exporter/
 Description: Export store details out of WooCommerce into a CSV-formatted file.
-Version: 1.4.5
+Version: 1.4.6
 Author: Visser Labs
 Author URI: http://www.visser.com.au/about/
 License: GPL2
@@ -20,7 +20,6 @@ define( 'WOO_CE_PATH', plugin_dir_path( __FILE__ ) );
 $woo_ce['prefix'] = 'woo_ce';
 $woo_ce['menu'] = __( 'Store Export', 'woo_ce' );
 $woo_ce['debug'] = false;
-
 
 include_once( WOO_CE_PATH . 'includes/functions.php' );
 include_once( WOO_CE_PATH . 'includes/functions-alternatives.php' );
@@ -305,6 +304,11 @@ if( is_admin() ) {
 							if( $export->filename && $bits ) {
 								$post_ID = woo_ce_save_csv_file_attachment( $export->filename );
 								$upload = wp_upload_bits( $export->filename, null, $bits );
+								if( $upload['error'] ) {
+									wp_delete_attachment( $post_ID );
+									wp_redirect( add_query_arg( array( 'failed' => true, 'message' => urlencode( $upload['error'] ) ) ) );
+									return;
+								}
 								$attach_data = wp_generate_attachment_metadata( $post_ID, $upload['file'] );
 								wp_update_attachment_metadata( $post_ID, $attach_data );
 								if( $post_ID ) {
@@ -312,7 +316,7 @@ if( is_admin() ) {
 									woo_ce_save_csv_file_details( $post_ID );
 								}
 								$export_type = $export->type;
-								woo_ce_unload_export_global();
+								unset( $export );
 
 								// The end memory usage and time is collected at the very last opportunity prior to the CSV header being rendered to the screen
 								woo_ce_update_csv_file_detail( $post_ID, '_woo_idle_memory_end', woo_ce_current_memory_usage() );
@@ -323,7 +327,11 @@ if( is_admin() ) {
 								unset( $export_type );
 
 								// Print file contents to screen
-								readfile( $upload['file'] );
+								if( $upload['file'] ) {
+									readfile( $upload['file'] );
+								} else {
+									wp_redirect( add_query_arg( 'failed', true ) );
+								}
 								unset( $upload );
 							} else {
 								wp_redirect( add_query_arg( 'failed', true ) );
@@ -362,7 +370,8 @@ if( is_admin() ) {
 
 			case 'export':
 				$message = __( 'Chosen WooCommerce details have been exported from your store.', 'woo_ce' );
-				$output = '<div class="updated settings-error"><p><strong>' . $message . '</strong></p></div>';
+				woo_ce_admin_notice( $message );
+				$output = '';
 				if( isset( $woo_ce['debug'] ) && $woo_ce['debug'] ) {
 					if( !isset( $woo_ce['debug_log'] ) )
 						$woo_ce['debug_log'] = __( 'No export entries were found, please try again with different export filters.', 'woo_ce' );
@@ -414,7 +423,7 @@ if( is_admin() ) {
 						woo_ce_update_option( 'custom_order_items', '' );
 					}
 				}
-				$message = '<strong>' . __( 'Custom Fields saved.', 'woo_ce' ) . '</strong>';
+				$message = __( 'Custom Fields saved.', 'woo_ce' );
 				woo_ce_admin_notice( $message );
 				woo_ce_manage_form();
 				break;

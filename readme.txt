@@ -4,8 +4,8 @@ Contributors: visser
 Donate link: http://www.visser.com.au/#donations
 Tags: e-commerce, woocommerce, shop, cart, ecommerce, export, csv, customers, products, sales, coupons
 Requires at least: 2.9.2
-Tested up to: 3.8
-Stable tag: 1.4.5
+Tested up to: 3.8.1
+Stable tag: 1.4.6
 
 == Description ==
 
@@ -69,6 +69,20 @@ http://www.visser.com.au/woocommerce/forums/
 7. Download achived copies of previous exports
 
 == Changelog ==
+
+= 1.4.6 =
+* Fixed: Blank screen on export in some instances
+* Changed: Removed legacy progress bar
+* Changed: Removed legacy Javascript in export screen
+* Added: Admin notice confirming deleted archive file
+* Changed: Removed bold headings from admin notices
+* Added: Error notice to explain blank CSV
+* Changed: Renamed "Delete temporary CSV after download" to "Enable Archives"
+* Changed: Removed woo_ce_unload_export_global()
+* Fixed: Delete WordPress Media on failed export
+* Added: Link to Usage document when an error is encountered "Need help?"
+* Changed: Using 'export' capability check for Store Export menu
+* Changed: Using 'update_plugins' capability check for Jigoshop Plugins Dashboard widget (thanks Marcus!)
 
 = 1.4.5 =
 * Added: Custom Product fields
