@@ -861,6 +861,16 @@ if( is_admin() ) {
 
 /* Start of: Common */
 
+function woo_ce_add_missing_mime_type( $mime_types = array(), $user ) {
+
+	// Add CSV mime type if it has been removed
+	if( !isset( $mime_types['csv'] ) )
+		$mime_types['csv'] = 'text/csv';
+	return $mime_types;
+
+}
+add_filter( 'upload_mimes', 'woo_ce_add_missing_mime_type', 10, 2 );
+
 function woo_ce_get_option( $option = null, $default = false ) {
 
 	global $woo_ce;

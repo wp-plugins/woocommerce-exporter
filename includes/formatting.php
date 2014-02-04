@@ -67,10 +67,12 @@ function woo_ce_display_time_elapsed( $from, $to ) {
 // This function escapes all cells in 'Excel' CSV escape formatting of a CSV file, also converts HTML entities to plain-text
 function woo_ce_escape_csv_value( $value = '', $delimiter = ',', $format = 'all' ) {
 
+	global $woo_ce;
+
 	$output = $value;
 	if( !empty( $output ) ) {
 		$output = str_replace( '"', '""', $output );
-		// $output = str_replace( PHP_EOL, ' ', $output );
+		$output = str_replace( PHP_EOL, ' ', $output );
 		$output = wp_specialchars_decode( $output );
 		$output = str_replace( PHP_EOL, "\r\n", $output );
 		switch( $format ) {

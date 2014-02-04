@@ -5,7 +5,7 @@ Donate link: http://www.visser.com.au/#donations
 Tags: e-commerce, woocommerce, shop, cart, ecommerce, export, csv, customers, products, sales, coupons
 Requires at least: 2.9.2
 Tested up to: 3.8.1
-Stable tag: 1.4.6
+Stable tag: 1.4.7
 
 == Description ==
 
@@ -26,6 +26,7 @@ Features include:
 * Export Customers (**)
 * Export Coupons (**)
 * Toggle and save export fields
+* Works with WordPress Multisite
 
 (*) Compatible with Product Importer Deluxe, All in One SEO Pack, Advanced Google Product Feed, Product Addons, Sequential Order Number Pro, WooCommerce Checkout Manager, Cost of Goods, Per-Product Shipping and more.
 (**) Requries the Pro upgrade to enable additional store export functionality.
@@ -69,6 +70,10 @@ http://www.visser.com.au/woocommerce/forums/
 7. Download achived copies of previous exports
 
 == Changelog ==
+
+= 1.4.7 =
+* Fixed: Multi-site support resolved
+* Changed: Permanently delete failed exports
 
 = 1.4.6 =
 * Fixed: Blank screen on export in some instances
