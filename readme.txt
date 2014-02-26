@@ -5,7 +5,7 @@ Donate link: http://www.visser.com.au/#donations
 Tags: e-commerce, woocommerce, shop, cart, ecommerce, export, csv, customers, products, sales, coupons
 Requires at least: 2.9.2
 Tested up to: 3.8.1
-Stable tag: 1.4.7
+Stable tag: 1.4.8
 
 == Description ==
 
@@ -70,6 +70,18 @@ http://www.visser.com.au/woocommerce/forums/
 7. Download achived copies of previous exports
 
 == Changelog ==
+
+= 1.4.8 =
+* Changed: Dropped $wpsc_ce global
+* Added: Using Plugin constants
+* Changed: Moved debug log to WordPress transient
+* Added: Disabled Custom Product Fields dialog
+* Changed: Removed duplicate Sale Price from Product export
+* Fixed: Empty Parent SKU and Product SKU for Product Variations
+* Fixed: Fill default Stock Status for Products
+* Fixed: Set Product Type to Simple Product by default
+* Added: Error notice after blank screen on export
+* Fixed: Product Categories empty for Variations in Product export
 
 = 1.4.7 =
 * Fixed: Multi-site support resolved

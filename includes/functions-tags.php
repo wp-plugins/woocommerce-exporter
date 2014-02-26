@@ -2,10 +2,13 @@
 // Returns a list of WooCommerce Product Tags to export process
 function woo_ce_get_product_tags( $args = array() ) {
 
-	$output = '';
+	$orderby = 'name';
+	$order = 'ASC';
 	if( $args ) {
-		$orderby = $args['tag_orderby'];
-		$order = $args['tag_order'];
+		if( isset( $args['tag_orderby'] ) )
+			$orderby = $args['tag_orderby'];
+		if( isset( $args['tag_order'] ) )
+			$order = $args['tag_order'];
 	}
 	$term_taxonomy = 'product_tag';
 	$args = array(
@@ -13,10 +16,15 @@ function woo_ce_get_product_tags( $args = array() ) {
 		'order' => $order,
 		'hide_empty' => 0
 	);
-	$tags = get_terms( $term_taxonomy, $args );
-	if( $tags )
-		$output = $tags;
-	return $output;
+	if( $tags = get_terms( $term_taxonomy, $args ) ) {
+		$size = count( $tags );
+		for( $i = 0; $i < $size; $i++ ) {
+			$tags[$i]->disabled = 0;
+			if( $tags[$i]->count == 0 )
+				$tags[$i]->disabled = 1;
+		}
+		return $tags;
+	}
 
 }
 
@@ -51,11 +59,11 @@ function woo_ce_get_tag_fields( $format = 'full' ) {
 	// Allow Plugin/Theme authors to add support for additional Product Tag columns
 	$fields = apply_filters( 'woo_ce_tag_fields', $fields );
 
-	$remember = woo_ce_get_option( 'tags_fields' );
-	if( $remember ) {
+	if( $remember = woo_ce_get_option( 'tags_fields', array() ) ) {
 		$remember = maybe_unserialize( $remember );
 		$size = count( $fields );
 		for( $i = 0; $i < $size; $i++ ) {
+			$fields[$i]['disabled'] = 0;
 			if( !array_key_exists( $fields[$i]['name'], $remember ) )
 				$fields[$i]['default'] = 0;
 		}
@@ -74,6 +82,7 @@ function woo_ce_get_tag_fields( $format = 'full' ) {
 		case 'full':
 		default:
 			return $fields;
+			break;
 
 	}
 

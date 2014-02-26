@@ -93,12 +93,10 @@ if( is_admin() ) {
 	// HTML template header on Store Exporter screen
 	function woo_ce_template_header( $title = '', $icon = 'woocommerce' ) {
 
-		global $woo_ce;
-
 		if( $title )
 			$output = $title;
 		else
-			$output = $woo_ce['menu']; ?>
+			$output = __( 'Store Export', 'woo_ce' ); ?>
 <div class="wrap">
 	<div id="icon-<?php echo $icon; ?>" class="icon32 icon32-woocommerce-importer"><br /></div>
 	<h2>
@@ -117,19 +115,17 @@ if( is_admin() ) {
 	// HTML template for header prompt on Store Exporter screen
 	function woo_ce_support_donate() {
 
-		global $woo_ce;
-
 		$output = '';
 		$show = true;
 		if( function_exists( 'woo_vl_we_love_your_plugins' ) ) {
-			if( in_array( $woo_ce['dirname'], woo_vl_we_love_your_plugins() ) )
+			if( in_array( WOO_CE_DIRNAME, woo_vl_we_love_your_plugins() ) )
 				$show = false;
 		}
 		if( function_exists( 'woo_cd_admin_init' ) )
 			$show = false;
 		if( $show ) {
 			$donate_url = 'http://www.visser.com.au/#donations';
-			$rate_url = 'http://wordpress.org/support/view/plugin-reviews/' . $woo_ce['dirname'];
+			$rate_url = 'http://wordpress.org/support/view/plugin-reviews/' . WOO_CE_DIRNAME;
 			$output = '
 	<div id="support-donate_rate" class="support-donate_rate">
 		<p>' . sprintf( __( '<strong>Like this Plugin?</strong> %s and %s.', 'woo_ce' ), '<a href="' . $donate_url . '" target="_blank">' . __( 'Donate to support this Plugin', 'woo_ce' ) . '</a>', '<a href="' . add_query_arg( array( 'rate' => '5' ), $rate_url ) . '#postform" target="_blank">rate / review us on WordPress.org</a>' ) . '</p>
@@ -155,8 +151,7 @@ if( is_admin() ) {
 
 		global $export;
 
-		$filename = woo_ce_generate_csv_filename( $dataset );
-		if( $filename ) {
+		if( $filename = woo_ce_generate_csv_filename( $dataset ) ) {
 			header( sprintf( 'Content-Encoding: %s', $export->encoding ) );
 			header( sprintf( 'Content-Type: text/csv; charset=%s', $export->encoding ) );
 			header( 'Content-Transfer-Encoding: binary' );
@@ -193,8 +188,6 @@ if( is_admin() ) {
 	// In-line display of CSV file and export details when viewed via WordPress Media screen
 	function woo_ce_read_csv_file( $post = null ) {
 
-		global $woo_ce;
-
 		if( !$post ) {
 			if( isset( $_GET['post'] ) )
 				$post = get_post( $_GET['post'] );
@@ -215,7 +208,7 @@ if( is_admin() ) {
 			fclose( $handle );
 		}
 		if( $contents )
-			include_once( $woo_ce['abspath'] . '/templates/admin/woo-admin_ce-media_csv_file.php' );
+			include_once( WOO_CE_PATH . 'templates/admin/woo-admin_ce-media_csv_file.php' );
 
 		$dataset = get_post_meta( $post->ID, '_woo_export_type', true );
 		$columns = get_post_meta( $post->ID, '_woo_columns', true );
@@ -226,7 +219,7 @@ if( is_admin() ) {
 		$data_memory_start = get_post_meta( $post->ID, '_woo_data_memory_start', true );
 		$data_memory_end = get_post_meta( $post->ID, '_woo_data_memory_end', true );
 		$idle_memory_end = get_post_meta( $post->ID, '_woo_idle_memory_end', true );
-		include_once( $woo_ce['abspath'] . '/templates/admin/woo-admin_ce-media_export_details.php' );
+		include_once( WOO_CE_PATH . 'templates/admin/woo-admin_ce-media_export_details.php' );
 
 	}
 	add_action( 'edit_form_after_editor', 'woo_ce_read_csv_file' );
@@ -283,7 +276,12 @@ if( is_admin() ) {
 
 			case 'products':
 				$post_type = 'product';
-				$count = wp_count_posts( $post_type );
+				$args = array(
+					'post_type' => $post_type,
+					'posts_per_page' => 1
+				);
+				$query = new WP_Query( $args );
+				$count = $query->found_posts;
 				break;
 
 			case 'categories':
@@ -298,40 +296,53 @@ if( is_admin() ) {
 
 			case 'orders':
 				$post_type = 'shop_order';
-				$count = wp_count_posts( $post_type );
-				$exclude_post_types = array( 'auto-draft' );
-				if( woo_ce_count_object( $count, $exclude_post_types ) > 100 ) {
-					$count = sprintf( '~%s *', woo_ce_count_object( $count, $exclude_post_types ) );
-				} else {
-					$count = woo_ce_count_object( $count, $exclude_post_types );
-				}
+				$args = array(
+					'post_type' => $post_type,
+					'posts_per_page' => 1
+				);
+				$query = new WP_Query( $args );
+				$count = $query->found_posts;
 				break;
 
 			case 'customers':
 				$post_type = 'shop_order';
-				$count = wp_count_posts( $post_type );
-				$exclude_post_types = array( 'auto-draft' );
-				if( woo_ce_count_object( $count, $exclude_post_types ) > 100 ) {
-					$count = sprintf( '~%s *', woo_ce_count_object( $count, $exclude_post_types ) );
+				$args = array(
+					'post_type' => $post_type,
+					'posts_per_page' => -1,
+					'post_status' => woo_ce_post_statuses(),
+					'tax_query' => array(
+						array(
+							'taxonomy' => 'shop_order_status',
+							'field' => 'slug',
+							'terms' => array( 'pending', 'on-hold', 'processing', 'completed' )
+						),
+					),
+					'fields' => 'ids'
+				);
+				$query = new WP_Query( $args );
+				$count = $query->found_posts;
+				if( $count > 100 ) {
+					$count = sprintf( '~%s *', $count );
 				} else {
-					$count = 0;
-					$args = array(
-						'post_type' => $post_type,
-						'numberposts' => -1,
-						'post_status' => woo_ce_post_statuses(),
-						'cache_results' => false,
-						'no_found_rows' => false,
-						'tax_query' => array(
-							array(
-								'taxonomy' => 'shop_order_status',
-								'field' => 'slug',
-								'terms' => array( 'pending', 'on-hold', 'processing', 'completed' )
-							)
-						)
-					);
+					$customers = array();
+					if ( $query->have_posts() ) {
+						while ( $query->have_posts() ) {
+							$query->the_post();
+							$email = get_post_meta( get_the_ID(), '_billing_email', true );
+							if( !in_array( $email, $customers ) ) {
+								$customers[get_the_ID()] = $email;
+							}
+							unset( $email );
+						}
+						$count = count( $customers );
+					}
+					wp_reset_postdata();
+				}
+/*
+				if( false ) {
 					$orders = get_posts( $args );
 					if( $orders ) {
-						$customers = array();
+						$customers = array()	;
 						foreach( $orders as $order ) {
 							$order->email = get_post_meta( $order->ID, '_billing_email', true );
 							if( empty( $order->email ) ) {
@@ -352,6 +363,7 @@ if( is_admin() ) {
 						unset( $orders, $order );
 					}
 				}
+*/
 				break;
 
 			case 'coupons':
@@ -380,149 +392,147 @@ if( is_admin() ) {
 	// Export process for CSV file
 	function woo_ce_export_dataset( $dataset, $args = array() ) {
 
-		global $wpdb, $woo_ce, $export;
+		global $wpdb, $export;
 
 		$csv = '';
 		if( $export->bom )
-			$csv .= chr(239) . chr(187) . chr(191) . '';
+			// $csv .= chr(239) . chr(187) . chr(191) . '';
+			$csv .= "\xEF\xBB\xBF";
 		$separator = $export->delimiter;
 		$export->args = $args;
-		foreach( $dataset as $datatype ) {
+		set_transient( WOO_CE_PREFIX . '_running', time(), woo_ce_get_option( 'timeout', MINUTE_IN_SECONDS ) );
 
-			$csv = '';
-			switch( $datatype ) {
+		$csv = '';
+		switch( $dataset ) {
 
-				// Products
-				case 'products':
-					$fields = woo_ce_get_product_fields( 'summary' );
-					if( $export->fields = array_intersect_assoc( $fields, $export->fields ) ) {
-						foreach( $export->fields as $key => $field )
-							$export->columns[] = woo_ce_get_product_field( $key );
+			// Products
+			case 'products':
+				$fields = woo_ce_get_product_fields( 'summary' );
+				if( $export->fields = array_intersect_assoc( $fields, $export->fields ) ) {
+					foreach( $export->fields as $key => $field )
+						$export->columns[] = woo_ce_get_product_field( $key );
+				}
+				$export->data_memory_start = woo_ce_current_memory_usage();
+				if( $products = woo_ce_get_products( $export->args ) ) {
+					$export->total_rows = count( $products );
+					$size = count( $export->columns );
+					$export->total_columns = $size;
+					for( $i = 0; $i < $size; $i++ ) {
+						if( $i == ( $size - 1 ) )
+							$csv .= woo_ce_escape_csv_value( $export->columns[$i], $export->delimiter, $export->escape_formatting ) . "\n";
+						else
+							$csv .= woo_ce_escape_csv_value( $export->columns[$i], $export->delimiter, $export->escape_formatting ) . $separator;
 					}
-					$export->data_memory_start = woo_ce_current_memory_usage();
-					if( $products = woo_ce_get_products( $export->args ) ) {
-						$export->total_rows = count( $products );
-						$size = count( $export->columns );
-						$export->total_columns = $size;
-						for( $i = 0; $i < $size; $i++ ) {
-							if( $i == ( $size - 1 ) )
-								$csv .= woo_ce_escape_csv_value( $export->columns[$i], $export->delimiter, $export->escape_formatting ) . "\n";
-							else
-								$csv .= woo_ce_escape_csv_value( $export->columns[$i], $export->delimiter, $export->escape_formatting ) . $separator;
-						}
-						unset( $export->columns );
-						$weight_unit = get_option( 'woocommerce_weight_unit' );
-						$dimension_unit = get_option( 'woocommerce_dimension_unit' );
-						$height_unit = $dimension_unit;
-						$width_unit = $dimension_unit;
-						$length_unit = $dimension_unit;
-						foreach( $products as $product ) {
-							foreach( $export->fields as $key => $field ) {
-								if( isset( $product->$key ) ) {
-									if( is_array( $field ) ) {
-										foreach( $field as $array_key => $array_value ) {
-											if( !is_array( $array_value ) )
-												$csv .= woo_ce_escape_csv_value( $array_value, $export->delimiter, $export->escape_formatting );
-										}
-									} else {
-										$csv .= woo_ce_escape_csv_value( $product->$key, $export->delimiter, $export->escape_formatting );
+					unset( $export->columns );
+					$weight_unit = get_option( 'woocommerce_weight_unit' );
+					$dimension_unit = get_option( 'woocommerce_dimension_unit' );
+					$height_unit = $dimension_unit;
+					$width_unit = $dimension_unit;
+					$length_unit = $dimension_unit;
+					foreach( $products as $product ) {
+						foreach( $export->fields as $key => $field ) {
+							if( isset( $product->$key ) ) {
+								if( is_array( $field ) ) {
+									foreach( $field as $array_key => $array_value ) {
+										if( !is_array( $array_value ) )
+											$csv .= woo_ce_escape_csv_value( $array_value, $export->delimiter, $export->escape_formatting );
 									}
+								} else {
+									$csv .= woo_ce_escape_csv_value( $product->$key, $export->delimiter, $export->escape_formatting );
 								}
-								$csv .= $separator;
 							}
-							$csv = substr( $csv, 0, -1 ) . "\n";
+							$csv .= $separator;
 						}
-						unset( $products, $product );
+						$csv = substr( $csv, 0, -1 ) . "\n";
 					}
-					$export->data_memory_end = woo_ce_current_memory_usage();
-					break;
+					unset( $products, $product );
+				}
+				$export->data_memory_end = woo_ce_current_memory_usage();
+				break;
 
-				// Categories
-				case 'categories':
-					$fields = woo_ce_get_category_fields( 'summary' );
-					if( $export->fields = array_intersect_assoc( $fields, $export->fields ) ) {
-						foreach( $export->fields as $key => $field )
-							$export->columns[] = woo_ce_get_category_field( $key );
+			// Categories
+			case 'categories':
+				$fields = woo_ce_get_category_fields( 'summary' );
+				if( $export->fields = array_intersect_assoc( $fields, $export->fields ) ) {
+					foreach( $export->fields as $key => $field )
+						$export->columns[] = woo_ce_get_category_field( $key );
+				}
+				$export->data_memory_start = woo_ce_current_memory_usage();
+				if( $categories = woo_ce_get_product_categories( $export->args ) ) {
+					$export->total_rows = count( $categories );
+					$size = count( $export->columns );
+					$export->total_columns = $size;
+					for( $i = 0; $i < $size; $i++ ) {
+						if( $i == ( $size - 1 ) )
+							$csv .= woo_ce_escape_csv_value( $export->columns[$i], $export->delimiter, $export->escape_formatting ) . "\n";
+						else
+							$csv .= woo_ce_escape_csv_value( $export->columns[$i], $export->delimiter, $export->escape_formatting ) . $separator;
 					}
-					$export->data_memory_start = woo_ce_current_memory_usage();
-					if( $categories = woo_ce_get_product_categories( $export->args ) ) {
-						$export->total_rows = count( $categories );
-						$size = count( $export->columns );
-						$export->total_columns = $size;
-						for( $i = 0; $i < $size; $i++ ) {
-							if( $i == ( $size - 1 ) )
-								$csv .= woo_ce_escape_csv_value( $export->columns[$i], $export->delimiter, $export->escape_formatting ) . "\n";
-							else
-								$csv .= woo_ce_escape_csv_value( $export->columns[$i], $export->delimiter, $export->escape_formatting ) . $separator;
+					unset( $export->columns );
+					foreach( $categories as $category ) {
+						foreach( $export->fields as $key => $field ) {
+							if( isset( $category->$key ) )
+								$csv .= woo_ce_escape_csv_value( $category->$key, $export->delimiter, $export->escape_formatting );
+							$csv .= $separator;
 						}
-						unset( $export->columns );
-						foreach( $categories as $category ) {
-							foreach( $export->fields as $key => $field ) {
-								if( isset( $category->$key ) )
-									$csv .= woo_ce_escape_csv_value( $category->$key, $export->delimiter, $export->escape_formatting );
-								$csv .= $separator;
-							}
-							$csv = substr( $csv, 0, -1 ) . "\n";
-						}
-						unset( $categories, $category );
+						$csv = substr( $csv, 0, -1 ) . "\n";
 					}
-					$export->data_memory_end = woo_ce_current_memory_usage();
-					break;
+					unset( $categories, $category );
+				}
+				$export->data_memory_end = woo_ce_current_memory_usage();
+				break;
 
-				// Tags
-				case 'tags':
-					$fields = woo_ce_get_tag_fields( 'summary' );
-					if( $export->fields = array_intersect_assoc( $fields, $export->fields ) ) {
-						foreach( $export->fields as $key => $field )
-							$export->columns[] = woo_ce_get_tag_field( $key );
+			// Tags
+			case 'tags':
+				$fields = woo_ce_get_tag_fields( 'summary' );
+				if( $export->fields = array_intersect_assoc( $fields, $export->fields ) ) {
+					foreach( $export->fields as $key => $field )
+						$export->columns[] = woo_ce_get_tag_field( $key );
+				}
+				$export->data_memory_start = woo_ce_current_memory_usage();
+				if( $tags = woo_ce_get_product_tags( $export->args ) ) {
+					$export->total_rows = count( $tags );
+					$size = count( $export->columns );
+					$export->total_columns = $size;
+					for( $i = 0; $i < $size; $i++ ) {
+						if( $i == ( $size - 1 ) )
+							$csv .= woo_ce_escape_csv_value( $export->columns[$i], $export->delimiter, $export->escape_formatting ) . "\n";
+						else
+							$csv .= woo_ce_escape_csv_value( $export->columns[$i], $export->delimiter, $export->escape_formatting ) . $separator;
 					}
-					$export->data_memory_start = woo_ce_current_memory_usage();
-					if( $tags = woo_ce_get_product_tags( $export->args ) ) {
-						$export->total_rows = count( $tags );
-						$size = count( $export->columns );
-						$export->total_columns = $size;
-						for( $i = 0; $i < $size; $i++ ) {
-							if( $i == ( $size - 1 ) )
-								$csv .= woo_ce_escape_csv_value( $export->columns[$i], $export->delimiter, $export->escape_formatting ) . "\n";
-							else
-								$csv .= woo_ce_escape_csv_value( $export->columns[$i], $export->delimiter, $export->escape_formatting ) . $separator;
+					unset( $export->columns );
+					foreach( $tags as $tag ) {
+						foreach( $export->fields as $key => $field ) {
+							if( isset( $tag->$key ) )
+								$csv .= woo_ce_escape_csv_value( $tag->$key, $export->delimiter, $export->escape_formatting );
+							$csv .= $separator;
 						}
-						unset( $export->columns );
-						foreach( $tags as $tag ) {
-							foreach( $export->fields as $key => $field ) {
-								if( isset( $tag->$key ) )
-									$csv .= woo_ce_escape_csv_value( $tag->$key, $export->delimiter, $export->escape_formatting );
-								$csv .= $separator;
-							}
-							$csv = substr( $csv, 0, -1 ) . "\n";
-						}
-						unset( $tags, $tag );
+						$csv = substr( $csv, 0, -1 ) . "\n";
 					}
-					$export->data_memory_end = woo_ce_current_memory_usage();
-					break;
+					unset( $tags, $tag );
+				}
+				$export->data_memory_end = woo_ce_current_memory_usage();
+				break;
 
-				// Orders
-				case 'orders':
-				// Customers
-				case 'customers':
-				// Coupons
-				case 'coupons':
-					$csv = apply_filters( 'woo_ce_export_dataset', $datatype, $export );
-					break;
-
-			}
-			if( $csv ) {
-				$csv = woo_ce_file_encoding( $csv );
-				$csv = utf8_decode( $csv );
-				if( isset( $woo_ce['debug'] ) && $woo_ce['debug'] )
-					$woo_ce['debug_log'] = $csv;
-				else
-					return $csv;
-			} else {
-				return false;
-			}
+			// Orders
+			case 'orders':
+			// Customers
+			case 'customers':
+			// Coupons
+			case 'coupons':
+				$csv = apply_filters( 'woo_ce_export_dataset', $export->type, $export );
+				break;
 
 		}
+		if( $csv ) {
+			$csv = woo_ce_file_encoding( $csv );
+			if( WOO_CE_DEBUG )
+				set_transient( WOO_CE_PREFIX . '_debug_log', base64_encode( $csv ), woo_ce_get_option( 'timeout', MINUTE_IN_SECONDS ) );
+			else
+				return $csv;
+		}
+		// Export completed successfully
+		delete_transient( WOO_CE_PREFIX . '_running' );
 
 	}
 
@@ -567,8 +577,6 @@ if( is_admin() ) {
 	// HTML template for each tab on the Store Exporter screen
 	function woo_ce_tab_template( $tab = '' ) {
 
-		global $woo_ce;
-
 		if( !$tab )
 			$tab = 'overview';
 
@@ -596,27 +604,30 @@ if( is_admin() ) {
 				$coupons = woo_ce_return_count( 'coupons' );
 				$customers = woo_ce_return_count( 'customers' );
 
-				$product_fields = woo_ce_get_product_fields();
-				if( $product_fields ) {
+				if( $product_fields = woo_ce_get_product_fields() ) {
 					foreach( $product_fields as $key => $product_field ) {
 						if( !isset( $product_fields[$key]['disabled'] ) )
 							$product_fields[$key]['disabled'] = 0;
 					}
-					$product_categories = woo_ce_get_product_categories();
-					$product_tags = woo_ce_get_product_tags();
+					$args = array(
+						'category_orderby' => 'name'
+					);
+					$product_categories = woo_ce_get_product_categories( $args );
+					$args = array(
+						'tag_orderby' => 'name'
+					);
+					$product_tags = woo_ce_get_product_tags( $args );
 					$product_statuses = get_post_statuses();
 					$product_statuses['trash'] = __( 'Trash', 'woo_ce' );
 					$product_types = woo_ce_get_product_types();
 					$product_orderby = woo_ce_get_option( 'product_orderby', 'ID' );
 					$product_order = woo_ce_get_option( 'product_order', 'DESC' );
 				}
-				$category_fields = woo_ce_get_category_fields();
-				if( $category_fields ) {
+				if( $category_fields = woo_ce_get_category_fields() ) {
 					$category_orderby = woo_ce_get_option( 'category_orderby', 'ID' );
 					$category_order = woo_ce_get_option( 'category_order', 'DESC' );
 				}
-				$tag_fields = woo_ce_get_tag_fields();
-				if( $tag_fields ) {
+				if( $tag_fields = woo_ce_get_tag_fields() ) {
 					$tag_orderby = woo_ce_get_option( 'tag_orderby', 'ID' );
 					$tag_order = woo_ce_get_option( 'tag_order', 'DESC' );
 				}
@@ -655,8 +666,7 @@ if( is_admin() ) {
 					$message = __( 'Archived export has been deleted.', 'woo_ce' );
 					woo_ce_admin_notice( $message );
 				}
-				$files = woo_ce_get_archive_files();
-				if( $files ) {
+				if( $files = woo_ce_get_archive_files() ) {
 					foreach( $files as $key => $file )
 						$files[$key] = woo_ce_get_archive_file( $file );
 				}
@@ -664,7 +674,7 @@ if( is_admin() ) {
 
 		}
 		if( $tab )
-			include_once( $woo_ce['abspath'] . '/templates/admin/woo-admin_ce-export_' . $tab . '.php' );
+			include_once( WOO_CE_PATH . 'templates/admin/woo-admin_ce-export_' . $tab . '.php' );
 
 	}
 
@@ -679,8 +689,7 @@ if( is_admin() ) {
 				'post_type' => $post_type,
 				'post_mime_type' => 'text/csv'
 			);
-			$post_ID = wp_insert_attachment( $args, $filename );
-			if( $post_ID )
+			if( $post_ID = wp_insert_attachment( $args, $filename ) )
 				$output = $post_ID;
 		}
 		return $output;
@@ -752,11 +761,11 @@ if( is_admin() ) {
 	function woo_ce_fail_notices() {
 
 		woo_ce_memory_prompt();
+		$troubleshooting_url = 'http://www.visser.com.au/documentation/store-exporter-deluxe/usage/';
 		if( isset( $_GET['failed'] ) ) {
 			$message = '';
 			if( isset( $_GET['message'] ) )
 				$message = urldecode( $_GET['message'] );
-			$troubleshooting_url = 'http://www.visser.com.au/documentation/store-exporter-deluxe/usage/';
 			if( $message )
 				$message = __( 'A WordPress or server error caused the exporter to fail, the exporter was provided with a reason: ', 'woo_ce' ) . '<em>' . $message . '</em>' . ' (<a href="' . $troubleshooting_url . '" target="_blank">' . __( 'Need help?', 'woo_ce' ) . '</a>)';
 			else
@@ -767,6 +776,11 @@ if( is_admin() ) {
 			$message = __( 'No export entries were found, please try again with different export filters.', 'woo_ce' );
 			woo_ce_admin_notice( $message, 'error' );
 		}
+		if( get_transient( WOO_CE_PREFIX . '_running' ) ) {
+			$message = __( 'A WordPress or server error caused the exporter to fail with a blank screen, this is either a memory or timeout issue, please get in touch so we can reproduce and resolve this.', 'woo_ce' ) . ' (<a href="' . $troubleshooting_url . '" target="_blank">' . __( 'Need help?', 'woo_ce' ) . '</a>)';
+			woo_ce_admin_notice( $message, 'error' );
+		}
+
 	}
 
 	// Returns a list of archived exports
@@ -848,8 +862,7 @@ if( is_admin() ) {
 		);
 		if( $type )
 			$args['meta_value'] = $type;
-		$posts = get_posts( $args );
-		if( $posts )
+		if( $posts = get_posts( $args ) )
 			$output = count( $posts );
 		echo $output;
 
@@ -873,12 +886,10 @@ add_filter( 'upload_mimes', 'woo_ce_add_missing_mime_type', 10, 2 );
 
 function woo_ce_get_option( $option = null, $default = false ) {
 
-	global $woo_ce;
-
 	$output = '';
 	if( isset( $option ) ) {
 		$separator = '_';
-		$output = get_option( $woo_ce['prefix'] . $separator . $option, $default );
+		$output = get_option( WOO_CE_PREFIX . $separator . $option, $default );
 	}
 	return $output;
 
@@ -886,12 +897,10 @@ function woo_ce_get_option( $option = null, $default = false ) {
 
 function woo_ce_update_option( $option = null, $value = null ) {
 
-	global $woo_ce;
-
 	$output = false;
 	if( isset( $option ) && isset( $value ) ) {
 		$separator = '_';
-		$output = update_option( $woo_ce['prefix'] . $separator . $option, $value );
+		$output = update_option( WOO_CE_PREFIX . $separator . $option, $value );
 	}
 	return $output;
 

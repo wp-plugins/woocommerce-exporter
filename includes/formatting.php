@@ -7,30 +7,14 @@ function woo_ce_file_encoding( $content = '' ) {
 		$to_encoding = $export->encoding;
 		// $from_encoding = 'auto';
 		$from_encoding = 'ISO-8859-1';
-		if( !empty( $to_encoding ) )
+		if( !empty( $to_encoding ) ) {
 			$content = mb_convert_encoding( trim( $content ), $to_encoding, $from_encoding );
+		}
+		if( $to_encoding == 'UTF-8' )
+			$content = utf8_decode( $content );
 	}
 	return $content;
 
-}
-
-function woo_ce_clean_html( $content = '' ) {
-
-	$content = trim( $content );
-	// $content = str_replace( ',', '&#44;', $content );
-	// $content = str_replace( "\n", '<br />', $content );
-	return $content;
-
-}
-
-if( !function_exists( 'escape_csv_value' ) ) {
-	function escape_csv_value( $value ) {
-
-		$value = str_replace( '"', '""', $value ); // First off escape all " and make them ""
-		$value = str_replace( PHP_EOL, ' ', $value );
-		return '"' . $value . '"'; // If I have new lines or commas escape them
-
-	}
 }
 
 function woo_ce_display_memory( $memory = 0 ) {
@@ -65,30 +49,27 @@ function woo_ce_display_time_elapsed( $from, $to ) {
 }
 
 // This function escapes all cells in 'Excel' CSV escape formatting of a CSV file, also converts HTML entities to plain-text
-function woo_ce_escape_csv_value( $value = '', $delimiter = ',', $format = 'all' ) {
+function woo_ce_escape_csv_value( $string = '', $delimiter = ',', $format = 'all' ) {
 
-	global $woo_ce;
+	$string = str_replace( '"', '""', $string );
+	$string = wp_specialchars_decode( $string );
+	$string = preg_replace('/&([^#])(?![a-z1-4]{1,8};)/i', '&#038;$1', $string );
+	// $string = remove_accents( $string );
+	$string = str_replace( PHP_EOL, "\r\n", $string );
+	switch( $format ) {
 
-	$output = $value;
-	if( !empty( $output ) ) {
-		$output = str_replace( '"', '""', $output );
-		$output = str_replace( PHP_EOL, ' ', $output );
-		$output = wp_specialchars_decode( $output );
-		$output = str_replace( PHP_EOL, "\r\n", $output );
-		switch( $format ) {
-	
-			case 'all':
-				$output = '"' . $output . '"';
-				break;
+		case 'all':
+			$string = '"' . $string . '"';
+			break;
 
-			case 'excel':
-				if( strstr( $output, $delimiter ) !== false || strstr( $output, "\r\n" ) !== false )
-					$output = '"' . $output . '"';
-				break;
-	
-		}
+		case 'excel':
+			if( strpos( $string, '"' ) !== false or strpos( $string, ',' ) !== false or strpos( $string, "\r" ) !== false or strpos( $string, "\n" ) !== false ) {
+				$string = '"' . $string . '"';
+			}
+			break;
+
 	}
-	return $output;
+	return $string;
 
 }
 
@@ -264,9 +245,15 @@ function woo_ce_format_switch( $input = '', $output_format = 'answer' ) {
 
 }
 
-function woo_ce_format_stock_status( $stock_status = '' ) {
+function woo_ce_format_stock_status( $stock_status = '', $stock = '' ) {
 
 	$output = '';
+	if( empty( $stock_status ) && !empty( $stock ) ) {
+		if( $stock )
+			$stock_status = 'instock';
+		else
+			$stock_status = 'outofstock';
+	}
 	if( $stock_status ) {
 		switch( $stock_status ) {
 
@@ -378,12 +365,12 @@ function woo_ce_format_product_type( $type_id = '' ) {
 	$output = $type_id;
 	if( $output ) {
 		$product_types = apply_filters( 'woo_ce_format_product_types', array(
-			'simple' => __( 'Simple', 'woocommerce' ),
+			'simple' => __( 'Simple Product', 'woocommerce' ),
 			'downloadable' => __( 'Downloadable', 'woocommerce' ),
-			'grouped' => __( 'Grouped', 'woocommerce' ),
+			'grouped' => __( 'Grouped Product', 'woocommerce' ),
 			'virtual' => __( 'Virtual', 'woocommerce' ),
 			'variable' => __( 'Variable', 'woocommerce' ),
-			'external' => __( 'External / Affiliate', 'woocommerce' ),
+			'external' => __( 'External/Affiliate Product', 'woocommerce' ),
 			'variation' => __( 'Variation', 'woo_ce' )
 		) );
 		if( isset( $product_types[$type_id] ) )
@@ -411,15 +398,27 @@ function woo_ce_format_date( $date = '' ) {
 
 }
 
+function woo_ce_format_product_category_label( $product_category = '', $parent_category = '' ) {
+
+	$output = $product_category;
+	if( !empty( $parent_category ) )
+		$output .= ' &raquo; ' . $parent_category;
+	return $output;
+
+}
+
 if( !function_exists( 'woo_ce_expand_state_name' ) ) {
 	function woo_ce_expand_state_name( $country_prefix = '', $state_prefix = '' ) {
 
 		$output = $state_prefix;
 		if( $output ) {
 			$countries = new WC_Countries();
-			$states = $countries->get_states( $country_prefix );
-			if( $state = $states[$state_prefix] )
-				$output = $state;
+			if( $states = $countries->get_states( $country_prefix ) ) {
+				if( isset( $states[$state_prefix] ) ) {
+					$state = $states[$state_prefix];
+					$output = $state;
+				}
+			}
 		}
 		return $output;
 

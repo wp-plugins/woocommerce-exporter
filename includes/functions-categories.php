@@ -2,10 +2,13 @@
 // Returns a list of WooCommerce Product Categories to export process
 function woo_ce_get_product_categories( $args = array() ) {
 
-	$output = '';
+	$orderby = 'name';
+	$order = 'ASC';
 	if( $args ) {
-		$orderby = $args['category_orderby'];
-		$order = $args['category_order'];
+		if( isset( $args['category_orderby'] ) )
+			$orderby = $args['category_orderby'];
+		if( isset( $args['category_order'] ) )
+			$order = $args['category_order'];
 	}
 	$term_taxonomy = 'product_cat';
 	$args = array(
@@ -13,15 +16,20 @@ function woo_ce_get_product_categories( $args = array() ) {
 		'order' => $order,
 		'hide_empty' => 0
 	);
-	$categories = get_terms( $term_taxonomy, $args );
-	if( $categories ) {
+	if( $categories = get_terms( $term_taxonomy, $args ) ) {
 		foreach( $categories as $key => $category ) {
-			$categories[$key]->parent_id = $category->parent;
+			$categories[$key]->parent_name = '';
+			if( $categories[$key]->parent_id = $category->parent ) {
+				if( $parent_category = get_term( $categories[$key]->parent_id, $term_taxonomy ) ) {
+					$categories[$key]->parent_name = $parent_category->name;
+				}
+				unset( $parent_category );
+			} else {
+				$categories[$key]->parent_id = '';
+			}
 		}
+		return $categories;
 	}
-	if( $categories )
-		$output = $categories;
-	return $output;
 
 }
 
@@ -61,11 +69,11 @@ function woo_ce_get_category_fields( $format = 'full' ) {
 	// Allow Plugin/Theme authors to add support for additional Category columns
 	$fields = apply_filters( 'woo_ce_category_fields', $fields );
 
-	$remember = woo_ce_get_option( 'categories_fields' );
-	if( $remember ) {
+	if( $remember = woo_ce_get_option( 'categories_fields', array() ) ) {
 		$remember = maybe_unserialize( $remember );
 		$size = count( $fields );
 		for( $i = 0; $i < $size; $i++ ) {
+			$fields[$i]['disabled'] = 0;
 			if( !array_key_exists( $fields[$i]['name'], $remember ) )
 				$fields[$i]['default'] = 0;
 		}
@@ -84,6 +92,7 @@ function woo_ce_get_category_fields( $format = 'full' ) {
 		case 'full':
 		default:
 			return $fields;
+			break;
 
 	}
 

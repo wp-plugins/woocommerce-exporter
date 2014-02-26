@@ -118,7 +118,7 @@ function woo_ce_get_customer_fields( $format = 'full' ) {
 		'label' => __( 'Shipping: State (prefix)', 'woo_ce' ),
 		'default' => 1
 	);
-	$fields[] = array( 
+	$fields[] = array(
 		'name' => 'shipping_state_full',
 		'label' => __( 'Shipping: State', 'woo_ce' ),
 		'default' => 1
@@ -160,8 +160,7 @@ function woo_ce_get_customer_fields( $format = 'full' ) {
 	// Allow Plugin/Theme authors to add support for additional Customer columns
 	$fields = apply_filters( 'woo_ce_customer_fields', $fields );
 
-	$remember = woo_ce_get_option( 'customers_fields' );
-	if( $remember ) {
+	if( $remember = woo_ce_get_option( 'customers_fields' ) ) {
 		$remember = maybe_unserialize( $remember );
 		$size = count( $fields );
 		for( $i = 0; $i < $size; $i++ ) {
@@ -183,6 +182,7 @@ function woo_ce_get_customer_fields( $format = 'full' ) {
 		case 'full':
 		default:
 			return $fields;
+			break;
 
 	}
 

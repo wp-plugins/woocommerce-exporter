@@ -319,8 +319,7 @@ function woo_ce_get_order_fields( $format = 'full' ) {
 	// Allow Plugin/Theme authors to add support for additional Order columns
 	$fields = apply_filters( 'woo_ce_order_fields', $fields );
 
-	$remember = woo_ce_get_option( 'orders_fields' );
-	if( $remember ) {
+	if( $remember = woo_ce_get_option( 'orders_fields' ) ) {
 		$remember = maybe_unserialize( $remember );
 		$size = count( $fields );
 		for( $i = 0; $i < $size; $i++ ) {
@@ -344,6 +343,7 @@ function woo_ce_get_order_fields( $format = 'full' ) {
 		case 'full':
 		default:
 			return $fields;
+			break;
 
 	}
 

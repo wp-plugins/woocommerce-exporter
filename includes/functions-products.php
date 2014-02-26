@@ -1,4 +1,46 @@
 <?php
+// HTML template for Custom Products widget on Store Exporter screen
+function woo_ce_products_custom_fields() { ?>
+<div id="export-products-custom-fields-link" class="separator">
+	<p><a href="#export-products-custom-fields"><?php _e( 'Manage Custom Product Fields', 'woo_ce' ); ?></a></p>
+	<form method="post" id="export-products-custom-fields">
+		<div id="poststuff">
+
+			<div class="postbox" id="export-options">
+				<h3 class="hndle"><?php _e( 'Custom Product Fields', 'woo_ce' ); ?></h3>
+				<div class="inside">
+					<p class="description"><?php _e( 'To include additional custom Product meta in the Export Products table above fill the Products text box then click Save Custom Fields.', 'woo_ce' ); ?></p>
+					<table class="form-table">
+
+						<tr>
+							<th>
+								<label><?php _e( 'Product Meta', 'woo_ce' ); ?></label>
+							</th>
+							<td>
+								<textarea name="custom_products" rows="5" cols="70" disabled="disabled"><?php echo $custom_products; ?></textarea>
+								<p class="description"><?php _e( 'Include additional custom Product meta in your exported CSV by adding each custom Product meta name to a new line above.<br />For example: <code>Customer UA, Customer IP Address</code>', 'woo_ce' ); ?></p>
+							</td>
+						</tr>
+
+					</table>
+					<p class="submit">
+						<input type="submit" value="<?php _e( 'Save Custom Fields', 'woo_ce' ); ?>" class="button button-disabled" />
+					</p>
+					<p class="description"><?php _e( 'For more information on custom Product meta consult our online documentation.', 'woo_ce' ); ?></p>
+				</div>
+				<!-- .inside -->
+			</div>
+			<!-- .postbox -->
+
+		</div>
+		<input type="hidden" name="action" value="update" />
+	</form>
+<!-- #export-products-custom-fields-link -->
+<?php
+	ob_end_flush();
+
+}
+
 // Returns a list of WooCommerce Products to export process
 function woo_ce_get_products( $args = array() ) {
 
@@ -19,8 +61,10 @@ function woo_ce_get_products( $args = array() ) {
 			$product_status = $args['product_status'];
 		if( !empty( $args['product_type'] ) )
 			$product_type = $args['product_type'];
-		$orderby = $args['product_orderby'];
-		$order = $args['product_order'];
+		if( isset( $args['product_orderby'] ) )
+			$orderby = $args['product_orderby'];
+		if( isset( $args['product_order'] ) )
+			$order = $args['product_order'];
 	}
 	$post_type = array( 'product', 'product_variation' );
 	$args = array(
@@ -79,12 +123,14 @@ function woo_ce_get_products( $args = array() ) {
 			if( $product->post_type == 'product_variation' ) {
 				// Assign Parent ID for Variants then check if Parent exists
 				if( $products[$key]->parent_id = $product->post_parent ) {
-					if( !get_posts( 'p=' . $products[$key]->parent_id ) ) {
+					if( !get_post( $products[$key]->parent_id ) ) {
 						unset( $products[$key] );
 						continue;
 					}
+					$products[$key]->parent_sku = get_post_meta( $product->post_parent, '_sku', true );
+				} else {
+					$products[$key]->parent_id = '';
 				}
-				$products[$key]->parent_sku = get_post_meta( $product->post_parent, '_sku', true );
 			}
 			$products[$key]->product_id = $product->ID;
 			$products[$key]->sku = get_post_meta( $product->ID, '_sku', true );
@@ -117,7 +163,7 @@ function woo_ce_get_products( $args = array() ) {
 			$products[$key]->width_unit = $width_unit;
 			$products[$key]->length = get_post_meta( $product->ID, '_length', true );
 			$products[$key]->length_unit = $length_unit;
-			$products[$key]->category = woo_ce_get_product_assoc_categories( $product->ID );
+			$products[$key]->category = woo_ce_get_product_assoc_categories( $product->ID, $products[$key]->parent_id );
 			$products[$key]->tag = woo_ce_get_product_assoc_tags( $product->ID );
 			$products[$key]->manage_stock = woo_ce_format_switch( get_post_meta( $product->ID, '_manage_stock', true ) );
 			$products[$key]->allow_backorders = woo_ce_format_switch( get_post_meta( $product->ID, '_backorders', true ) );
@@ -125,7 +171,7 @@ function woo_ce_get_products( $args = array() ) {
 			$products[$key]->upsell_ids = woo_ce_convert_product_ids( get_post_meta( $product->ID, '_upsell_ids', true ) );
 			$products[$key]->crosssell_ids = woo_ce_convert_product_ids( get_post_meta( $product->ID, '_crosssell_ids', true ) );
 			$products[$key]->quantity = get_post_meta( $product->ID, '_stock', true );
-			$products[$key]->stock_status = woo_ce_format_stock_status( get_post_meta( $product->ID, '_stock_status', true ) );
+			$products[$key]->stock_status = woo_ce_format_stock_status( get_post_meta( $product->ID, '_stock_status', true ), $products[$key]->quantity );
 			$products[$key]->image = woo_ce_get_product_assoc_featured_image( $product->ID );
 			$products[$key]->product_gallery = woo_ce_get_product_assoc_product_gallery( $product->ID );
 			$products[$key]->tax_status = woo_ce_format_tax_status( get_post_meta( $product->ID, '_tax_status', true ) );
@@ -161,12 +207,15 @@ function woo_ce_get_products( $args = array() ) {
 }
 
 // Returns Product Categories associated to a specific Product
-function woo_ce_get_product_assoc_categories( $product_id = 0 ) {
+function woo_ce_get_product_assoc_categories( $product_id = 0, $parent_id = 0 ) {
 
 	global $export;
 
 	$output = '';
 	$term_taxonomy = 'product_cat';
+	// Return Product Categories of Parent if this is a Variation
+	if( $parent_id )
+		$product_id = $parent_id;
 	if( $product_id )
 		$categories = wp_get_object_terms( $product_id, $term_taxonomy );
 	if( $categories ) {
@@ -207,8 +256,7 @@ function woo_ce_get_product_assoc_tags( $product_id = 0 ) {
 
 	$output = '';
 	$term_taxonomy = 'product_tag';
-	$tags = wp_get_object_terms( $product_id, $term_taxonomy );
-	if( $tags ) {
+	if( $tags = wp_get_object_terms( $product_id, $term_taxonomy ) ) {
 		$size = count( $tags );
 		for( $i = 0; $i < $size; $i++ ) {
 			$tag = get_term( $tags[$i]->term_id, $term_taxonomy );
@@ -258,6 +306,8 @@ function woo_ce_get_product_assoc_type( $product_id = 0 ) {
 	$output = '';
 	$term_taxonomy = 'product_type';
 	$types = wp_get_object_terms( $product_id, $term_taxonomy );
+	if( empty( $types ) )
+		$types = array( get_term_by( 'name', 'simple', $term_taxonomy ) );
 	if( $types ) {
 		$size = count( $types );
 		for( $i = 0; $i < $size; $i++ ) {
@@ -397,11 +447,6 @@ function woo_ce_get_product_fields( $format = 'full' ) {
 	$fields[] = array(
 		'name' => 'price',
 		'label' => __( 'Price', 'woo_ce' ),
-		'default' => 1
-	);
-	$fields[] = array(
-		'name' => 'sale_price',
-		'label' => __( 'Sale Price', 'woo_ce' ),
 		'default' => 1
 	);
 	$fields[] = array(
@@ -576,8 +621,7 @@ function woo_ce_get_product_fields( $format = 'full' ) {
 	// Allow Plugin/Theme authors to add support for additional Product columns
 	$fields = apply_filters( 'woo_ce_product_fields', $fields );
 
-	$remember = woo_ce_get_option( 'products_fields' );
-	if( $remember ) {
+	if( $remember = woo_ce_get_option( 'products_fields' ) ) {
 		$remember = maybe_unserialize( $remember );
 		$size = count( $fields );
 		for( $i = 0; $i < $size; $i++ ) {
@@ -599,6 +643,7 @@ function woo_ce_get_product_fields( $format = 'full' ) {
 		case 'full':
 		default:
 			return $fields;
+			break;
 
 	}
 
@@ -658,15 +703,34 @@ function woo_ce_get_product_types() {
 	$args = array(
 		'hide_empty' => 0
 	);
-	$types = get_terms( $term_taxonomy, $args );
-	if( $types ) {
+	if( $types = get_terms( $term_taxonomy, $args ) ) {
 		$size = count( $types );
-		for( $i = 0; $i < $size; $i++ )
-			$output[$types[$i]->slug] = $types[$i]->name;
-		$output['variation'] = __( 'variation', 'woo_ce' );
+		for( $i = 0; $i < $size; $i++ ) {
+			$output[$types[$i]->slug] = array(
+				'name' => $types[$i]->name,
+				'count' => $types[$i]->count
+			);
+		}
+		$output['variation'] = array(
+			'name' => __( 'variation', 'woo_ce' ),
+			'count' => woo_ce_get_product_type_variation_count()
+		);
 		asort( $output );
 	}
 	return $output;
+
+}
+
+function woo_ce_get_product_type_variation_count() {
+
+	$post_type = 'product_variation';
+	$args = array(
+		'post_type' => $post_type,
+		'posts_per_page' => 1
+	);
+	$query = new WP_Query( $args );
+	$size = $query->found_posts;
+	return $size;
 
 }
 
