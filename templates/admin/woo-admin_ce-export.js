@@ -143,4 +143,15 @@ $j(function() {
 		$j(this).closest('.postbox').find(':checkbox').attr('checked', false);
 	});
 
+	$j(document).ready(function() {
+		var href = jQuery(location).attr('href');
+		if (href.toLowerCase().indexOf('tab=export') >= 0) {
+			if (href.toLowerCase().indexOf('#') >= 0 ) {
+				var type = href.substr(href.indexOf("#") + 1)
+				var type = type.replace('export-','');
+				$j('#'+type).trigger('click');
+			}
+		}
+	});
+
 });

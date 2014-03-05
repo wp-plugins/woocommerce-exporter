@@ -28,7 +28,7 @@ function woo_ce_get_order_fields( $format = 'full' ) {
 	$fields[] = array(
 		'name' => 'order_excl_tax',
 		'label' => __( 'Order Excl. Tax', 'woo_ce' ),
-		'default' => ''
+		'default' => 1
 	);
 /*
 	$fields[] = array(
@@ -307,7 +307,21 @@ function woo_ce_get_order_fields( $format = 'full' ) {
 		'label' => __( 'Order Items: Type', 'woo_ce' ),
 		'default' => 1
 	);
-
+	$fields[] = array(
+		'name' => 'order_items_type',
+		'label' => __( 'Order Items: Type', 'woo_ce' ),
+		'default' => 1
+	);
+	$fields[] = array(
+		'name' => 'order_items_category',
+		'label' => __( 'Order Items: Category', 'woo_ce' ),
+		'default' => 1
+	);
+	$fields[] = array(
+		'name' => 'order_items_tag',
+		'label' => __( 'Order Items: Tag', 'woo_ce' ),
+		'default' => 1
+	);
 /*
 	$fields[] = array(
 		'name' => '',
