@@ -191,7 +191,7 @@
 							<option value="date"<?php selected( 'date', $product_orderby ); ?>><?php _e( 'Date Created', 'woo_ce' ); ?></option>
 							<option value="modified"<?php selected( 'modified', $product_orderby ); ?>><?php _e( 'Date Modified', 'woo_ce' ); ?></option>
 							<option value="rand"<?php selected( 'rand', $product_orderby ); ?>><?php _e( 'Random', 'woo_ce' ); ?></option>
-							<option value="menu_order"<?php selected( 'menu_order', $product_orderby ); ?>><?php _e( 'Menu Order', 'woo_ce' ); ?></option>
+							<option value="menu_order"<?php selected( 'menu_order', $product_orderby ); ?>><?php _e( 'Sort Order', 'woo_ce' ); ?></option>
 						</select>
 						<select name="product_order">
 							<option value="ASC"<?php selected( 'ASC', $product_order ); ?>><?php _e( 'Ascending', 'woo_ce' ); ?></option>
@@ -295,10 +295,10 @@
 			<!-- .postbox -->
 
 			<div id="export-tags-filters" class="postbox">
-				<h3 class="hndle"><?php _e( 'Tag Filters', 'woo_ce' ); ?></h3>
+				<h3 class="hndle"><?php _e( 'Product Tag Filters', 'woo_ce' ); ?></h3>
 				<div class="inside">
 
-					<p><label><?php _e( 'Tag Sorting', 'woo_ce' ); ?></label></p>
+					<p><label><?php _e( 'Product Tag Sorting', 'woo_ce' ); ?></label></p>
 					<div>
 						<select name="tag_orderby">
 							<option value="id"<?php selected( 'id', $tag_orderby ); ?>><?php _e( 'Term ID', 'woo_ce' ); ?></option>
@@ -308,7 +308,7 @@
 							<option value="ASC"<?php selected( 'ASC', $tag_order ); ?>><?php _e( 'Ascending', 'woo_ce' ); ?></option>
 							<option value="DESC"<?php selected( 'DESC', $tag_order ); ?>><?php _e( 'Descending', 'woo_ce' ); ?></option>
 						</select>
-						<p class="description"><?php _e( 'Select the sorting of Tags within the exported file. By default this is set to export Tags by Term ID in Desending order.', 'woo_ce' ); ?></p>
+						<p class="description"><?php _e( 'Select the sorting of Product Tags within the exported file. By default this is set to export Product Tags by Term ID in Desending order.', 'woo_ce' ); ?></p>
 					</div>
 
 				</div>
@@ -457,6 +457,7 @@
 		<div class="postbox" id="export-options">
 			<h3 class="hndle"><?php _e( 'Export Options', 'woo_ce' ); ?></h3>
 			<div class="inside">
+				<p class="description"><?php _e( 'You can find additional export options under the Settings tab at the top of this screen.', 'woo_ce' ); ?></p>
 				<table class="form-table">
 
 					<?php do_action( 'woo_ce_export_options' ); ?>
@@ -540,53 +541,6 @@
 <?php } else { ?>
 							<p class="description"><?php _e( 'Character encoding options are unavailable in PHP 4, contact your hosting provider to update your site install to use PHP 5 or higher.', 'woo_ce' ); ?></p>
 <?php } ?>
-						</td>
-					</tr>
-
-					<tr>
-						<th>
-							<label for="delete_temporary_csv"><?php _e( 'Enable Archives', 'woo_ce' ); ?></label>
-						</th>
-						<td>
-							<select id="delete_temporary_csv" name="delete_temporary_csv">
-								<option value="0"<?php selected( $delete_csv, 0 ); ?>><?php _e( 'Yes', 'woo_ce' ); ?></option>
-								<option value="1"<?php selected( $delete_csv, 1 ); ?>><?php _e( 'No', 'woo_ce' ); ?></option>
-							</select>
-							<p class="description"><?php _e( 'Save copies of CSV exports to the WordPress Media for downloading later. By default this option is turned on.', 'woo_ce' ); ?></p>
-						</td>
-					</tr>
-
-<?php if( !ini_get( 'safe_mode' ) ) { ?>
-					<tr>
-						<th>
-							<label for="timeout"><?php _e( 'Script timeout', 'woo_ce' ); ?>: </label>
-						</th>
-						<td>
-							<select id="timeout" name="timeout">
-								<option value="600"<?php selected( $timeout, 600 ); ?>><?php printf( __( '%s minutes', 'woo_ce' ), 10 ); ?></option>
-								<option value="1800"<?php selected( $timeout, 1800 ); ?>><?php printf( __( '%s minutes', 'woo_ce' ), 30 ); ?></option>
-								<option value="3600"<?php selected( $timeout, 3600 ); ?>><?php printf( __( '%s hour', 'woo_ce' ), 1 ); ?></option>
-								<option value="0"<?php selected( $timeout, 0 ); ?>><?php _e( 'Unlimited', 'woo_ce' ); ?></option>
-							</select>
-							<p class="description"><?php _e( 'Script timeout defines how long WooCommerce Exporter is \'allowed\' to process your CSV file, once the time limit is reached the export process halts.', 'woo_ce' ); ?></p>
-						</td>
-					</tr>
-<?php } ?>
-
-					<tr>
-						<th><?php _e( 'Date Format', 'woo_ce' ); ?></th>
-						<td>
-							<fieldset>
-								<label title="F j, Y"><input type="radio" name="date_format" value="F j, Y"<?php checked( $date_format, 'F j, Y' ); ?>> <span><?php echo date( 'F j, Y' ); ?></span></label><br>
-								<label title="Y/m/d"><input type="radio" name="date_format" value="Y/m/d"<?php checked( $date_format, 'Y/m/d' ); ?>> <span><?php echo date( 'Y/m/d' ); ?></span></label><br>
-								<label title="m/d/Y"><input type="radio" name="date_format" value="m/d/Y"<?php checked( $date_format, 'm/d/Y' ); ?>> <span><?php echo date( 'm/d/Y' ); ?></span></label><br>
-								<label title="d/m/Y"><input type="radio" name="date_format" value="d/m/Y"<?php checked( $date_format, 'd/m/Y' ); ?>> <span><?php echo date( 'd/m/Y' ); ?></span></label><br>
-<!--
-								<label><input type="radio" name="date_format" id="date_format_custom_radio" value="\c\u\s\t\o\m"> Custom: </label><input type="text" name="date_format_custom" value="F j, Y" class="small-text"> <span class="example"> January 6, 2014</span> <span class="spinner"></span>
-								<p><a href="http://codex.wordpress.org/Formatting_Date_and_Time"><?php _e( 'Documentation on date and time formatting', 'woo_ce' ); ?></a>.</p>
--->
-							</fieldset>
-							<p class="description"><?php _e( 'The date format option affects how date\'s are presented within your CSV file. Default is set to DD/MM/YYYY.', 'woo_ce' ); ?></p>
 						</td>
 					</tr>
 

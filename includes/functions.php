@@ -137,12 +137,10 @@ if( is_admin() ) {
 	}
 
 	// Saves the state of Export fields for next export
-	function woo_ce_save_fields( $dataset, $fields = array() ) {
+	function woo_ce_save_fields( $type, $fields = array() ) {
 
-		if( $dataset && !empty( $fields ) ) {
-			$type = $dataset[0];
+		if( $type && !empty( $fields ) )
 			woo_ce_update_option( $type . '_fields', $fields );
-		}
 
 	}
 
@@ -165,14 +163,22 @@ if( is_admin() ) {
 	// Function to generate filename of CSV file based on the Export type
 	function woo_ce_generate_csv_filename( $dataset = '' ) {
 
+		// Get the filename from WordPress options
+		$filename = woo_ce_get_option( 'export_filename', 'woo-export_%dataset%-%date%.csv' );
+
+		// Populate the available tags
 		$date = date( 'Ymd' );
-		$output = sprintf( 'woo-export_default-%s.csv', $date );
-		if( $dataset ) {
-			$filename = sprintf( 'woo-export_%s-%s.csv', $dataset, $date );
-			if( $filename )
-				$output = $filename;
-		}
-		return $output;
+		$time = date( 'His' );
+		$store_name = sanitize_title( get_bloginfo( 'name' ) );
+
+		// Switch out the tags for filled values
+		$filename = str_replace( '%dataset%', $dataset, $filename );
+		$filename = str_replace( '%date%', $date, $filename );
+		$filename = str_replace( '%time%', $time, $filename );
+		$filename = str_replace( '%store_name%', $store_name, $filename );
+
+		// Return the filename
+		return $filename;
 
 	}
 
@@ -206,8 +212,18 @@ if( is_admin() ) {
 			$handle = fopen( $filepath, "r" );
 			$contents = stream_get_contents( $handle );
 			fclose( $handle );
+		} else {
+			// This resets the _wp_attached_file Post meta key to the correct value
+			update_attached_file( $post->ID, $post->guid );
+			// Try grabbing the file contents again
+			$filepath = get_attached_file( $post->ID );
+			if( file_exists( $filepath ) ) {
+				$handle = fopen( $filepath, "r" );
+				$contents = stream_get_contents( $handle );
+				fclose( $handle );
+			}
 		}
-		if( $contents )
+		if( !empty( $contents ) )
 			include_once( WOO_CE_PATH . 'templates/admin/woo-admin_ce-media_csv_file.php' );
 
 		$dataset = get_post_meta( $post->ID, '_woo_export_type', true );
@@ -310,6 +326,8 @@ if( is_admin() ) {
 					'post_type' => $post_type,
 					'posts_per_page' => -1,
 					'post_status' => woo_ce_post_statuses(),
+					'cache_results' => false,
+					'no_found_rows' => false,
 					'tax_query' => array(
 						array(
 							'taxonomy' => 'shop_order_status',
@@ -342,7 +360,7 @@ if( is_admin() ) {
 				if( false ) {
 					$orders = get_posts( $args );
 					if( $orders ) {
-						$customers = array()	;
+						$customers = array();
 						foreach( $orders as $order ) {
 							$order->email = get_post_meta( $order->ID, '_billing_email', true );
 							if( empty( $order->email ) ) {
@@ -641,13 +659,15 @@ if( is_admin() ) {
 				$escape_formatting = woo_ce_get_option( 'escape_formatting', 'all' );
 				$limit_volume = woo_ce_get_option( 'limit_volume' );
 				$offset = woo_ce_get_option( 'offset' );
-				$timeout = woo_ce_get_option( 'timeout', 0 );
-				$delete_csv = woo_ce_get_option( 'delete_csv', 0 );
-				$file_encodings = false;
-				if( function_exists( 'mb_list_encodings' ) )
-					$file_encodings = mb_list_encodings();
+				$file_encodings = ( function_exists( 'mb_list_encodings' ) ? mb_list_encodings() : false );
 				$encoding = woo_ce_get_option( 'encoding', 'UTF-8' );
+				break;
+
+			case 'settings':
+				$export_filename = woo_ce_get_option( 'export_filename', 'woo-export_%dataset%-%date%.csv' );
+				$delete_csv = woo_ce_get_option( 'delete_csv', 0 );
 				$date_format = woo_ce_get_option( 'date_format', 'd/m/Y' );
+				$timeout = woo_ce_get_option( 'timeout', 0 );
 				break;
 
 			case 'tools':

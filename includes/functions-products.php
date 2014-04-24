@@ -2,7 +2,6 @@
 // HTML template for Custom Products widget on Store Exporter screen
 function woo_ce_products_custom_fields() { ?>
 <div id="export-products-custom-fields-link" class="separator">
-	<p><a href="#export-products-custom-fields"><?php _e( 'Manage Custom Product Fields', 'woo_ce' ); ?></a></p>
 	<form method="post" id="export-products-custom-fields">
 		<div id="poststuff">
 
@@ -156,13 +155,17 @@ function woo_ce_get_products( $args = array() ) {
 			$products[$key]->virtual = woo_ce_format_switch( get_post_meta( $product->ID, '_virtual', true ) );
 			$products[$key]->downloadable = woo_ce_format_switch( get_post_meta( $product->ID, '_downloadable', true ) );
 			$products[$key]->weight = get_post_meta( $product->ID, '_weight', true );
-			$products[$key]->weight_unit = $weight_unit;
+			// $products[$key]->weight_unit = $weight_unit;
+			$products[$key]->weight_unit = ( $products[$key]->weight != '' ? $weight_unit : '' );
 			$products[$key]->height = get_post_meta( $product->ID, '_height', true );
-			$products[$key]->height_unit = $height_unit;
+			// $products[$key]->height_unit = $height_unit;
+			$products[$key]->height_unit = ( $products[$key]->height != '' ? $height_unit : '' );
 			$products[$key]->width = get_post_meta( $product->ID, '_width', true );
-			$products[$key]->width_unit = $width_unit;
+			// $products[$key]->width_unit = $width_unit;
+			$products[$key]->width_unit = ( $products[$key]->width != '' ? $width_unit : '' );
 			$products[$key]->length = get_post_meta( $product->ID, '_length', true );
-			$products[$key]->length_unit = $length_unit;
+			// $products[$key]->length_unit = $length_unit;
+			$products[$key]->length_unit = ( $products[$key]->length != '' ? $length_unit : '' );
 			$products[$key]->category = woo_ce_get_product_assoc_categories( $product->ID, $products[$key]->parent_id );
 			$products[$key]->tag = woo_ce_get_product_assoc_tags( $product->ID );
 			$products[$key]->manage_stock = woo_ce_format_switch( get_post_meta( $product->ID, '_manage_stock', true ) );
@@ -181,9 +184,11 @@ function woo_ce_get_products( $args = array() ) {
 			$products[$key]->file_download = woo_ce_get_product_assoc_file_downloads( $product->ID );
 			$products[$key]->download_limit = get_post_meta( $product->ID, '_download_limit', true );
 			$products[$key]->download_expiry = get_post_meta( $product->ID, '_download_expiry', true );
+			$products[$key]->download_type = woo_ce_format_download_type( get_post_meta( $product->ID, '_download_type', true ) );
 			$products[$key]->purchase_note = get_post_meta( $product->ID, '_purchase_note', true );
 			$products[$key]->product_status = woo_ce_format_product_status( $product->post_status );
-			$products[$key]->comment_status = woo_ce_format_comment_status( $product->comment_status );
+			$products[$key]->enable_reviews = woo_ce_format_comment_status( $product->comment_status );
+			$products[$key]->menu_order = $product->menu_order;
 			if( $attributes = woo_ce_get_product_attributes() ) {
 				if( $product->post_type == 'product_variation' ) {
 					foreach( $attributes as $attribute ) {
@@ -259,8 +264,8 @@ function woo_ce_get_product_assoc_tags( $product_id = 0 ) {
 	if( $tags = wp_get_object_terms( $product_id, $term_taxonomy ) ) {
 		$size = count( $tags );
 		for( $i = 0; $i < $size; $i++ ) {
-			$tag = get_term( $tags[$i]->term_id, $term_taxonomy );
-			$output .= $tag->name . $export->category_separator;
+			if( $tag = get_term( $tags[$i]->term_id, $term_taxonomy ) )
+				$output .= $tag->name . $export->category_separator;
 		}
 		$output = substr( $output, 0, -1 );
 	}
@@ -273,8 +278,7 @@ function woo_ce_get_product_assoc_featured_image( $product_id = 0 ) {
 
 	$output = '';
 	if( $product_id ) {
-		$thumbnail_id = get_post_meta( $product_id, '_thumbnail_id', true );
-		if( $thumbnail_id )
+		if( $thumbnail_id = get_post_meta( $product_id, '_thumbnail_id', true ) )
 			$output = wp_get_attachment_url( $thumbnail_id );
 	}
 	return $output;
@@ -288,8 +292,7 @@ function woo_ce_get_product_assoc_product_gallery( $product_id = 0 ) {
 
 	$output = '';
 	if( $product_id ) {
-		$images = get_post_meta( $product_id, '_product_image_gallery', true );
-		if( $images ) {
+		if( $images = get_post_meta( $product_id, '_product_image_gallery', true ) ) {
 			$images = str_replace( ',', $export->category_separator, $images );
 			$output = $images;
 		}
@@ -348,13 +351,23 @@ function woo_ce_get_product_assoc_file_downloads( $product_id = 0 ) {
 
 	$output = '';
 	if( $product_id ) {
-		$file_downloads = maybe_unserialize( get_post_meta( $product_id, '_file_paths', true ) );
-		if( $file_downloads ) {
-			foreach( $file_downloads as $file_download )
-				$output .= $file_download . $export->category_separator;
-			unset( $file_downloads );
+		if( version_compare( WOOCOMMERCE_VERSION, '2.0', '>=' ) ) {
+			// If WooCommerce 2.0+ is installed then use new _downloadable_files Post meta key
+			if( $file_downloads = maybe_unserialize( get_post_meta( $product_id, '_downloadable_files', true ) ) ) {
+				foreach( $file_downloads as $file_download )
+					$output .= $file_download['file'] . $export->category_separator;
+				unset( $file_download, $file_downloads );
+			}
+			$output = substr( $output, 0, -1 );
+		} else {
+			// If WooCommerce -2.0 is installed then use legacy _file_paths Post meta key
+			if( $file_downloads = maybe_unserialize( get_post_meta( $product_id, '_file_paths', true ) ) ) {
+				foreach( $file_downloads as $file_download )
+					$output .= $file_download . $export->category_separator;
+				unset( $file_download, $file_downloads );
+			}
+			$output = substr( $output, 0, -1 );
 		}
-		$output = substr( $output, 0, -1 );
 	}
 	return $output;
 
@@ -550,6 +563,11 @@ function woo_ce_get_product_fields( $format = 'full' ) {
 		'default' => 1
 	);
 	$fields[] = array(
+		'name' => 'download_type',
+		'label' => __( 'Download Type', 'woo_ce' ),
+		'default' => 1
+	);
+	$fields[] = array(
 		'name' => 'manage_stock',
 		'label' => __( 'Manage Stock', 'woo_ce' ),
 		'default' => 1
@@ -605,8 +623,13 @@ function woo_ce_get_product_fields( $format = 'full' ) {
 		'default' => 1
 	);
 	$fields[] = array(
-		'name' => 'comment_status',
-		'label' => __( 'Comment Status', 'woo_ce' ),
+		'name' => 'enable_reviews',
+		'label' => __( 'Enable Reviews', 'woo_ce' ),
+		'default' => 1
+	);
+	$fields[] = array(
+		'name' => 'menu_order',
+		'label' => __( 'Sort Order', 'woo_ce' ),
 		'default' => 1
 	);
 

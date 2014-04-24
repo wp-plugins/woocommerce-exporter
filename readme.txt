@@ -4,8 +4,8 @@ Contributors: visser
 Donate link: http://www.visser.com.au/#donations
 Tags: e-commerce, woocommerce, shop, cart, ecommerce, export, csv, customers, products, sales, coupons
 Requires at least: 2.9.2
-Tested up to: 3.8.1
-Stable tag: 1.4.9
+Tested up to: 3.9
+Stable tag: 1.5.1
 
 == Description ==
 
@@ -70,6 +70,24 @@ http://www.visser.com.au/woocommerce/forums/
 7. Download achived copies of previous exports
 
 == Changelog ==
+
+= 1.5.1 =
+* Fixed: CSV File not being displayed on Media screen
+* Added: Download Type support to Products export
+* Fixed: File Download support for WooCommerce 2.0+
+* Changed: Legacy support for File Download export support in pre-WooCommerce 2.0
+* Changed: An empty weight/height/width/length will make the dimension unit empty
+* Added: Setttings tab for managing global export settings
+* Added: Custom export filename support with variables: %store_name%, %dataset%, %date%, %time%
+* Changed: Moved Date Format option to Settings tab
+* Changed: Moved Max unique Order items option to Settings tab
+* Changed: Moved Enable Archives options to Settings tab
+* Changed: Removed Manage Custom Product Fields link from Export Options
+* Changed: Moved Script Timeout option to Settings tab
+
+= 1.5 =
+* Added: Menu Order to Products export
+* Changed: Comment Status to Enable Reviews in Products export
 
 = 1.4.9 =
 * Added: Order Items: Category and Order Items: Tag to Orders export

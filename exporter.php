@@ -3,7 +3,7 @@
 Plugin Name: WooCommerce - Store Exporter
 Plugin URI: http://www.visser.com.au/woocommerce/plugins/exporter/
 Description: Export store details out of WooCommerce into a CSV-formatted file.
-Version: 1.4.9
+Version: 1.5.1
 Author: Visser Labs
 Author URI: http://www.visser.com.au/about/
 License: GPL2
@@ -55,9 +55,15 @@ if( is_admin() ) {
 
 		$page = 'woocommerce_page_woo_ce';
 		if( $page == $hook ) {
-			// WooCommerce
-			global $woocommerce;
-			wp_enqueue_style( 'woocommerce_admin_styles', $woocommerce->plugin_url() . '/assets/css/admin.css' );
+
+			// Simple check that WooCommerce is activated
+			if( class_exists( 'woocommerce' ) ) {
+
+				global $woocommerce;
+
+				// Load WooCommerce default Admin styling
+				wp_enqueue_style( 'woocommerce_admin_styles', $woocommerce->plugin_url() . '/assets/css/admin.css' );
+			}
 
 			// Date Picker
 			wp_enqueue_script( 'jquery-ui-datepicker' );
@@ -85,6 +91,7 @@ if( is_admin() ) {
 		$action = woo_get_action();
 		switch( $action ) {
 
+			// Prompt on Export screen when insufficient memory (less than 64M is allocated)
 			case 'dismiss_memory_prompt':
 				woo_ce_update_option( 'dismiss_memory_prompt', 1 );
 				$url = add_query_arg( 'action', null );
@@ -92,6 +99,19 @@ if( is_admin() ) {
 				exit();
 				break;
 
+			// Save changes on Settings screen
+			case 'save':
+				woo_ce_update_option( 'export_filename', (string)$_POST['export_filename'] );
+				woo_ce_update_option( 'delete_csv', (int)$_POST['delete_temporary_csv'] );
+				woo_ce_update_option( 'date_format', (string)$_POST['date_format'] );
+				// Export Deluxe field
+				if( isset( $_POST['max_order_items'] ) )
+					woo_ce_update_option( 'max_order_items', (int)$_POST['max_order_items'] );
+				$message = __( 'Changes have been saved.', 'woo_ce' );
+				woo_ce_admin_notice( $message );
+				break;
+
+			// This is where the magic happens
 			case 'export':
 				$export = new stdClass();
 				$export->start_time = time();
@@ -120,23 +140,14 @@ if( is_admin() ) {
 					if( $export->offset <> woo_ce_get_option( 'offset' ) )
 						woo_ce_update_option( 'offset', $export->offset );
 				}
-				$export->delete_temporary_csv = 0;
-				if( !empty( $_POST['delete_temporary_csv'] ) ) {
-					$export->delete_temporary_csv = (int)$_POST['delete_temporary_csv'];
-					if( $export->delete_temporary_csv <> woo_ce_get_option( 'delete_csv' ) )
-						woo_ce_update_option( 'delete_csv', $export->delete_temporary_csv );
-				}
+				$export->delete_temporary_csv = woo_ce_get_option( 'delete_csv', 0 );
 				$export->encoding = 'UTF-8';
 				if( !empty( $_POST['encoding'] ) ) {
 					$export->encoding = (string)$_POST['encoding'];
 					if( $export->encoding <> woo_ce_get_option( 'encoding' ) )
 						woo_ce_update_option( 'encoding', $export->encoding );
 				}
-				if( !empty( $_POST['date_format'] ) ) {
-					$export->date_format = (string)$_POST['date_format'];
-					if( $export->date_format <> woo_ce_get_option( 'date_format' ) )
-						woo_ce_update_option( 'date_format', $export->date_format );
-				}
+				$export->date_format = woo_ce_get_option( 'date_format', 'd/m/Y' );
 				$export->fields = false;
 				$export->product_categories = false;
 				$export->product_tags = false;
@@ -207,11 +218,7 @@ if( is_admin() ) {
 							if( $export->order_items <> woo_ce_get_option( 'order_items_formatting' ) )
 								woo_ce_update_option( 'order_items_formatting', $export->order_items );
 						}
-						if( isset( $_POST['max_order_items'] ) ) {
-							$export->max_order_items = (int)$_POST['max_order_items'];
-							if( $export->max_order_items <> woo_ce_get_option( 'max_order_items' ) )
-								woo_ce_update_option( 'max_order_items', $export->max_order_items );
-						}
+						$export->max_order_items = woo_ce_get_option( 'max_order_items', 10 );
 						$export->order_orderby = ( isset( $_POST['order_orderby'] ) ) ? $_POST['order_orderby'] : false;
 						if( $export->order_orderby <> woo_ce_get_option( 'order_orderby' ) )
 							woo_ce_update_option( 'order_orderby', $export->order_orderby );
@@ -286,7 +293,7 @@ if( is_admin() ) {
 							wp_redirect( add_query_arg( 'empty', true ) );
 							exit();
 						}
-						if( isset( $export->delete_temporary_csv ) && $export->delete_temporary_csv ) {
+						if( $export->delete_temporary_csv ) {
 
 							// Print to browser
 							woo_ce_generate_csv_header( $export->type );
@@ -306,6 +313,7 @@ if( is_admin() ) {
 								}
 								$attach_data = wp_generate_attachment_metadata( $post_ID, $upload['file'] );
 								wp_update_attachment_metadata( $post_ID, $attach_data );
+								update_attached_file( $post_ID, $upload['file'] );
 								if( $post_ID ) {
 									woo_ce_save_csv_file_guid( $post_ID, $export->type, $upload['url'] );
 									woo_ce_save_csv_file_details( $post_ID );

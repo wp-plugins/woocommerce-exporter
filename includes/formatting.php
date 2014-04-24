@@ -7,9 +7,8 @@ function woo_ce_file_encoding( $content = '' ) {
 		$to_encoding = $export->encoding;
 		// $from_encoding = 'auto';
 		$from_encoding = 'ISO-8859-1';
-		if( !empty( $to_encoding ) ) {
+		if( !empty( $to_encoding ) )
 			$content = mb_convert_encoding( trim( $content ), $to_encoding, $from_encoding );
-		}
 		if( $to_encoding == 'UTF-8' )
 			$content = utf8_decode( $content );
 	}
@@ -134,6 +133,26 @@ function woo_ce_format_visibility( $visibility = '' ) {
 
 			case 'hidden':
 				$output = __( 'Hidden', 'woo_ce' );
+				break;
+
+		}
+	}
+	return $output;
+
+}
+
+function woo_ce_format_download_type( $download_type = '' ) {
+
+	$output = __( 'Standard', 'woo_ce' );
+	if( $download_type ) {
+		switch( $download_type ) {
+
+			case 'application':
+				$output = __( 'Application', 'woo_ce' );
+				break;
+
+			case 'music':
+				$output = __( 'Music', 'woo_ce' );
 				break;
 
 		}
