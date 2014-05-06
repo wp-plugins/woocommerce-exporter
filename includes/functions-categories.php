@@ -2,20 +2,13 @@
 // Returns a list of WooCommerce Product Categories to export process
 function woo_ce_get_product_categories( $args = array() ) {
 
-	$orderby = 'name';
-	$order = 'ASC';
-	if( $args ) {
-		if( isset( $args['category_orderby'] ) )
-			$orderby = $args['category_orderby'];
-		if( isset( $args['category_order'] ) )
-			$order = $args['category_order'];
-	}
 	$term_taxonomy = 'product_cat';
-	$args = array(
-		'orderby' => $orderby,
-		'order' => $order,
+	$defaults = array(
+		'orderby' => 'name',
+		'order' => 'ASC',
 		'hide_empty' => 0
 	);
+	$args = wp_parse_args( $args, $defaults );
 	if( $categories = get_terms( $term_taxonomy, $args ) ) {
 		foreach( $categories as $key => $category ) {
 			$categories[$key]->parent_name = '';

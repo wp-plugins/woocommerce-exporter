@@ -1,3 +1,4 @@
+<?php do_action( 'woo_ce_export_settings_top' ); ?>
 <form method="post">
 	<table class="form-table">
 		<tbody>
@@ -22,6 +23,68 @@
 						<option value="1"<?php selected( $delete_csv, 1 ); ?>><?php _e( 'No', 'woo_ce' ); ?></option>
 					</select>
 					<p class="description"><?php _e( 'Save copies of CSV exports to the WordPress Media for downloading later. By default this option is turned on.', 'woo_ce' ); ?></p>
+				</td>
+			</tr>
+
+			<tr>
+				<th>
+					<label for="delimiter"><?php _e( 'Field delimiter', 'woo_ce' ); ?></label>
+				</th>
+				<td>
+					<input type="text" size="3" id="delimiter" name="delimiter" value="<?php echo $delimiter; ?>" size="1" maxlength="1" class="text" />
+					<p class="description"><?php _e( 'The field delimiter is the character separating each cell in your CSV. This is typically the \',\' (comma) character.', 'woo_pc' ); ?></p>
+				</td>
+			</tr>
+
+			<tr>
+				<th>
+					<label for="category_separator"><?php _e( 'Category separator', 'woo_ce' ); ?></label>
+				</th>
+				<td>
+					<input type="text" size="3" id="category_separator" name="category_separator" value="<?php echo $category_separator; ?>" size="1" class="text" />
+					<p class="description"><?php _e( 'The Product Category separator allows you to assign individual Products to multiple Product Categories/Tags/Images at a time. It is suggested to use the \'|\' (vertical pipe) character between each item. For instance: <code>Clothing|Mens|Shirts</code>.', 'woo_ce' ); ?></p>
+				</td>
+			</tr>
+
+			<tr>
+				<th>
+					<label for="bom"><?php _e( 'Add BOM character', 'woo_ce' ); ?>: </label>
+				</th>
+				<td>
+					<select id="bom" name="bom">
+						<option value="1"<?php selected( $bom, 1 ); ?>><?php _e( 'Yes', 'woo_ce' ); ?></option>
+						<option value="0"<?php selected( $bom, 0 ); ?>><?php _e( 'No', 'woo_ce' ); ?></option>
+					</select>
+					<p class="description"><?php _e( 'Mark the CSV file as UTF8 by adding a byte order mark (BOM) to the export, useful for non-English character sets.', 'woo_ce' ); ?></p>
+				</td>
+			</tr>
+
+			<tr>
+				<th>
+					<label for="encoding"><?php _e( 'Character encoding', 'woo_ce' ); ?>: </label>
+				</th>
+				<td>
+<?php if( $file_encodings ) { ?>
+					<select id="encoding" name="encoding">
+						<option value=""><?php _e( 'System default', 'woo_ce' ); ?></option>
+	<?php foreach( $file_encodings as $key => $chr ) { ?>
+						<option value="<?php echo $chr; ?>"<?php selected( $chr, $encoding ); ?>><?php echo $chr; ?></option>
+	<?php } ?>
+					</select>
+<?php } else { ?>
+					<p class="description"><?php _e( 'Character encoding options are unavailable in PHP 4, contact your hosting provider to update your site install to use PHP 5 or higher.', 'woo_ce' ); ?></p>
+<?php } ?>
+				</td>
+			</tr>
+
+			<tr>
+				<th>
+					<label for="escape_formatting"><?php _e( 'Field escape formatting', 'woo_ce' ); ?>: </label>
+				</th>
+				<td>
+					<label><input type="radio" name="escape_formatting" value="all"<?php checked( $escape_formatting, 'all' ); ?> />&nbsp;<?php _e( 'Escape all fields', 'woo_ce' ); ?></label><br />
+					<label><input type="radio" name="escape_formatting" value="excel"<?php checked( $escape_formatting, 'excel' ); ?> />&nbsp;<?php _e( 'Escape fields as Excel would', 'woo_ce' ); ?></label>
+					<p class="description"><?php _e( 'Choose the field escape format that suits your spreadsheet software (e.g. Excel).', 'woo_ce' ); ?></p>
 				</td>
 			</tr>
 
@@ -68,3 +131,4 @@
 
 	<input type="hidden" name="action" value="save" />
 </form>
+<?php do_action( 'woo_ce_export_settings_bottom' ); ?>

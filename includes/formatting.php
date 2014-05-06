@@ -374,6 +374,7 @@ function woo_ce_format_user_role_label( $user_role = '' ) {
 		$user_roles = woo_ce_get_user_roles();
 		if( isset( $user_roles[$user_role] ) )
 			$output = ucfirst( $user_roles[$user_role]['name'] );
+		unset( $user_roles );
 	}
 	return $output;
 
@@ -429,14 +430,14 @@ function woo_ce_format_product_category_label( $product_category = '', $parent_c
 if( !function_exists( 'woo_ce_expand_state_name' ) ) {
 	function woo_ce_expand_state_name( $country_prefix = '', $state_prefix = '' ) {
 
+		global $woocommerce;
+
 		$output = $state_prefix;
 		if( $output ) {
-			$countries = new WC_Countries();
-			if( $states = $countries->get_states( $country_prefix ) ) {
-				if( isset( $states[$state_prefix] ) ) {
-					$state = $states[$state_prefix];
-					$output = $state;
-				}
+			if( isset( $woocommerce->countries ) ) {
+				if( $states = $woocommerce->countries->get_states( $country_prefix ) )
+					$output = $states[$state_prefix];
+				unset( $states );
 			}
 		}
 		return $output;
@@ -447,11 +448,13 @@ if( !function_exists( 'woo_ce_expand_state_name' ) ) {
 if( !function_exists( 'woo_ce_expand_country_name' ) ) {
 	function woo_ce_expand_country_name( $country_prefix = '' ) {
 
+		global $woocommerce;
+
 		$output = $country_prefix;
 		if( $output ) {
-			$countries = new WC_Countries();
-			if( $country = $countries->countries[$country_prefix] )
-				$output = $country;
+			if( isset( $woocommerce->countries ) )
+				$output = $woocommerce->countries->countries[$country_prefix];
+			unset( $countries );
 		}
 		return $output;
 

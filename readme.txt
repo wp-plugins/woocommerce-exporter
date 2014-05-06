@@ -5,7 +5,7 @@ Donate link: http://www.visser.com.au/#donations
 Tags: e-commerce, woocommerce, shop, cart, ecommerce, export, csv, customers, products, sales, coupons
 Requires at least: 2.9.2
 Tested up to: 3.9
-Stable tag: 1.5.1
+Stable tag: 1.5.3
 
 == Description ==
 
@@ -27,8 +27,10 @@ Features include:
 * Export Coupons (**)
 * Toggle and save export fields
 * Works with WordPress Multisite
+* Supports external CRON commands
+* Supports scheduled exports
 
-(*) Compatible with Product Importer Deluxe, All in One SEO Pack, Advanced Google Product Feed, Product Addons, Sequential Order Number Pro, WooCommerce Checkout Manager, Cost of Goods, Per-Product Shipping and more.
+(*) Compatible with Product Importer Deluxe, All in One SEO Pack, Advanced Google Product Feed, Product Addons, Sequential Order Number Pro, WooCommerce Checkout Manager, Cost of Goods, Per-Product Shipping, Local Pickups Plus and more.
 (**) Requries the Pro upgrade to enable additional store export functionality.
 
 For more information visit: http://www.visser.com.au/woocommerce/
@@ -70,6 +72,30 @@ http://www.visser.com.au/woocommerce/forums/
 7. Download achived copies of previous exports
 
 == Changelog ==
+
+= 1.5.3 =
+* Added: Support for exporting Local Pickup Plus fields in Orders
+* Fixed: Memory leak in woo_ce_expand_state_name
+* Fixed: Memory leak in woo_ce_expand_country_name
+* Changed: Removed duplicate Order Items: Type field
+* Added: Disabled Custom Order Fields widget to Export screen
+* Changed: Using WP_Query instead of get_posts for bulk export
+* Changed: Cross-Sells and Up-Sells get their own formatting functions
+* Changed: Moved export function into common space for CRON and scheduled exports
+* Added: Toggle visibility of each export types fields within Export Options
+
+= 1.5.2 =
+* Added: Option for Up-Sells to export Product SKU instead of Product ID
+* Added: Option for Cross-Sells to export Product SKU instead of Product ID
+* Changed: Toggle visibility of dataset relevant export options
+* Changed: Moved Field delimiter option to Settings tab
+* Changed: Moved Category separator option to Settings tab
+* Changed: Moved Add BOM character option to Settings tab
+* Changed: Moved Character encoding option to Settings tab
+* Changed: Moved Field escape formatting option to Settings tab
+* Changed: Moved Order Item Formatting option to Export Options widget
+* Changed: Combined Volume offset and Limit volume
+* Added: Skip Overview screen option to Overview screen
 
 = 1.5.1 =
 * Fixed: CSV File not being displayed on Media screen

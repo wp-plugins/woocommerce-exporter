@@ -458,95 +458,47 @@
 			<h3 class="hndle"><?php _e( 'Export Options', 'woo_ce' ); ?></h3>
 			<div class="inside">
 				<p class="description"><?php _e( 'You can find additional export options under the Settings tab at the top of this screen.', 'woo_ce' ); ?></p>
+
+				<?php do_action( 'woo_ce_export_options_before' ); ?>
+
 				<table class="form-table">
 
 					<?php do_action( 'woo_ce_export_options' ); ?>
 
-					<tr>
-						<th>
-							<label for="delimiter"><?php _e( 'Field delimiter', 'woo_ce' ); ?></label>
-						</th>
+					<tr class="export-options product-options">
+						<th><label for=""><?php _e( 'Up-Sells Formatting', 'woo_ce' ); ?></label></th>
 						<td>
-							<input type="text" size="3" id="delimiter" name="delimiter" value="<?php echo $delimiter; ?>" size="1" maxlength="1" class="text" />
-							<p class="description"><?php _e( 'The field delimiter is the character separating each cell in your CSV. This is typically the \',\' (comma) character.', 'woo_pc' ); ?></p>
+							<label><input type="radio" name="product_upsell_formatting" value="0"<?php checked( $upsell_formatting, 0 ); ?> />&nbsp;<?php _e( 'Export Up-Sells as Product ID', 'woo_ce' ); ?></label><br />
+							<label><input type="radio" name="product_upsell_formatting" value="1"<?php checked( $upsell_formatting, 1 ); ?> />&nbsp;<?php _e( 'Export Up-Sells as Product SKU', 'woo_ce' ); ?></label>
+							<p class="description"><?php _e( 'Choose the up-sell formatting that is accepted by your WooCommerce import Plugin (e.g. Product Importer Deluxe, Product Import Suite, etc.).', 'woo_ce' ); ?></p>
+						</td>
+					</tr>
+
+					<tr class="export-options product-options">
+						<th><label for=""><?php _e( 'Cross-Sells Formatting', 'woo_ce' ); ?></label></th>
+						<td>
+							<label><input type="radio" name="product_crosssell_formatting" value="0"<?php checked( $crosssell_formatting, 0 ); ?> />&nbsp;<?php _e( 'Export Cross-Sells as Product ID', 'woo_ce' ); ?></label><br />
+							<label><input type="radio" name="product_crosssell_formatting" value="1"<?php checked( $crosssell_formatting, 1 ); ?> />&nbsp;<?php _e( 'Export Cross-Sells as Product SKU', 'woo_ce' ); ?></label>
+							<p class="description"><?php _e( 'Choose the cross-sell formatting that is accepted by your WooCommerce import Plugin (e.g. Product Importer Deluxe, Product Import Suite, etc.).', 'woo_ce' ); ?></p>
 						</td>
 					</tr>
 
 					<tr>
 						<th>
-							<label for="category_separator"><?php _e( 'Category separator', 'woo_ce' ); ?></label>
+							<label for="offset"><?php _e( 'Volume offset', 'woo_ce' ); ?></label> / <label for="limit_volume"><?php _e( 'Limit volume', 'woo_ce' ); ?></label>
 						</th>
 						<td>
-							<input type="text" size="3" id="category_separator" name="category_separator" value="<?php echo $category_separator; ?>" size="1" class="text" />
-							<p class="description"><?php _e( 'The Product Category separator allows you to assign individual Products to multiple Product Categories/Tags/Images at a time. It is suggested to use the \'|\' (vertical pipe) character between each item. For instance: <code>Clothing|Mens|Shirts</code>.', 'woo_ce' ); ?></p>
+							<input type="text" size="3" id="offset" name="offset" value="<?php echo $offset; ?>" size="5" class="text" /> <?php _e( 'to', 'woo_ce' ); ?> <input type="text" size="3" id="limit_volume" name="limit_volume" value="<?php echo $limit_volume; ?>" size="5" class="text" />
+							<p class="description"><?php _e( 'Volume offset and limit allows for partial exporting of a dataset (e.g. records 0 to 500, etc.). This is useful when encountering timeout and/or memory errors during the a large or memory intensive export. To be used effectively both fields must be filled. By default this is not used and is left empty.', 'woo_ce' ); ?></p>
 						</td>
 					</tr>
 
-					<tr>
-						<th>
-							<label for="escape_formatting"><?php _e( 'Field escape formatting', 'woo_ce' ); ?>: </label>
-						</th>
-						<td>
-							<label><input type="radio" name="escape_formatting" value="all"<?php checked( $escape_formatting, 'all' ); ?> />&nbsp;<?php _e( 'Escape all fields', 'woo_ce' ); ?></label><br />
-							<label><input type="radio" name="escape_formatting" value="excel"<?php checked( $escape_formatting, 'excel' ); ?> />&nbsp;<?php _e( 'Escape fields as Excel would', 'woo_ce' ); ?></label>
-							<p class="description"><?php _e( 'Choose the field escape format that suits your spreadsheet software (e.g. Excel).', 'woo_ce' ); ?></p>
-						</td>
-					</tr>
-
-					<tr>
-						<th>
-							<label for="offset"><?php _e( 'Volume offset', 'woo_ce' ); ?></label>
-						</th>
-						<td>
-							<input type="text" size="3" id="offset" name="offset" value="<?php echo $offset; ?>" size="5" class="text" />
-							<p class="description"><?php _e( 'Volume offset allows for partial exporting of a dataset, to be used in conjuction with Limit volme option above. By default this is not used and is left empty.', 'woo_ce' ); ?></p>
-						</td>
-					</tr>
-
-					<tr>
-						<th>
-							<label for="limit_volume"><?php _e( 'Limit volume', 'woo_ce' ); ?></label>
-						</th>
-						<td>
-							<input type="text" size="3" id="limit_volume" name="limit_volume" value="<?php echo $limit_volume; ?>" size="5" class="text" />
-							<p class="description"><?php _e( 'Limit volume allows for partial exporting of a dataset. This is useful when encountering timeout and/or memory errors during the default export. By default this is not used and is left empty.', 'woo_ce' ); ?></p>
-						</td>
-					</tr>
-
-					<tr>
-						<th>
-							<label for="bom"><?php _e( 'Add BOM character', 'woo_ce' ); ?>: </label>
-						</th>
-						<td>
-							<select id="bom" name="bom">
-								<option value="1"<?php selected( $bom, 1 ); ?>><?php _e( 'Yes', 'woo_ce' ); ?></option>
-								<option value="0"<?php selected( $bom, 0 ); ?>><?php _e( 'No', 'woo_ce' ); ?></option>
-							</select>
-							<p class="description"><?php _e( 'Mark the CSV file as UTF8 by adding a byte order mark (BOM) to the export, useful for non-English character sets.', 'woo_ce' ); ?></p>
-						</td>
-					</tr>
-
-					<tr>
-						<th>
-							<label for="encoding"><?php _e( 'Character encoding', 'woo_ce' ); ?>: </label>
-						</th>
-						<td>
-<?php if( $file_encodings ) { ?>
-							<select id="encoding" name="encoding">
-								<option value=""><?php _e( 'System default', 'woo_ce' ); ?></option>
-	<?php foreach( $file_encodings as $key => $chr ) { ?>
-								<option value="<?php echo $chr; ?>"<?php selected( $chr, $encoding ); ?>><?php echo $chr; ?></option>
-	<?php } ?>
-							</select>
-<?php } else { ?>
-							<p class="description"><?php _e( 'Character encoding options are unavailable in PHP 4, contact your hosting provider to update your site install to use PHP 5 or higher.', 'woo_ce' ); ?></p>
-<?php } ?>
-						</td>
-					</tr>
-
-					<?php do_action( 'woo_ce_export_options_after' ); ?>
+					<?php do_action( 'woo_ce_export_options_table_after' ); ?>
 
 				</table>
+
+				<?php do_action( 'woo_ce_export_options_after' ); ?>
+
 			</div>
 		</div>
 		<!-- .postbox -->

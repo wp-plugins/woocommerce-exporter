@@ -1,6 +1,10 @@
 var $j = jQuery.noConflict();
 $j(function() {
 
+	$j('#skip_overview').click(function(){
+		$j('#skip_overview_form').submit();
+	});
+
 	// Date Picker
 	$j('.datepicker').datepicker({
 		dateFormat: 'dd/mm/yy'
@@ -79,6 +83,9 @@ $j(function() {
 		$j('#export-orders').hide();
 		$j('#export-customers').hide();
 		$j('#export-coupons').hide();
+
+		$j('.export-options').hide();
+		$j('.product-options').show();
 	});
 	$j('#categories').click(function(){
 		$j('#export-products').hide();
@@ -87,6 +94,9 @@ $j(function() {
 		$j('#export-orders').hide();
 		$j('#export-customers').hide();
 		$j('#export-coupons').hide();
+
+		$j('.export-options').hide();
+		$j('.category-options').show();
 	});
 	$j('#tags').click(function(){
 		$j('#export-products').hide();
@@ -95,6 +105,9 @@ $j(function() {
 		$j('#export-orders').hide();
 		$j('#export-customers').hide();
 		$j('#export-coupons').hide();
+
+		$j('.export-options').hide();
+		$j('.tag-options').show();
 	});
 	$j('#orders').click(function(){
 		$j('#export-products').hide();
@@ -103,6 +116,9 @@ $j(function() {
 		$j('#export-orders').show();
 		$j('#export-customers').hide();
 		$j('#export-coupons').hide();
+
+		$j('.export-options').hide();
+		$j('.order-options').show();
 	});
 	$j('#customers').click(function(){
 		$j('#export-products').hide();
@@ -111,6 +127,9 @@ $j(function() {
 		$j('#export-orders').hide();
 		$j('#export-customers').show();
 		$j('#export-coupons').hide();
+
+		$j('.export-options').hide();
+		$j('.customer-options').show();
 	});
 	$j('#coupons').click(function(){
 		$j('#export-products').hide();
@@ -119,6 +138,9 @@ $j(function() {
 		$j('#export-orders').hide();
 		$j('#export-customers').hide();
 		$j('#export-coupons').show();
+
+		$j('.export-options').hide();
+		$j('.coupon-options').show();
 	});
 
 	// Export button

@@ -308,11 +308,6 @@ function woo_ce_get_order_fields( $format = 'full' ) {
 		'default' => 1
 	);
 	$fields[] = array(
-		'name' => 'order_items_type',
-		'label' => __( 'Order Items: Type', 'woo_ce' ),
-		'default' => 1
-	);
-	$fields[] = array(
 		'name' => 'order_items_category',
 		'label' => __( 'Order Items: Category', 'woo_ce' ),
 		'default' => 1
@@ -410,6 +405,57 @@ function woo_ce_get_order_statuses() {
 	);
 	$terms = get_terms( 'shop_order_status', $args );
 	return $terms;
+
+}
+
+// HTML template for disabled Custom Orders widget on Store Exporter screen
+function woo_ce_orders_custom_fields() {
+
+	ob_start(); ?>
+<form method="post" id="export-orders-custom-fields" class="export-options order-options">
+	<div id="poststuff">
+
+		<div class="postbox" id="export-options">
+			<h3 class="hndle"><?php _e( 'Custom Order Fields', 'woo_ce' ); ?></h3>
+			<div class="inside">
+				<p class="description"><?php _e( 'To include additional custom Order and Order Item meta in the Export Orders table above fill the Orders and Order Items text box then click Save Custom Fields.', 'woo_ce' ); ?></p>
+				<table class="form-table">
+
+					<tr>
+						<th>
+							<label><?php _e( 'Order Meta', 'woo_ce' ); ?></label>
+						</th>
+						<td>
+							<textarea name="custom_orders" rows="5" cols="70" disabled="disabled">-</textarea>
+							<p class="description"><?php _e( 'Include additional custom Order meta in your exported CSV by adding each custom Order meta name to a new line above.<br />For example: <code>Customer UA, Customer IP Address</code>', 'woo_ce' ); ?></p>
+						</td>
+					</tr>
+
+					<tr>
+						<th>
+							<label><?php _e( 'Order Item Meta', 'woo_ce' ); ?></label>
+						</th>
+						<td>
+							<textarea name="custom_order_items" rows="5" cols="70" disabled="disabled">-</textarea>
+							<p class="description"><?php _e( 'Include additional custom Order Item meta in your exported CSV by adding each custom Order Item meta name to a new line above.<br />For example: <code>Personalized Message</code>.', 'woo_ce' ); ?></p>
+						</td>
+					</tr>
+
+				</table>
+				<p class="submit">
+					<input type="submit" value="<?php _e( 'Save Custom Fields', 'woo_ce' ); ?>" class="button-primary" />
+				</p>
+				<p class="description"><?php _e( 'For more information on custom Order and Order Item meta consult our online documentation.', 'woo_ce' ); ?></p>
+			</div>
+			<!-- .inside -->
+		</div>
+		<!-- .postbox -->
+
+	</div>
+	<input type="hidden" name="action" value="update" />
+</form>
+<?php
+	ob_end_flush();
 
 }
 

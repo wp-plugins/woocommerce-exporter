@@ -35,8 +35,24 @@
 	<h3><a href="<?php echo add_query_arg( 'tab', 'archive' ); ?>"><?php _e( 'Archives', 'woo_ce' ); ?></a></h3>
 	<p><?php _e( 'Download copies of prior store exports.', 'woo_ce' ); ?></p>
 
+	<h3><a href="<?php echo add_query_arg( 'tab', 'settings' ); ?>"><?php _e( 'Settings', 'woo_ce' ); ?></a></h3>
+	<p><?php _e( 'Manage CSV export options from a single detailed screen.', 'woo_ce' ); ?></p>
+
 	<h3><a href="<?php echo add_query_arg( 'tab', 'tools' ); ?>"><?php _e( 'Tools', 'woo_ce' ); ?></a></h3>
 	<p><?php _e( 'Export tools for WooCommerce.', 'woo_ce' ); ?></p>
+
+	<hr />
+<?php if( !function_exists( 'woo_cd_admin_init' ) ) { ?>
+	<label class="description">
+		<input type="checkbox" disabled="disabled" /> <?php _e( 'Jump to Export screen in the future', 'woo_ce' ); ?>
+		<span class="description"> - <?php printf( __( 'available in %s', 'woo_ce' ), $woo_cd_link ); ?></span>
+	</label>
+<?php } else { ?>
+	<form id="skip_overview_form" method="post">
+		<label><input type="checkbox" id="skip_overview" name="skip_overview"<?php checked( $skip_overview ); ?> /> <?php _e( 'Jump to Export screen in the future', 'woo_ce' ); ?></label>
+		<input type="hidden" name="action" value="skip_overview" />
+	</form>
+<?php } ?>
 
 </div>
 <!-- .overview-left -->
@@ -51,10 +67,12 @@
 		<li><?php _e( 'Select export date ranges', 'woo_ce' ); ?></li>
 		<li><?php _e( 'Export Orders', 'woo_ce' ); ?></li>
 		<li><?php _e( 'Select Order fields to export', 'woo_ce' ); ?></li>
+		<li><?php _e( 'Export custom Order Meta and Order Item Meta', 'woo_ce' ); ?></li>
 		<li><?php _e( 'Export Customers', 'woo_ce' ); ?></li>
 		<li><?php _e( 'Select Customer fields to export', 'woo_ce' ); ?></li>
 		<li><?php _e( 'Export Coupons', 'woo_ce' ); ?></li>
 		<li><?php _e( 'Select Coupon fields to export', 'woo_ce' ); ?></li>
+		<li><?php _e( 'CRON / Scheduled Exports', 'woo_ce' ); ?></li>
 		<li><?php _e( 'Premium Support', 'woo_ce' ); ?></li>
 	</ul>
 	<p>
@@ -62,5 +80,5 @@
 		<a href="<?php echo $woo_cd_url; ?>" target="_blank" class="button button-primary"><?php _e( 'Buy Now', 'woo_ce' ); ?></a>
 	</p>
 </div>
-<?php } ?>
 <!-- .overview-right -->
+<?php } ?>

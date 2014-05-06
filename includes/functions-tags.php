@@ -2,20 +2,13 @@
 // Returns a list of WooCommerce Product Tags to export process
 function woo_ce_get_product_tags( $args = array() ) {
 
-	$orderby = 'name';
-	$order = 'ASC';
-	if( $args ) {
-		if( isset( $args['tag_orderby'] ) )
-			$orderby = $args['tag_orderby'];
-		if( isset( $args['tag_order'] ) )
-			$order = $args['tag_order'];
-	}
 	$term_taxonomy = 'product_tag';
-	$args = array(
-		'orderby' => $orderby,
-		'order' => $order,
+	$defaults = array(
+		'orderby' => 'name',
+		'order' => 'ASC',
 		'hide_empty' => 0
 	);
+	$args = wp_parse_args( $args, $defaults );
 	if( $tags = get_terms( $term_taxonomy, $args ) ) {
 		$size = count( $tags );
 		for( $i = 0; $i < $size; $i++ ) {

@@ -1,40 +1,38 @@
 <?php
 // HTML template for Custom Products widget on Store Exporter screen
 function woo_ce_products_custom_fields() { ?>
-<div id="export-products-custom-fields-link" class="separator">
-	<form method="post" id="export-products-custom-fields">
-		<div id="poststuff">
+<form method="post" id="export-products-custom-fields" class="export-options product-options">
+	<div id="poststuff">
 
-			<div class="postbox" id="export-options">
-				<h3 class="hndle"><?php _e( 'Custom Product Fields', 'woo_ce' ); ?></h3>
-				<div class="inside">
-					<p class="description"><?php _e( 'To include additional custom Product meta in the Export Products table above fill the Products text box then click Save Custom Fields.', 'woo_ce' ); ?></p>
-					<table class="form-table">
+		<div class="postbox" id="export-options">
+			<h3 class="hndle"><?php _e( 'Custom Product Fields', 'woo_ce' ); ?></h3>
+			<div class="inside">
+				<p class="description"><?php _e( 'To include additional custom Product meta in the Export Products table above fill the Products text box then click Save Custom Fields.', 'woo_ce' ); ?></p>
+				<table class="form-table">
 
-						<tr>
-							<th>
-								<label><?php _e( 'Product Meta', 'woo_ce' ); ?></label>
-							</th>
-							<td>
-								<textarea name="custom_products" rows="5" cols="70" disabled="disabled"><?php echo $custom_products; ?></textarea>
-								<p class="description"><?php _e( 'Include additional custom Product meta in your exported CSV by adding each custom Product meta name to a new line above.<br />For example: <code>Customer UA, Customer IP Address</code>', 'woo_ce' ); ?></p>
-							</td>
-						</tr>
+					<tr>
+						<th>
+							<label><?php _e( 'Product Meta', 'woo_ce' ); ?></label>
+						</th>
+						<td>
+							<textarea name="custom_products" rows="5" cols="70" disabled="disabled">-</textarea>
+							<p class="description"><?php _e( 'Include additional custom Product meta in your exported CSV by adding each custom Product meta name to a new line above.<br />For example: <code>Customer UA, Customer IP Address</code>', 'woo_ce' ); ?></p>
+						</td>
+					</tr>
 
-					</table>
-					<p class="submit">
-						<input type="submit" value="<?php _e( 'Save Custom Fields', 'woo_ce' ); ?>" class="button button-disabled" />
-					</p>
-					<p class="description"><?php _e( 'For more information on custom Product meta consult our online documentation.', 'woo_ce' ); ?></p>
-				</div>
-				<!-- .inside -->
+				</table>
+				<p class="submit">
+					<input type="submit" value="<?php _e( 'Save Custom Fields', 'woo_ce' ); ?>" class="button button-disabled" />
+				</p>
+				<p class="description"><?php _e( 'For more information on custom Product meta consult our online documentation.', 'woo_ce' ); ?></p>
 			</div>
-			<!-- .postbox -->
-
+			<!-- .inside -->
 		</div>
-		<input type="hidden" name="action" value="update" />
-	</form>
-<!-- #export-products-custom-fields-link -->
+		<!-- .postbox -->
+
+	</div>
+	<input type="hidden" name="action" value="update" />
+</form>
 <?php
 	ob_end_flush();
 
@@ -49,6 +47,8 @@ function woo_ce_get_products( $args = array() ) {
 	$product_tags = false;
 	$product_status = false;
 	$product_type = false;
+	$orderby = 'ID';
+	$order = 'ASC';
 	if( $args ) {
 		$limit_volume = $args['limit_volume'];
 		$offset = $args['offset'];
@@ -68,12 +68,13 @@ function woo_ce_get_products( $args = array() ) {
 	$post_type = array( 'product', 'product_variation' );
 	$args = array(
 		'post_type' => $post_type,
-		'numberposts' => $limit_volume,
 		'orderby' => $orderby,
 		'order' => $order,
 		'offset' => $offset,
+		'posts_per_page' => $limit_volume,
 		'post_status' => woo_ce_post_statuses(),
-		'cache_results' => false
+		'no_found_rows' => false,
+		'fields' => 'ids'
 	);
 	if( $product_categories ) {
 		$term_taxonomy = 'product_cat';
@@ -110,104 +111,121 @@ function woo_ce_get_products( $args = array() ) {
 			);
 		}
 	}
-	if( $products = get_posts( $args ) ) {
-		$weight_unit = get_option( 'woocommerce_weight_unit' );
-		$dimension_unit = get_option( 'woocommerce_dimension_unit' );
-		$height_unit = $dimension_unit;
-		$width_unit = $dimension_unit;
-		$length_unit = $dimension_unit;
-		foreach( $products as $key => $product ) {
-			$products[$key]->parent_id = '';
-			$products[$key]->parent_sku = '';
+	$products = array();
+	$product_ids = new WP_Query( $args );
+	if( $product_ids->posts ) {
+		foreach( $product_ids->posts as $product_id ) {
+			$product = get_post( $product_id );
 			if( $product->post_type == 'product_variation' ) {
-				// Assign Parent ID for Variants then check if Parent exists
-				if( $products[$key]->parent_id = $product->post_parent ) {
-					if( !get_post( $products[$key]->parent_id ) ) {
-						unset( $products[$key] );
+				// Check if Parent exists
+				if( $product->post_parent ) {
+					if( !get_post( $product->post_parent ) ) {
+						unset( $product );
 						continue;
 					}
-					$products[$key]->parent_sku = get_post_meta( $product->post_parent, '_sku', true );
-				} else {
-					$products[$key]->parent_id = '';
 				}
 			}
-			$products[$key]->product_id = $product->ID;
-			$products[$key]->sku = get_post_meta( $product->ID, '_sku', true );
-			$products[$key]->name = get_the_title( $product->ID );
-			$products[$key]->description = $product->post_content;
-			$products[$key]->regular_price = get_post_meta( $product->ID, '_regular_price', true );
-			$products[$key]->price = get_post_meta( $product->ID, '_price', true );
-			if( !empty( $products[$key]->regular_price ) && ( $products[$key]->regular_price <> $products[$key]->price ) )
-				$products[$key]->price = $products[$key]->regular_price;
-			$products[$key]->sale_price = get_post_meta( $product->ID, '_sale_price', true );
-			$products[$key]->sale_price_dates_from = woo_ce_format_sale_price_dates( get_post_meta( $product->ID, '_sale_price_dates_from', true ) );
-			$products[$key]->sale_price_dates_to = woo_ce_format_sale_price_dates( get_post_meta( $product->ID, '_sale_price_dates_to', true ) );
-			$products[$key]->slug = $product->post_name;
-			$products[$key]->permalink = get_permalink( $product->ID );
-			$products[$key]->excerpt = $product->post_excerpt;
-			$products[$key]->post_date = woo_ce_format_date( $product->post_date );
-			$products[$key]->post_modified = woo_ce_format_date( $product->post_modified );
-			$products[$key]->type = woo_ce_get_product_assoc_type( $product->ID );
-			if( $product->post_type == 'product_variation' )
-				$products[$key]->type = __( 'Variation', 'woo_ce' );
-			$products[$key]->visibility = woo_ce_format_visibility( get_post_meta( $product->ID, '_visibility', true ) );
-			$products[$key]->featured = woo_ce_format_switch( get_post_meta( $product->ID, '_featured', true ) );
-			$products[$key]->virtual = woo_ce_format_switch( get_post_meta( $product->ID, '_virtual', true ) );
-			$products[$key]->downloadable = woo_ce_format_switch( get_post_meta( $product->ID, '_downloadable', true ) );
-			$products[$key]->weight = get_post_meta( $product->ID, '_weight', true );
-			// $products[$key]->weight_unit = $weight_unit;
-			$products[$key]->weight_unit = ( $products[$key]->weight != '' ? $weight_unit : '' );
-			$products[$key]->height = get_post_meta( $product->ID, '_height', true );
-			// $products[$key]->height_unit = $height_unit;
-			$products[$key]->height_unit = ( $products[$key]->height != '' ? $height_unit : '' );
-			$products[$key]->width = get_post_meta( $product->ID, '_width', true );
-			// $products[$key]->width_unit = $width_unit;
-			$products[$key]->width_unit = ( $products[$key]->width != '' ? $width_unit : '' );
-			$products[$key]->length = get_post_meta( $product->ID, '_length', true );
-			// $products[$key]->length_unit = $length_unit;
-			$products[$key]->length_unit = ( $products[$key]->length != '' ? $length_unit : '' );
-			$products[$key]->category = woo_ce_get_product_assoc_categories( $product->ID, $products[$key]->parent_id );
-			$products[$key]->tag = woo_ce_get_product_assoc_tags( $product->ID );
-			$products[$key]->manage_stock = woo_ce_format_switch( get_post_meta( $product->ID, '_manage_stock', true ) );
-			$products[$key]->allow_backorders = woo_ce_format_switch( get_post_meta( $product->ID, '_backorders', true ) );
-			$products[$key]->sold_individually = woo_ce_format_switch( get_post_meta( $product->ID, '_sold_individually', true ) );
-			$products[$key]->upsell_ids = woo_ce_convert_product_ids( get_post_meta( $product->ID, '_upsell_ids', true ) );
-			$products[$key]->crosssell_ids = woo_ce_convert_product_ids( get_post_meta( $product->ID, '_crosssell_ids', true ) );
-			$products[$key]->quantity = get_post_meta( $product->ID, '_stock', true );
-			$products[$key]->stock_status = woo_ce_format_stock_status( get_post_meta( $product->ID, '_stock_status', true ), $products[$key]->quantity );
-			$products[$key]->image = woo_ce_get_product_assoc_featured_image( $product->ID );
-			$products[$key]->product_gallery = woo_ce_get_product_assoc_product_gallery( $product->ID );
-			$products[$key]->tax_status = woo_ce_format_tax_status( get_post_meta( $product->ID, '_tax_status', true ) );
-			$products[$key]->tax_class = woo_ce_format_tax_class( get_post_meta( $product->ID, '_tax_class', true ) );
-			$products[$key]->product_url = get_post_meta( $product->ID, '_product_url', true );
-			$products[$key]->button_text = get_post_meta( $product->ID, '_button_text', true );
-			$products[$key]->file_download = woo_ce_get_product_assoc_file_downloads( $product->ID );
-			$products[$key]->download_limit = get_post_meta( $product->ID, '_download_limit', true );
-			$products[$key]->download_expiry = get_post_meta( $product->ID, '_download_expiry', true );
-			$products[$key]->download_type = woo_ce_format_download_type( get_post_meta( $product->ID, '_download_type', true ) );
-			$products[$key]->purchase_note = get_post_meta( $product->ID, '_purchase_note', true );
-			$products[$key]->product_status = woo_ce_format_product_status( $product->post_status );
-			$products[$key]->enable_reviews = woo_ce_format_comment_status( $product->comment_status );
-			$products[$key]->menu_order = $product->menu_order;
-			if( $attributes = woo_ce_get_product_attributes() ) {
-				if( $product->post_type == 'product_variation' ) {
-					foreach( $attributes as $attribute ) {
-						$products[$key]->{'attribute_' . $attribute->attribute_name} = get_post_meta( $product->ID, sprintf( 'attribute_pa_%s', $attribute->attribute_name ), true );
-					}
-				} else {
-					$products[$key]->attributes = maybe_unserialize( get_post_meta( $product->ID, '_product_attributes', true ) );
-					if( !empty( $products[$key]->attributes ) ) {
-						foreach( $attributes as $attribute ) {
-							if( isset( $products[$key]->attributes['pa_' . $attribute->attribute_name] ) )
-								$products[$key]->{'attribute_' . $attribute->attribute_name} = woo_ce_get_product_assoc_attributes( $product->ID, $products[$key]->attributes['pa_' . $attribute->attribute_name] );
-						}
-					}
-				}
-			}
-			$products[$key] = apply_filters( 'woo_ce_product_item', $products[$key], $product->ID );
+			$products[] = $product_id;
 		}
+		unset( $product_ids, $product_id );
 	}
 	return $products;
+
+}
+
+function woo_ce_get_product_data( $product_id = 0, $args = array() ) {
+
+	// Get Product defaults
+	$weight_unit = get_option( 'woocommerce_weight_unit' );
+	$dimension_unit = get_option( 'woocommerce_dimension_unit' );
+	$height_unit = $dimension_unit;
+	$width_unit = $dimension_unit;
+	$length_unit = $dimension_unit;
+
+	$product = get_post( $product_id );
+	$product->parent_id = '';
+	$product->parent_sku = '';
+	if( $product->post_type == 'product_variation' ) {
+		// Assign Parent ID for Variants then check if Parent exists
+		if( $product->parent_id = $product->post_parent )
+			$product->parent_sku = get_post_meta( $product->post_parent, '_sku', true );
+		else
+			$product->parent_id = '';
+	}
+	$product->product_id = $product->ID;
+	$product->sku = get_post_meta( $product->ID, '_sku', true );
+	$product->name = get_the_title( $product->ID );
+	$product->permalink = get_permalink( $product->ID );
+	$product->slug = $product->post_name;
+	$product->description = $product->post_content;
+	$product->excerpt = $product->post_excerpt;
+	$product->regular_price = get_post_meta( $product->ID, '_regular_price', true );
+	$product->price = get_post_meta( $product->ID, '_price', true );
+	if( !empty( $product->regular_price ) && ( $product->regular_price <> $product->price ) )
+		$product->price = $product->regular_price;
+	$product->sale_price = get_post_meta( $product->ID, '_sale_price', true );
+	$product->sale_price_dates_from = woo_ce_format_sale_price_dates( get_post_meta( $product->ID, '_sale_price_dates_from', true ) );
+	$product->sale_price_dates_to = woo_ce_format_sale_price_dates( get_post_meta( $product->ID, '_sale_price_dates_to', true ) );
+	$product->post_date = woo_ce_format_date( $product->post_date );
+	$product->post_modified = woo_ce_format_date( $product->post_modified );
+	$product->type = woo_ce_get_product_assoc_type( $product->ID );
+	if( $product->post_type == 'product_variation' )
+		$product->type = __( 'Variation', 'woo_ce' );
+	$product->visibility = woo_ce_format_visibility( get_post_meta( $product->ID, '_visibility', true ) );
+	$product->featured = woo_ce_format_switch( get_post_meta( $product->ID, '_featured', true ) );
+	$product->virtual = woo_ce_format_switch( get_post_meta( $product->ID, '_virtual', true ) );
+	$product->downloadable = woo_ce_format_switch( get_post_meta( $product->ID, '_downloadable', true ) );
+	$product->weight = get_post_meta( $product->ID, '_weight', true );
+	// $product->weight_unit = $weight_unit;
+	$product->weight_unit = ( $product->weight != '' ? $weight_unit : '' );
+	$product->height = get_post_meta( $product->ID, '_height', true );
+	// $product->height_unit = $height_unit;
+	$product->height_unit = ( $product->height != '' ? $height_unit : '' );
+	$product->width = get_post_meta( $product->ID, '_width', true );
+	// $product->width_unit = $width_unit;
+	$product->width_unit = ( $product->width != '' ? $width_unit : '' );
+	$product->length = get_post_meta( $product->ID, '_length', true );
+	// $product->length_unit = $length_unit;
+	$product->length_unit = ( $product->length != '' ? $length_unit : '' );
+	$product->category = woo_ce_get_product_assoc_categories( $product->ID, $product->parent_id );
+	$product->tag = woo_ce_get_product_assoc_tags( $product->ID );
+	$product->manage_stock = woo_ce_format_switch( get_post_meta( $product->ID, '_manage_stock', true ) );
+	$product->allow_backorders = woo_ce_format_switch( get_post_meta( $product->ID, '_backorders', true ) );
+	$product->sold_individually = woo_ce_format_switch( get_post_meta( $product->ID, '_sold_individually', true ) );
+	$product->upsell_ids = woo_ce_get_product_assoc_upsell_ids( $product->ID );
+	$product->crosssell_ids = woo_ce_get_product_assoc_crosssell_ids( $product->ID );
+	$product->quantity = get_post_meta( $product->ID, '_stock', true );
+	$product->stock_status = woo_ce_format_stock_status( get_post_meta( $product->ID, '_stock_status', true ), $product->quantity );
+	$product->image = woo_ce_get_product_assoc_featured_image( $product->ID );
+	$product->product_gallery = woo_ce_get_product_assoc_product_gallery( $product->ID );
+	$product->tax_status = woo_ce_format_tax_status( get_post_meta( $product->ID, '_tax_status', true ) );
+	$product->tax_class = woo_ce_format_tax_class( get_post_meta( $product->ID, '_tax_class', true ) );
+	$product->product_url = get_post_meta( $product->ID, '_product_url', true );
+	$product->button_text = get_post_meta( $product->ID, '_button_text', true );
+	$product->file_download = woo_ce_get_product_assoc_file_downloads( $product->ID );
+	$product->download_limit = get_post_meta( $product->ID, '_download_limit', true );
+	$product->download_expiry = get_post_meta( $product->ID, '_download_expiry', true );
+	$product->download_type = woo_ce_format_download_type( get_post_meta( $product->ID, '_download_type', true ) );
+	$product->purchase_note = get_post_meta( $product->ID, '_purchase_note', true );
+	$product->product_status = woo_ce_format_product_status( $product->post_status );
+	$product->enable_reviews = woo_ce_format_comment_status( $product->comment_status );
+	$product->menu_order = $product->menu_order;
+	if( $attributes = woo_ce_get_product_attributes() ) {
+		if( $product->post_type == 'product_variation' ) {
+			foreach( $attributes as $attribute ) {
+				$product->{'attribute_' . $attribute->attribute_name} = get_post_meta( $product->ID, sprintf( 'attribute_pa_%s', $attribute->attribute_name ), true );
+			}
+		} else {
+			$product->attributes = maybe_unserialize( get_post_meta( $product->ID, '_product_attributes', true ) );
+			if( !empty( $product->attributes ) ) {
+				foreach( $attributes as $attribute ) {
+					if( isset( $product->attributes['pa_' . $attribute->attribute_name] ) )
+						$product->{'attribute_' . $attribute->attribute_name} = woo_ce_get_product_assoc_attributes( $product->ID, $product->attributes['pa_' . $attribute->attribute_name] );
+				}
+			}
+		}
+	}
+	return apply_filters( 'woo_ce_product_item', $product, $product->ID );
 
 }
 
@@ -321,6 +339,57 @@ function woo_ce_get_product_assoc_type( $product_id = 0 ) {
 	}
 	return $output;
 
+}
+
+// Returns the Up-Sell associated to a specific Product
+function woo_ce_get_product_assoc_upsell_ids( $product_id = 0 ) {
+
+	global $export;
+
+	$output = '';
+	if( $product_id ) {
+		$upsell_ids = get_post_meta( $product_id, '_upsell_ids', true );
+		// Convert Product ID to Product SKU as per Up-Sells Formatting
+		if( $export->upsell_formatting == 1 && !empty( $upsell_ids ) ) {
+			$size = count( $upsell_ids );
+			for( $i = 0; $i < $size; $i++ ) {
+				$upsell_ids[$i] = get_post_meta( $upsell_ids[$i], '_sku', true );
+				if( empty( $upsell_ids[$i] ) )
+					unset( $upsell_ids[$i] );
+			}
+			// 'reindex' array
+			$upsell_ids = array_values( $upsell_ids );
+		}
+		$output = woo_ce_convert_product_ids( $upsell_ids );
+	}
+	return $output;
+
+}
+
+// Returns the Cross-Sell associated to a specific Product
+function woo_ce_get_product_assoc_crosssell_ids( $product_id = 0 ) {
+
+	global $export;
+
+	$output = '';
+	if( $product_id ) {
+		$crosssell_ids = get_post_meta( $product_id, '_crosssell_ids', true );
+		// Convert Product ID to Product SKU as per Cross-Sells Formatting
+		if( $export->crosssell_formatting == 1 && !empty( $crosssell_ids ) ) {
+			$size = count( $crosssell_ids );
+			for( $i = 0; $i < $size; $i++ ) {
+				$crosssell_ids[$i] = get_post_meta( $crosssell_ids[$i], '_sku', true );
+				// Remove Cross-Sell if SKU is empty
+				if( empty( $crosssell_ids[$i] ) )
+					unset( $crosssell_ids[$i] );
+			}
+			// 'reindex' array
+			$crosssell_ids = array_values( $crosssell_ids );
+		}
+		$output = woo_ce_convert_product_ids( $crosssell_ids );
+	}
+	return $output;
+	
 }
 
 // Returns Product Attributes associated to a specific Product
