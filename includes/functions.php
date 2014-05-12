@@ -551,6 +551,7 @@ if( is_admin() ) {
 		if( get_transient( WOO_CE_PREFIX . '_running' ) ) {
 			$message = __( 'A WordPress or server error caused the exporter to fail with a blank screen, this is either a memory or timeout issue, please get in touch so we can reproduce and resolve this.', 'woo_ce' ) . ' (<a href="' . $troubleshooting_url . '" target="_blank">' . __( 'Need help?', 'woo_ce' ) . '</a>)';
 			woo_ce_admin_notice( $message, 'error' );
+			delete_transient( WOO_CE_PREFIX . '_running' );
 		}
 
 	}
@@ -593,8 +594,8 @@ if( is_admin() ) {
 		if( !$file->post_mime_type )
 			$file->post_mime_type = __( 'N/A', 'woo_ce' );
 		$file->media_icon = wp_get_attachment_image( $file->ID, array( 80, 60 ), true );
-		$author_name = get_user_by( 'id', $file->post_author );
-		$file->post_author_name = $author_name->display_name;
+		if( $author_name = get_user_by( 'id', $file->post_author ) )
+			$file->post_author_name = $author_name->display_name;
 		$t_time = strtotime( $file->post_date, current_time( 'timestamp' ) );
 		$time = get_post_time( 'G', true, $file->ID, false );
 		if( ( abs( $t_diff = time() - $time ) ) < 86400 )
@@ -794,6 +795,8 @@ function woo_ce_export_dataset( $dataset, $args = array() ) {
 			break;
 
 	}
+	// Export completed successfully
+	delete_transient( WOO_CE_PREFIX . '_running' );
 	if( $csv ) {
 		$csv = woo_ce_file_encoding( $csv );
 		if( WOO_CE_DEBUG )
@@ -801,8 +804,6 @@ function woo_ce_export_dataset( $dataset, $args = array() ) {
 		else
 			return $csv;
 	}
-	// Export completed successfully
-	delete_transient( WOO_CE_PREFIX . '_running' );
 
 }
 

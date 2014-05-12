@@ -61,9 +61,8 @@ function woo_ce_escape_csv_value( $string = '', $delimiter = ',', $format = 'all
 			break;
 
 		case 'excel':
-			if( strpos( $string, '"' ) !== false or strpos( $string, ',' ) !== false or strpos( $string, "\r" ) !== false or strpos( $string, "\n" ) !== false ) {
+			if( strpos( $string, '"' ) !== false or strpos( $string, ',' ) !== false or strpos( $string, "\r" ) !== false or strpos( $string, "\n" ) !== false )
 				$string = '"' . $string . '"';
-			}
 			break;
 
 	}
