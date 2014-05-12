@@ -3,7 +3,7 @@
 Plugin Name: WooCommerce - Store Exporter
 Plugin URI: http://www.visser.com.au/woocommerce/plugins/exporter/
 Description: Export store details out of WooCommerce into a CSV-formatted file.
-Version: 1.5.3
+Version: 1.5.4
 Author: Visser Labs
 Author URI: http://www.visser.com.au/about/
 License: GPL2
@@ -213,7 +213,7 @@ if( is_admin() ) {
 				$export->order_order = false;
 				$export->max_order_items = false;
 
-				$export->type = ( isset( $_POST['dataset'] ) ) ? $_POST['dataset'] : false;
+				$export->type = ( isset( $_POST['dataset'] ) ? $_POST['dataset'] : false );
 				switch( $export->type ) {
 
 					case 'products':
@@ -243,12 +243,12 @@ if( is_admin() ) {
 					case 'categories':
 						// Set up dataset specific options
 						$export->fields = ( isset( $_POST['category_fields'] ) ? $_POST['category_fields'] : false );
+						$export->category_orderby = ( isset( $_POST['category_orderby'] ) ? $_POST['category_orderby'] : false );
+						$export->category_order = ( isset( $_POST['category_order'] ) ? $_POST['category_order'] : false );
 
 						// Save dataset export specific options
-						$export->category_orderby = ( isset( $_POST['category_orderby'] ) ) ? $_POST['category_orderby'] : false;
 						if( $export->category_orderby <> woo_ce_get_option( 'category_orderby' ) )
 							woo_ce_update_option( 'category_orderby', $export->category_orderby );
-						$export->category_order = ( isset( $_POST['category_order'] ) ) ? $_POST['category_order'] : false;
 						if( $export->category_order <> woo_ce_get_option( 'category_order' ) )
 							woo_ce_update_option( 'category_order', $export->category_order );
 						break;
@@ -256,28 +256,28 @@ if( is_admin() ) {
 					case 'tags':
 						// Set up dataset specific options
 						$export->fields = ( isset( $_POST['tag_fields'] ) ? $_POST['tag_fields'] : false );
+						$export->tag_orderby = ( isset( $_POST['tag_orderby'] ) ? $_POST['tag_orderby'] : false );
+						$export->tag_order = ( isset( $_POST['tag_order'] ) ? $_POST['tag_order'] : false );
 
 						// Save dataset export specific options
-						$export->tag_orderby = ( isset( $_POST['tag_orderby'] ) ? $_POST['tag_orderby'] : false );
 						if( $export->tag_orderby <> woo_ce_get_option( 'tag_orderby' ) )
 							woo_ce_update_option( 'tag_orderby', $export->tag_orderby );
-						$export->tag_order = ( isset( $_POST['tag_order'] ) ? $_POST['tag_order'] : false );
 						if( $export->tag_order <> woo_ce_get_option( 'tag_order' ) )
 							woo_ce_update_option( 'tag_order', $export->tag_order );
 						break;
 
 					case 'orders':
 						// Set up dataset specific options
-						$export->fields = ( isset( $_POST['order_fields'] ) ) ? $_POST['order_fields'] : false;
-						$export->order_dates_filter = ( isset( $_POST['order_dates_filter'] ) ) ? $_POST['order_dates_filter'] : false;
+						$export->fields = ( isset( $_POST['order_fields'] ) ? $_POST['order_fields'] : false );
+						$export->order_dates_filter = ( isset( $_POST['order_dates_filter'] ) ? $_POST['order_dates_filter'] : false );
 						$export->order_dates_from = $_POST['order_dates_from'];
 						$export->order_dates_to = $_POST['order_dates_to'];
-						$export->order_status = ( isset( $_POST['order_filter_status'] ) ) ? woo_ce_format_product_filters( $_POST['order_filter_status'] ) : false;
-						$export->order_customer = ( isset( $_POST['order_customer'] ) ) ? $_POST['order_customer'] : false;
-						$export->order_user_roles = ( isset( $_POST['order_filter_user_role'] ) ) ? woo_ce_format_user_role_filters( $_POST['order_filter_user_role'] ) : false;
-						$export->order_orderby = ( isset( $_POST['order_orderby'] ) ) ? $_POST['order_orderby'] : false;
-						$export->order_order = ( isset( $_POST['order_order'] ) ) ? $_POST['order_order'] : false;
-	
+						$export->order_status = ( isset( $_POST['order_filter_status'] ) ? woo_ce_format_product_filters( $_POST['order_filter_status'] ) : false );
+						$export->order_customer = ( isset( $_POST['order_customer'] ) ? $_POST['order_customer'] : false );
+						$export->order_user_roles = ( isset( $_POST['order_filter_user_role'] ) ? woo_ce_format_user_role_filters( $_POST['order_filter_user_role'] ) : false );
+						$export->order_orderby = ( isset( $_POST['order_orderby'] ) ? $_POST['order_orderby'] : false );
+						$export->order_order = ( isset( $_POST['order_order'] ) ? $_POST['order_order'] : false );
+
 						// Save dataset export specific options
 						if( isset( $_POST['order_items'] ) ) {
 							$export->order_items = $_POST['order_items'];
@@ -285,9 +285,9 @@ if( is_admin() ) {
 								woo_ce_update_option( 'order_items_formatting', $export->order_items );
 						}
 						if( isset( $_POST['max_order_items'] ) ) {
-							$export->max_order_items = $_POST['max_order_items'];
+							$export->max_order_items = (int)$_POST['max_order_items'];
 							if( $export->max_order_items <> woo_ce_get_option( 'max_order_items' ) )
-								woo_ce_update_option( 'max_order_items', (int)$_POST['max_order_items'] );
+								woo_ce_update_option( 'max_order_items', $export->max_order_items );
 						}
 						if( $export->order_orderby <> woo_ce_get_option( 'order_orderby' ) )
 							woo_ce_update_option( 'order_orderby', $export->order_orderby );
@@ -529,6 +529,7 @@ if( is_admin() ) {
 			$tab = 'export';
 		$url = add_query_arg( 'page', 'woo_ce' );
 		woo_ce_fail_notices();
+
 		include_once( WOO_CE_PATH . 'templates/admin/woo-admin_ce-export.php' );
 
 	}

@@ -104,6 +104,7 @@
 					<p class="description"><?php _e( 'The date format option affects how date\'s are presented within your CSV file. Default is set to DD/MM/YYYY.', 'woo_ce' ); ?></p>
 				</td>
 			</tr>
+
 <?php if( !ini_get( 'safe_mode' ) ) { ?>
 			<tr>
 				<th>

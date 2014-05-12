@@ -4,8 +4,8 @@ Contributors: visser
 Donate link: http://www.visser.com.au/#donations
 Tags: e-commerce, woocommerce, shop, cart, ecommerce, export, csv, customers, products, sales, coupons
 Requires at least: 2.9.2
-Tested up to: 3.9
-Stable tag: 1.5.3
+Tested up to: 3.9.1
+Stable tag: 1.5.4
 
 == Description ==
 
@@ -72,6 +72,11 @@ http://www.visser.com.au/woocommerce/forums/
 7. Download achived copies of previous exports
 
 == Changelog ==
+
+= 1.5.4 =
+* Changed: Removed WooCommere Plugins dashboard widget
+* Added: CSS class to Custom Product Fields
+* Fixed: Broken export checks that may affect export options
 
 = 1.5.3 =
 * Added: Support for exporting Local Pickup Plus fields in Orders

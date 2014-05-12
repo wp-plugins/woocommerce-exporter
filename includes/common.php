@@ -51,7 +51,7 @@ if( !function_exists( 'woo_get_action' ) ) {
 if( !function_exists( 'woo_is_wpsc_activated' ) ) {
 	function woo_is_wpsc_activated() {
 
-		if( class_exists( 'WP_eCommerce' ) )
+		if( class_exists( 'WP_eCommerce' ) || defined( 'WPSC_VERSION' ) )
 			return true;
 
 	}

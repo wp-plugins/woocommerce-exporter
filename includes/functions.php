@@ -690,6 +690,7 @@ function woo_ce_export_dataset( $dataset, $args = array() ) {
 				$width_unit = $dimension_unit;
 				$length_unit = $dimension_unit;
 				foreach( $products as $product ) {
+
 					$product = woo_ce_get_product_data( $product, $export->args );
 					foreach( $export->fields as $key => $field ) {
 						if( isset( $product->$key ) ) {
@@ -908,10 +909,10 @@ function woo_ce_get_user_roles() {
 if( !function_exists( 'woo_ce_current_memory_usage' ) ) {
 	function woo_ce_current_memory_usage() {
 
-			$output = '';
-			if( function_exists( 'memory_get_usage' ) )
-				$output = round( memory_get_usage( true ) / 1024 / 1024, 2 );
-			return $output;
+		$output = '';
+		if( function_exists( 'memory_get_usage' ) )
+			$output = round( memory_get_usage( true ) / 1024 / 1024, 2 );
+		return $output;
 
 	}
 }

@@ -4,7 +4,7 @@ function woo_ce_products_custom_fields() { ?>
 <form method="post" id="export-products-custom-fields" class="export-options product-options">
 	<div id="poststuff">
 
-		<div class="postbox" id="export-options">
+		<div class="postbox" id="export-options product-options">
 			<h3 class="hndle"><?php _e( 'Custom Product Fields', 'woo_ce' ); ?></h3>
 			<div class="inside">
 				<p class="description"><?php _e( 'To include additional custom Product meta in the Export Products table above fill the Products text box then click Save Custom Fields.', 'woo_ce' ); ?></p>

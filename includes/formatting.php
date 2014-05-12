@@ -53,7 +53,6 @@ function woo_ce_escape_csv_value( $string = '', $delimiter = ',', $format = 'all
 	$string = str_replace( '"', '""', $string );
 	$string = wp_specialchars_decode( $string );
 	$string = preg_replace('/&([^#])(?![a-z1-4]{1,8};)/i', '&#038;$1', $string );
-	// $string = remove_accents( $string );
 	$string = str_replace( PHP_EOL, "\r\n", $string );
 	switch( $format ) {
 
