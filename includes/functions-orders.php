@@ -423,7 +423,7 @@ function woo_ce_orders_custom_fields() {
 
 					<tr>
 						<th>
-							<label><?php _e( 'Order Meta', 'woo_ce' ); ?></label>
+							<label><?php _e( 'Order meta', 'woo_ce' ); ?></label>
 						</th>
 						<td>
 							<textarea name="custom_orders" rows="5" cols="70" disabled="disabled">-</textarea>
@@ -433,7 +433,7 @@ function woo_ce_orders_custom_fields() {
 
 					<tr>
 						<th>
-							<label><?php _e( 'Order Item Meta', 'woo_ce' ); ?></label>
+							<label><?php _e( 'Order Item meta', 'woo_ce' ); ?></label>
 						</th>
 						<td>
 							<textarea name="custom_order_items" rows="5" cols="70" disabled="disabled">-</textarea>

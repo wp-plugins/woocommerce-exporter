@@ -67,12 +67,13 @@
 		<li><?php _e( 'Select export date ranges', 'woo_ce' ); ?></li>
 		<li><?php _e( 'Export Orders', 'woo_ce' ); ?></li>
 		<li><?php _e( 'Select Order fields to export', 'woo_ce' ); ?></li>
-		<li><?php _e( 'Export custom Order Meta and Order Item Meta', 'woo_ce' ); ?></li>
+		<li><?php _e( 'Export custom Order and Order Item meta', 'woo_ce' ); ?></li>
 		<li><?php _e( 'Export Customers', 'woo_ce' ); ?></li>
 		<li><?php _e( 'Select Customer fields to export', 'woo_ce' ); ?></li>
 		<li><?php _e( 'Export Coupons', 'woo_ce' ); ?></li>
 		<li><?php _e( 'Select Coupon fields to export', 'woo_ce' ); ?></li>
 		<li><?php _e( 'CRON / Scheduled Exports', 'woo_ce' ); ?></li>
+		<li><?php _e( 'Export to XML', 'woo_ce' ); ?></li>
 		<li><?php _e( 'Premium Support', 'woo_ce' ); ?></li>
 	</ul>
 	<p>

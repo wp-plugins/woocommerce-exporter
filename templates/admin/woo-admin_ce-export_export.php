@@ -466,7 +466,7 @@
 					<?php do_action( 'woo_ce_export_options' ); ?>
 
 					<tr class="export-options product-options">
-						<th><label for=""><?php _e( 'Up-Sells Formatting', 'woo_ce' ); ?></label></th>
+						<th><label for=""><?php _e( 'Up-sells formatting', 'woo_ce' ); ?></label></th>
 						<td>
 							<label><input type="radio" name="product_upsell_formatting" value="0"<?php checked( $upsell_formatting, 0 ); ?> />&nbsp;<?php _e( 'Export Up-Sells as Product ID', 'woo_ce' ); ?></label><br />
 							<label><input type="radio" name="product_upsell_formatting" value="1"<?php checked( $upsell_formatting, 1 ); ?> />&nbsp;<?php _e( 'Export Up-Sells as Product SKU', 'woo_ce' ); ?></label>
@@ -475,7 +475,7 @@
 					</tr>
 
 					<tr class="export-options product-options">
-						<th><label for=""><?php _e( 'Cross-Sells Formatting', 'woo_ce' ); ?></label></th>
+						<th><label for=""><?php _e( 'Cross-sells formatting', 'woo_ce' ); ?></label></th>
 						<td>
 							<label><input type="radio" name="product_crosssell_formatting" value="0"<?php checked( $crosssell_formatting, 0 ); ?> />&nbsp;<?php _e( 'Export Cross-Sells as Product ID', 'woo_ce' ); ?></label><br />
 							<label><input type="radio" name="product_crosssell_formatting" value="1"<?php checked( $crosssell_formatting, 1 ); ?> />&nbsp;<?php _e( 'Export Cross-Sells as Product SKU', 'woo_ce' ); ?></label>

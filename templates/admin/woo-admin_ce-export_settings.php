@@ -1,12 +1,23 @@
-<?php do_action( 'woo_ce_export_settings_top' ); ?>
+<ul class="subsubsub">
+	<li><a href="#general-settings"><?php _e( 'General Settings', 'woo_ce' ); ?></a> |</li>
+	<li><a href="#csv-settings"><?php _e( 'CSV Settings', 'woo_ce' ); ?></a></li>
+	<?php do_action( 'woo_ce_export_settings_top' ); ?>
+</ul>
+<!-- .subsubsub -->
 <form method="post">
 	<table class="form-table">
 		<tbody>
 
 			<?php do_action( 'woo_ce_export_settings_before' ); ?>
 
+			<tr id="general-settings">
+				<td colspan="2" style="padding:0;">
+					<h3><?php _e( 'General Settings', 'woo_ce' ); ?></h3>
+				</td>
+			</tr>
+
 			<tr valign="top">
-				<th scope="row"><label for="export_filename"><?php _e( 'Export Filename', 'woo_ce' ); ?></label></th>
+				<th scope="row"><label for="export_filename"><?php _e( 'Export filename', 'woo_ce' ); ?></label></th>
 				<td>
 					<input name="export_filename" type="text" id="export_filename" value="<?php echo $export_filename; ?>" class="regular-text code" />
 					<p class="description"><?php _e( 'The filename of the exported dataset. Tags can be used: ', 'woo_ce' ); ?> <code>%dataset%</code>, <code>%date%</code>, <code>%time%</code>, <code>%store_name%</code>.</p>
@@ -15,7 +26,7 @@
 
 			<tr>
 				<th>
-					<label for="delete_temporary_csv"><?php _e( 'Enable Archives', 'woo_ce' ); ?></label>
+					<label for="delete_temporary_csv"><?php _e( 'Enable archives', 'woo_ce' ); ?></label>
 				</th>
 				<td>
 					<select id="delete_temporary_csv" name="delete_temporary_csv">
@@ -28,40 +39,7 @@
 
 			<tr>
 				<th>
-					<label for="delimiter"><?php _e( 'Field delimiter', 'woo_ce' ); ?></label>
-				</th>
-				<td>
-					<input type="text" size="3" id="delimiter" name="delimiter" value="<?php echo $delimiter; ?>" size="1" maxlength="1" class="text" />
-					<p class="description"><?php _e( 'The field delimiter is the character separating each cell in your CSV. This is typically the \',\' (comma) character.', 'woo_pc' ); ?></p>
-				</td>
-			</tr>
-
-			<tr>
-				<th>
-					<label for="category_separator"><?php _e( 'Category separator', 'woo_ce' ); ?></label>
-				</th>
-				<td>
-					<input type="text" size="3" id="category_separator" name="category_separator" value="<?php echo $category_separator; ?>" size="1" class="text" />
-					<p class="description"><?php _e( 'The Product Category separator allows you to assign individual Products to multiple Product Categories/Tags/Images at a time. It is suggested to use the \'|\' (vertical pipe) character between each item. For instance: <code>Clothing|Mens|Shirts</code>.', 'woo_ce' ); ?></p>
-				</td>
-			</tr>
-
-			<tr>
-				<th>
-					<label for="bom"><?php _e( 'Add BOM character', 'woo_ce' ); ?>: </label>
-				</th>
-				<td>
-					<select id="bom" name="bom">
-						<option value="1"<?php selected( $bom, 1 ); ?>><?php _e( 'Yes', 'woo_ce' ); ?></option>
-						<option value="0"<?php selected( $bom, 0 ); ?>><?php _e( 'No', 'woo_ce' ); ?></option>
-					</select>
-					<p class="description"><?php _e( 'Mark the CSV file as UTF8 by adding a byte order mark (BOM) to the export, useful for non-English character sets.', 'woo_ce' ); ?></p>
-				</td>
-			</tr>
-
-			<tr>
-				<th>
-					<label for="encoding"><?php _e( 'Character encoding', 'woo_ce' ); ?>: </label>
+					<label for="encoding"><?php _e( 'Character encoding', 'woo_ce' ); ?></label>
 				</th>
 				<td>
 <?php if( $file_encodings ) { ?>
@@ -78,18 +56,7 @@
 			</tr>
 
 			<tr>
-				<th>
-					<label for="escape_formatting"><?php _e( 'Field escape formatting', 'woo_ce' ); ?>: </label>
-				</th>
-				<td>
-					<label><input type="radio" name="escape_formatting" value="all"<?php checked( $escape_formatting, 'all' ); ?> />&nbsp;<?php _e( 'Escape all fields', 'woo_ce' ); ?></label><br />
-					<label><input type="radio" name="escape_formatting" value="excel"<?php checked( $escape_formatting, 'excel' ); ?> />&nbsp;<?php _e( 'Escape fields as Excel would', 'woo_ce' ); ?></label>
-					<p class="description"><?php _e( 'Choose the field escape format that suits your spreadsheet software (e.g. Excel).', 'woo_ce' ); ?></p>
-				</td>
-			</tr>
-
-			<tr>
-				<th><?php _e( 'Date Format', 'woo_ce' ); ?></th>
+				<th><?php _e( 'Date format', 'woo_ce' ); ?></th>
 				<td>
 					<fieldset>
 						<label title="F j, Y"><input type="radio" name="date_format" value="F j, Y"<?php checked( $date_format, 'F j, Y' ); ?>> <span><?php echo date( 'F j, Y' ); ?></span></label><br>
@@ -108,7 +75,7 @@
 <?php if( !ini_get( 'safe_mode' ) ) { ?>
 			<tr>
 				<th>
-					<label for="timeout"><?php _e( 'Script Timeout', 'woo_ce' ); ?>: </label>
+					<label for="timeout"><?php _e( 'Script timeout', 'woo_ce' ); ?></label>
 				</th>
 				<td>
 					<select id="timeout" name="timeout">
@@ -117,10 +84,61 @@
 						<option value="3600"<?php selected( $timeout, 3600 ); ?>><?php printf( __( '%s hour', 'woo_ce' ), 1 ); ?></option>
 						<option value="0"<?php selected( $timeout, 0 ); ?>><?php _e( 'Unlimited', 'woo_ce' ); ?></option>
 					</select>
-					<p class="description"><?php _e( 'Script timeout defines how long WooCommerce Exporter is \'allowed\' to process your CSV file, once the time limit is reached the export process halts.', 'woo_ce' ); ?></p>
+					<p class="description"><?php _e( 'Script timeout defines how long Store Exporter is \'allowed\' to process your CSV file, once the time limit is reached the export process halts.', 'woo_ce' ); ?></p>
 				</td>
 			</tr>
 <?php } ?>
+
+			<tr id="csv-settings">
+				<td colspan="2" style="padding:0;">
+					<hr />
+					<h3><?php _e( 'CSV Settings', 'woo_ce' ); ?></h3>
+				</td>
+			</tr>
+
+			<tr>
+				<th>
+					<label for="delimiter"><?php _e( 'Field delimiter', 'woo_ce' ); ?></label>
+				</th>
+				<td>
+					<input type="text" size="3" id="delimiter" name="delimiter" value="<?php echo $delimiter; ?>" maxlength="1" class="text" />
+					<p class="description"><?php _e( 'The field delimiter is the character separating each cell in your CSV. This is typically the \',\' (comma) character.', 'woo_pc' ); ?></p>
+				</td>
+			</tr>
+
+			<tr>
+				<th>
+					<label for="category_separator"><?php _e( 'Category separator', 'woo_ce' ); ?></label>
+				</th>
+				<td>
+					<input type="text" size="3" id="category_separator" name="category_separator" value="<?php echo $category_separator; ?>" maxlength="1" class="text" />
+					<p class="description"><?php _e( 'The Product Category separator allows you to assign individual Products to multiple Product Categories/Tags/Images at a time. It is suggested to use the \'|\' (vertical pipe) character between each item. For instance: <code>Clothing|Mens|Shirts</code>.', 'woo_ce' ); ?></p>
+				</td>
+			</tr>
+
+			<tr>
+				<th>
+					<label for="bom"><?php _e( 'Add BOM character', 'woo_ce' ); ?></label>
+				</th>
+				<td>
+					<select id="bom" name="bom">
+						<option value="1"<?php selected( $bom, 1 ); ?>><?php _e( 'Yes', 'woo_ce' ); ?></option>
+						<option value="0"<?php selected( $bom, 0 ); ?>><?php _e( 'No', 'woo_ce' ); ?></option>
+					</select>
+					<p class="description"><?php _e( 'Mark the CSV file as UTF8 by adding a byte order mark (BOM) to the export, useful for non-English character sets.', 'woo_ce' ); ?></p>
+				</td>
+			</tr>
+
+			<tr>
+				<th>
+					<label for="escape_formatting"><?php _e( 'Field escape formatting', 'woo_ce' ); ?></label>
+				</th>
+				<td>
+					<label><input type="radio" name="escape_formatting" value="all"<?php checked( $escape_formatting, 'all' ); ?> />&nbsp;<?php _e( 'Escape all fields', 'woo_ce' ); ?></label><br />
+					<label><input type="radio" name="escape_formatting" value="excel"<?php checked( $escape_formatting, 'excel' ); ?> />&nbsp;<?php _e( 'Escape fields as Excel would', 'woo_ce' ); ?></label>
+					<p class="description"><?php _e( 'Choose the field escape format that suits your spreadsheet software (e.g. Excel).', 'woo_ce' ); ?></p>
+				</td>
+			</tr>
 
 			<?php do_action( 'woo_ce_export_settings_after' ); ?>
 

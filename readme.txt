@@ -2,14 +2,14 @@
 
 Contributors: visser
 Donate link: http://www.visser.com.au/#donations
-Tags: e-commerce, woocommerce, shop, cart, ecommerce, export, csv, customers, products, sales, coupons
+Tags: e-commerce, woocommerce, shop, cart, ecommerce, export, csv, xml, customers, products, sales, coupons
 Requires at least: 2.9.2
 Tested up to: 3.9.1
-Stable tag: 1.5.5
+Stable tag: 1.5.7
 
 == Description ==
 
-Export store details out of WooCommerce into a CSV-formatted file.
+Export store details out of WP e-Commerce into simple formatted files (e.g. CSV, XML, TXT, etc.).
 
 Features include:
 
@@ -27,8 +27,10 @@ Features include:
 * Export Coupons (**)
 * Toggle and save export fields
 * Works with WordPress Multisite
-* Supports external CRON commands
-* Supports scheduled exports
+* Export to CSV file
+* Export to XML file (**)
+* Supports external CRON commands (**)
+* Supports scheduled exports (**)
 
 (*) Compatible with Product Importer Deluxe, All in One SEO Pack, Advanced Google Product Feed, Product Addons, Sequential Order Number Pro, WooCommerce Checkout Manager, Cost of Goods, Per-Product Shipping, Local Pickups Plus and more.
 (**) Requries the Pro upgrade to enable additional store export functionality.
@@ -72,6 +74,20 @@ http://www.visser.com.au/woocommerce/forums/
 7. Download achived copies of previous exports
 
 == Changelog ==
+
+= 1.5.7 =
+* Changed: Replaced woo_ce_save_csv_file_attachment() with generic woo_ce_save_file_attachment()
+* Changed: Replaced woo_ce_save_csv_file_guid() with generic woo_ce_save_file_guid()
+* Changed: Replaced woo_ce_save_csv_file_details() with generic woo_ce_save_file_details()
+* Changed: Replaced woo_ce_update_csv_file_detail() with generic woo_ce_update_file_detail()
+* Changed: Moved woo_ce_save_file_details() into common Plugin space
+* Changed: Added third allow_empty property to custom get_option()
+
+= 1.5.6 =
+* Added: Disabled support for XML Export Format under Export Option
+* Changed: Created new functions-csv.php file
+* Changed: Moved woo_ce_generate_csv_filename() to functions-csv.php
+* Changed: Moved woo_ce_generate_csv_header() to functions-csv.php
 
 = 1.5.5 =
 * Fixed: Export error prompt displaying due to WordPress transient
@@ -128,7 +144,7 @@ http://www.visser.com.au/woocommerce/forums/
 * Added: Clicking an export type from the opening screen will open that export tab
 
 = 1.4.8 =
-* Changed: Dropped $wpsc_ce global
+* Changed: Dropped $woo_ce global
 * Added: Using Plugin constants
 * Changed: Moved debug log to WordPress transient
 * Added: Disabled Custom Product Fields dialog
