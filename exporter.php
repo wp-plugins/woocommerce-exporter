@@ -3,7 +3,7 @@
 Plugin Name: WooCommerce - Store Exporter
 Plugin URI: http://www.visser.com.au/woocommerce/plugins/exporter/
 Description: Export store details out of WooCommerce into simple formatted files (e.g. CSV, XML, TXT, etc.).
-Version: 1.5.7
+Version: 1.5.8
 Author: Visser Labs
 Author URI: http://www.visser.com.au/about/
 License: GPL2
@@ -139,6 +139,9 @@ if( is_admin() ) {
 					woo_ce_update_option( 'auto_method', (string)$_POST['auto_method'] );
 					// Display additional notice if Enabled CRON is enabled/disabled
 					if( woo_ce_get_option( 'enable_cron', 0 ) <> (int)$_POST['enable_cron'] ) {
+						// Remove from WP-CRON schedule if disabled
+						if( (int)$POST['enable_cron'] == 0 && function_exists( 'woo_cd_admin_init' ) )
+							woo_cd_cron_activation();
 						$message = sprintf( __( 'CRON support has been %s.', 'woo_ce' ), ( ( (int)$_POST['enable_cron'] == 1 ) ? __( 'enabled', 'woo_ce' ) : __( 'disabled', 'woo_ce' ) ) );
 						woo_ce_admin_notice( $message );
 					}

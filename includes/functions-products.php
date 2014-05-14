@@ -12,7 +12,7 @@ function woo_ce_products_custom_fields() { ?>
 
 					<tr>
 						<th>
-							<label><?php _e( 'Product Meta', 'woo_ce' ); ?></label>
+							<label><?php _e( 'Product meta', 'woo_ce' ); ?></label>
 						</th>
 						<td>
 							<textarea name="custom_products" rows="5" cols="70" disabled="disabled">-</textarea>
@@ -31,6 +31,7 @@ function woo_ce_products_custom_fields() { ?>
 		<!-- .postbox -->
 
 	</div>
+	<!-- #poststuff -->
 	<input type="hidden" name="action" value="update" />
 </form>
 <?php

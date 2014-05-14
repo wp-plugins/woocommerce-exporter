@@ -5,11 +5,11 @@ Donate link: http://www.visser.com.au/#donations
 Tags: e-commerce, woocommerce, shop, cart, ecommerce, export, csv, xml, customers, products, sales, coupons
 Requires at least: 2.9.2
 Tested up to: 3.9.1
-Stable tag: 1.5.7
+Stable tag: 1.5.8
 
 == Description ==
 
-Export store details out of WP e-Commerce into simple formatted files (e.g. CSV, XML, TXT, etc.).
+Export store details out of WooCommerce into simple formatted files (e.g. CSV, XML, TXT, etc.).
 
 Features include:
 
@@ -41,7 +41,7 @@ For more information visit: http://www.visser.com.au/woocommerce/
 
 1. Upload the folder 'woocommerce-exporter' to the '/wp-content/plugins/' directory
 
-2. Activate 'WooCommerce - Exporter' through the 'Plugins' menu in WordPress
+2. Activate 'WooCommerce - Store Exporter' through the 'Plugins' menu in WordPress
 
 That's it!
 
@@ -74,6 +74,9 @@ http://www.visser.com.au/woocommerce/forums/
 7. Download achived copies of previous exports
 
 == Changelog ==
+
+= 1.5.8 =
+* Fixed: Fatal error if Store Exporter is not activated
 
 = 1.5.7 =
 * Changed: Replaced woo_ce_save_csv_file_attachment() with generic woo_ce_save_file_attachment()
