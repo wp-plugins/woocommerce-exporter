@@ -5,337 +5,274 @@ function woo_ce_get_order_fields( $format = 'full' ) {
 	$fields = array();
 	$fields[] = array(
 		'name' => 'purchase_id',
-		'label' => __( 'Purchase ID', 'woo_ce' ),
-		'default' => 1
+		'label' => __( 'Purchase ID', 'woo_ce' )
 	);
 	$fields[] = array(
 		'name' => 'purchase_total',
-		'label' => __( 'Order Total', 'woo_ce' ),
-		'default' => 1
+		'label' => __( 'Order Total', 'woo_ce' )
 	);
 	$fields[] = array(
 		'name' => 'order_discount',
-		'label' => __( 'Order Discount', 'woo_ce' ),
-		'default' => 1
+		'label' => __( 'Order Discount', 'woo_ce' )
 	);
 /*
 	$fields[] = array(
 		'name' => 'order_incl_tax',
-		'label' => __( 'Order Incl. Tax', 'woo_ce' ),
-		'default' => ''
+		'label' => __( 'Order Incl. Tax', 'woo_ce' )
 	);
 */
 	$fields[] = array(
 		'name' => 'order_excl_tax',
-		'label' => __( 'Order Excl. Tax', 'woo_ce' ),
-		'default' => 1
+		'label' => __( 'Order Excl. Tax', 'woo_ce' )
 	);
 /*
 	$fields[] = array(
 		'name' => 'order_tax_rate',
-		'label' => __( 'Order Tax Rate', 'woo_ce' ),
-		'default' => ''
+		'label' => __( 'Order Tax Rate', 'woo_ce' )
 	);
 */
 	$fields[] = array(
 		'name' => 'order_sales_tax',
-		'label' => __( 'Sales Tax Total', 'woo_ce' ),
-		'default' => 1
+		'label' => __( 'Sales Tax Total', 'woo_ce' )
 	);
 	$fields[] = array(
 		'name' => 'order_shipping_tax',
-		'label' => __( 'Shipping Tax Total', 'woo_ce' ),
-		'default' => 1
+		'label' => __( 'Shipping Tax Total', 'woo_ce' )
 	);
 	$fields[] = array(
 		'name' => 'payment_gateway_id',
-		'label' => __( 'Payment Gateway ID', 'woo_ce' ),
-		'default' => 1
+		'label' => __( 'Payment Gateway ID', 'woo_ce' )
 	);
 	$fields[] = array(
 		'name' => 'payment_gateway',
-		'label' => __( 'Payment Gateway', 'woo_ce' ),
-		'default' => 1
+		'label' => __( 'Payment Gateway', 'woo_ce' )
 	);
 	$fields[] = array(
 		'name' => 'shipping_method_id',
-		'label' => __( 'Shipping Method ID', 'woo_ce' ),
-		'default' => 1
+		'label' => __( 'Shipping Method ID', 'woo_ce' )
 	);
 	$fields[] = array(
 		'name' => 'shipping_method',
-		'label' => __( 'Shipping Method', 'woo_ce' ),
-		'default' => 1
+		'label' => __( 'Shipping Method', 'woo_ce' )
 	);
 	$fields[] = array(
 		'name' => 'shipping_cost',
-		'label' => __( 'Shipping Cost', 'woo_ce' ),
-		'default' => 1
+		'label' => __( 'Shipping Cost', 'woo_ce' )
 	);
 	$fields[] = array(
 		'name' => 'payment_status',
-		'label' => __( 'Payment Status', 'woo_ce' ),
-		'default' => 1
+		'label' => __( 'Payment Status', 'woo_ce' )
 	);
 	$fields[] = array(
 		'name' => 'order_key',
-		'label' => __( 'Order Key', 'woo_ce' ),
-		'default' => 1
+		'label' => __( 'Order Key', 'woo_ce' )
 	);
 	$fields[] = array(
 		'name' => 'purchase_date',
-		'label' => __( 'Purchase Date', 'woo_ce' ),
-		'default' => 1
+		'label' => __( 'Purchase Date', 'woo_ce' )
 	);
 	$fields[] = array(
 		'name' => 'purchase_time',
-		'label' => __( 'Purchase Time', 'woo_ce' ),
-		'default' => 1
+		'label' => __( 'Purchase Time', 'woo_ce' )
 	);
 	$fields[] = array(
 		'name' => 'customer_note',
-		'label' => __( 'Customer Note', 'woo_ce' ),
-		'default' => 1
+		'label' => __( 'Customer Note', 'woo_ce' )
 	);
 	$fields[] = array(
 		'name' => 'order_notes',
-		'label' => __( 'Order Notes', 'woo_ce' ),
-		'default' => 1
+		'label' => __( 'Order Notes', 'woo_ce' )
 	);
 	$fields[] = array(
 		'name' => 'user_id',
-		'label' => __( 'User ID', 'woo_ce' ),
-		'default' => 1
+		'label' => __( 'User ID', 'woo_ce' )
 	);
 	$fields[] = array(
 		'name' => 'user_name',
-		'label' => __( 'Username', 'woo_ce' ),
-		'default' => 1
+		'label' => __( 'Username', 'woo_ce' )
 	);
 	$fields[] = array(
 		'name' => 'user_role',
-		'label' => __( 'User Role', 'woo_ce' ),
-		'default' => 1
+		'label' => __( 'User Role', 'woo_ce' )
 	);
 	$fields[] = array(
 		'name' => 'ip_address',
-		'label' => __( 'Checkout IP Address', 'woo_ce' ),
-		'default' => 1
+		'label' => __( 'Checkout IP Address', 'woo_ce' )
 	);
 	$fields[] = array(
 		'name' => 'browser_agent',
-		'label' => __( 'Checkout Browser Agent', 'woo_ce' ),
-		'default' => 1
+		'label' => __( 'Checkout Browser Agent', 'woo_ce' )
 	);
 	$fields[] = array(
 		'name' => 'billing_full_name',
-		'label' => __( 'Billing: Full Name', 'woo_ce' ),
-		'default' => 1
+		'label' => __( 'Billing: Full Name', 'woo_ce' )
 	);
 	$fields[] = array(
 		'name' => 'billing_first_name',
-		'label' => __( 'Billing: First Name', 'woo_ce' ),
-		'default' => 1
+		'label' => __( 'Billing: First Name', 'woo_ce' )
 	);
 	$fields[] = array(
 		'name' => 'billing_last_name',
-		'label' => __( 'Billing: Last Name', 'woo_ce' ),
-		'default' => 1
+		'label' => __( 'Billing: Last Name', 'woo_ce' )
 	);
 	$fields[] = array( 
 		'name' => 'billing_company',
-		'label' => __( 'Billing: Company', 'woo_ce' ),
-		'default' => 1
+		'label' => __( 'Billing: Company', 'woo_ce' )
 	);
 	$fields[] = array( 
 		'name' => 'billing_address',
-		'label' => __( 'Billing: Street Address', 'woo_ce' ),
-		'default' => 1
+		'label' => __( 'Billing: Street Address', 'woo_ce' )
 	);
 	$fields[] = array( 
 		'name' => 'billing_city',
-		'label' => __( 'Billing: City', 'woo_ce' ),
-		'default' => 1
+		'label' => __( 'Billing: City', 'woo_ce' )
 	);
 	$fields[] = array( 
 		'name' => 'billing_postcode',
-		'label' => __( 'Billing: ZIP Code', 'woo_ce' ),
-		'default' => 1
+		'label' => __( 'Billing: ZIP Code', 'woo_ce' )
 	);
 	$fields[] = array( 
 		'name' => 'billing_state',
-		'label' => __( 'Billing: State (prefix)', 'woo_ce' ),
-		'default' => 1
+		'label' => __( 'Billing: State (prefix)', 'woo_ce' )
 	);
 	$fields[] = array( 
 		'name' => 'billing_state_full',
-		'label' => __( 'Billing: State', 'woo_ce' ),
-		'default' => 1
+		'label' => __( 'Billing: State', 'woo_ce' )
 	);
 	$fields[] = array( 
 		'name' => 'billing_country',
-		'label' => __( 'Billing: Country (prefix)', 'woo_ce' ),
-		'default' => 1
+		'label' => __( 'Billing: Country (prefix)', 'woo_ce' )
 	);
 	$fields[] = array( 
 		'name' => 'billing_country_full',
-		'label' => __( 'Billing: Country', 'woo_ce' ),
-		'default' => 1
+		'label' => __( 'Billing: Country', 'woo_ce' )
 	);
 	$fields[] = array( 
 		'name' => 'billing_phone',
-		'label' => __( 'Billing: Phone Number', 'woo_ce' ),
-		'default' => 1
+		'label' => __( 'Billing: Phone Number', 'woo_ce' )
 	);
 	$fields[] = array( 
 		'name' => 'billing_email',
-		'label' => __( 'Billing: E-mail Address', 'woo_ce' ),
-		'default' => 1
+		'label' => __( 'Billing: E-mail Address', 'woo_ce' )
 	);
 	$fields[] = array( 
 		'name' => 'shipping_full_name',
-		'label' => __( 'Shipping: Full Name', 'woo_ce' ),
-		'default' => 1
+		'label' => __( 'Shipping: Full Name', 'woo_ce' )
 	);
 	$fields[] = array( 
 		'name' => 'shipping_first_name',
-		'label' => __( 'Shipping: First Name', 'woo_ce' ),
-		'default' => 1
+		'label' => __( 'Shipping: First Name', 'woo_ce' )
 	);
 	$fields[] = array( 
 		'name' => 'shipping_last_name',
-		'label' => __( 'Shipping: Last Name', 'woo_ce' ),
-		'default' => 1
+		'label' => __( 'Shipping: Last Name', 'woo_ce' )
 	);
 	$fields[] = array( 
 		'name' => 'shipping_company',
-		'label' => __( 'Shipping: Company', 'woo_ce' ),
-		'default' => 1
+		'label' => __( 'Shipping: Company', 'woo_ce' )
 	);
 	$fields[] = array( 
 		'name' => 'shipping_address',
-		'label' => __( 'Shipping: Street Address', 'woo_ce' ),
-		'default' => 1
+		'label' => __( 'Shipping: Street Address', 'woo_ce' )
 	);
 	$fields[] = array( 
 		'name' => 'shipping_city',
-		'label' => __( 'Shipping: City', 'woo_ce' ),
-		'default' => 1
+		'label' => __( 'Shipping: City', 'woo_ce' )
 	);
 	$fields[] = array( 
 		'name' => 'shipping_postcode',
-		'label' => __( 'Shipping: ZIP Code', 'woo_ce' ),
-		'default' => 1
+		'label' => __( 'Shipping: ZIP Code', 'woo_ce' )
 	);
 	$fields[] = array( 
 		'name' => 'shipping_state',
-		'label' => __( 'Shipping: State (prefix)', 'woo_ce' ),
-		'default' => 1
+		'label' => __( 'Shipping: State (prefix)', 'woo_ce' )
 	);
 	$fields[] = array( 
 		'name' => 'shipping_state_full',
-		'label' => __( 'Shipping: State', 'woo_ce' ),
-		'default' => 1
+		'label' => __( 'Shipping: State', 'woo_ce' )
 	);
 	$fields[] = array( 
 		'name' => 'shipping_country',
-		'label' => __( 'Shipping: Country (prefix)', 'woo_ce' ),
-		'default' => 1
+		'label' => __( 'Shipping: Country (prefix)', 'woo_ce' )
 	);
 	$fields[] = array( 
 		'name' => 'shipping_country_full',
-		'label' => __( 'Shipping: Country', 'woo_ce' ),
-		'default' => 1
+		'label' => __( 'Shipping: Country', 'woo_ce' )
 	);
 	$fields[] = array(
 		'name' => 'order_items_product_id',
-		'label' => __( 'Order Items: Product ID', 'woo_ce' ),
-		'default' => 1
+		'label' => __( 'Order Items: Product ID', 'woo_ce' )
 	);
 	$fields[] = array(
 		'name' => 'order_items_variation_id',
-		'label' => __( 'Order Items: Variation ID', 'woo_ce' ),
-		'default' => 1
+		'label' => __( 'Order Items: Variation ID', 'woo_ce' )
 	);
 	$fields[] = array(
 		'name' => 'order_items_sku',
-		'label' => __( 'Order Items: SKU', 'woo_ce' ),
-		'default' => 1
+		'label' => __( 'Order Items: SKU', 'woo_ce' )
 	);
 	$fields[] = array(
 		'name' => 'order_items_name',
-		'label' => __( 'Order Items: Product Name', 'woo_ce' ),
-		'default' => 1
+		'label' => __( 'Order Items: Product Name', 'woo_ce' )
 	);
 	$fields[] = array(
 		'name' => 'order_items_variation',
-		'label' => __( 'Order Items: Product Variation', 'woo_ce' ),
-		'default' => 1
+		'label' => __( 'Order Items: Product Variation', 'woo_ce' )
 	);
 	$fields[] = array(
 		'name' => 'order_items_tax_class',
-		'label' => __( 'Order Items: Tax Class', 'woo_ce' ),
-		'default' => 1
+		'label' => __( 'Order Items: Tax Class', 'woo_ce' )
 	);
 	$fields[] = array(
 		'name' => 'order_items_quantity',
-		'label' => __( 'Order Items: Quantity', 'woo_ce' ),
-		'default' => 1
+		'label' => __( 'Order Items: Quantity', 'woo_ce' )
 	);
 	$fields[] = array(
 		'name' => 'order_items_total',
-		'label' => __( 'Order Items: Total', 'woo_ce' ),
-		'default' => 1
+		'label' => __( 'Order Items: Total', 'woo_ce' )
 	);
 	$fields[] = array(
 		'name' => 'order_items_subtotal',
-		'label' => __( 'Order Items: Subtotal', 'woo_ce' ),
-		'default' => 1
+		'label' => __( 'Order Items: Subtotal', 'woo_ce' )
 	);
 	$fields[] = array(
 		'name' => 'order_items_tax',
-		'label' => __( 'Order Items: Tax', 'woo_ce' ),
-		'default' => 1
+		'label' => __( 'Order Items: Tax', 'woo_ce' )
 	);
 	$fields[] = array(
 		'name' => 'order_items_tax_subtotal',
-		'label' => __( 'Order Items: Tax Subtotal', 'woo_ce' ),
-		'default' => 1
+		'label' => __( 'Order Items: Tax Subtotal', 'woo_ce' )
 	);
 	$fields[] = array(
 		'name' => 'order_items_type',
-		'label' => __( 'Order Items: Type', 'woo_ce' ),
-		'default' => 1
+		'label' => __( 'Order Items: Type', 'woo_ce' )
 	);
 	$fields[] = array(
 		'name' => 'order_items_category',
-		'label' => __( 'Order Items: Category', 'woo_ce' ),
-		'default' => 1
+		'label' => __( 'Order Items: Category', 'woo_ce' )
 	);
 	$fields[] = array(
 		'name' => 'order_items_tag',
-		'label' => __( 'Order Items: Tag', 'woo_ce' ),
-		'default' => 1
+		'label' => __( 'Order Items: Tag', 'woo_ce' )
 	);
 /*
 	$fields[] = array(
 		'name' => '',
-		'label' => __( '', 'woo_ce' ),
-		'default' => 1
+		'label' => __( '', 'woo_ce' )
 	);
 */
 
 	// Allow Plugin/Theme authors to add support for additional Order columns
 	$fields = apply_filters( 'woo_ce_order_fields', $fields );
 
-	if( $remember = woo_ce_get_option( 'orders_fields' ) ) {
+	if( $remember = woo_ce_get_option( 'orders_fields', array() ) ) {
 		$remember = maybe_unserialize( $remember );
 		$size = count( $fields );
 		for( $i = 0; $i < $size; $i++ ) {
-			if( $fields[$i] ) {
-				if( !array_key_exists( $fields[$i]['name'], $remember ) )
-					$fields[$i]['default'] = 0;
-			}
+			$fields[$i]['disabled'] = 0;
+			$fields[$i]['default'] = 1;
+			if( !array_key_exists( $fields[$i]['name'], $remember ) )
+				$fields[$i]['default'] = 0;
 		}
 	}
 
@@ -445,7 +382,7 @@ function woo_ce_orders_custom_fields() {
 				<p class="submit">
 					<input type="submit" value="<?php _e( 'Save Custom Fields', 'woo_ce' ); ?>" class="button-primary" />
 				</p>
-				<p class="description"><?php _e( 'For more information on custom Order and Order Item meta consult our online documentation.', 'woo_ce' ); ?></p>
+				<p class="description"><?php printf( __( 'For more information on custom Order and Order Item meta consult our <a href="%s" target="_blank">online documentation</a>.', 'woo_ce' ), $troubleshooting_url ); ?></p>
 			</div>
 			<!-- .inside -->
 		</div>
@@ -570,6 +507,6 @@ function woo_ce_orders_order_sorting() {
 </div>
 <?php
 	ob_end_flush();
-	
+
 }
 ?>

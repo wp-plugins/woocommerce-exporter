@@ -20,7 +20,7 @@
 				<th scope="row"><label for="export_filename"><?php _e( 'Export filename', 'woo_ce' ); ?></label></th>
 				<td>
 					<input name="export_filename" type="text" id="export_filename" value="<?php echo $export_filename; ?>" class="regular-text code" />
-					<p class="description"><?php _e( 'The filename of the exported dataset. Tags can be used: ', 'woo_ce' ); ?> <code>%dataset%</code>, <code>%date%</code>, <code>%time%</code>, <code>%store_name%</code>.</p>
+					<p class="description"><?php _e( 'The filename of the exported export type. Tags can be used: ', 'woo_ce' ); ?> <code>%dataset%</code>, <code>%date%</code>, <code>%time%</code>, <code>%store_name%</code>.</p>
 				</td>
 			</tr>
 

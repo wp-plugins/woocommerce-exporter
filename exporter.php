@@ -3,7 +3,7 @@
 Plugin Name: WooCommerce - Store Exporter
 Plugin URI: http://www.visser.com.au/woocommerce/plugins/exporter/
 Description: Export store details out of WooCommerce into simple formatted files (e.g. CSV, XML, TXT, etc.).
-Version: 1.5.8
+Version: 1.6
 Author: Visser Labs
 Author URI: http://www.visser.com.au/about/
 License: GPL2
@@ -88,8 +88,6 @@ if( is_admin() ) {
 
 		global $export, $wp_roles;
 
-		include_once( WOO_CE_PATH . 'includes/formatting.php' );
-
 		$action = woo_get_action();
 		switch( $action ) {
 
@@ -115,46 +113,6 @@ if( is_admin() ) {
 				}
 				break;
 
-			// Save changes on Settings screen
-			case 'save':
-				woo_ce_update_option( 'export_filename', (string)$_POST['export_filename'] );
-				woo_ce_update_option( 'delete_csv', (int)$_POST['delete_temporary_csv'] );
-				woo_ce_update_option( 'delimiter', (string)$_POST['delimiter'] );
-				woo_ce_update_option( 'category_separator', (string)$_POST['category_separator'] );
-				woo_ce_update_option( 'bom', (string)$_POST['bom'] );
-				woo_ce_update_option( 'encoding', (string)$_POST['encoding'] );
-				woo_ce_update_option( 'escape_formatting', (string)$_POST['escape_formatting'] );
-				woo_ce_update_option( 'date_format', (string)$_POST['date_format'] );
-
-				// Save Store Exporter Deluxe options if present
-				if( function_exists( 'woo_cd_admin_init' ) ) {
-					// Display additional notice if Enabled Scheduled Exports is enabled/disabled
-					if( woo_ce_get_option( 'enable_auto', 0 ) <> (int)$_POST['enable_auto'] ) {
-						$message = sprintf( __( 'Scheduled exports has been %s.', 'woo_ce' ), ( ( (int)$_POST['enable_auto'] == 1 ) ? sprintf( __( 'activated, next scheduled export will run in %d minutes', 'woo_ce' ), (int)$_POST['auto_interval'] ) : __( 'de-activated, no further automated exports will occur', 'woo_ce' ) ) );
-						woo_ce_admin_notice( $message );
-					}
-					woo_ce_update_option( 'enable_auto', (int)$_POST['enable_auto'] );
-					woo_ce_update_option( 'auto_type', (string)$_POST['auto_type'] );
-					woo_ce_update_option( 'auto_interval', (int)$_POST['auto_interval'] );
-					woo_ce_update_option( 'auto_method', (string)$_POST['auto_method'] );
-					// Display additional notice if Enabled CRON is enabled/disabled
-					if( woo_ce_get_option( 'enable_cron', 0 ) <> (int)$_POST['enable_cron'] ) {
-						// Remove from WP-CRON schedule if disabled
-						if( (int)$POST['enable_cron'] == 0 && function_exists( 'woo_cd_admin_init' ) )
-							woo_cd_cron_activation();
-						$message = sprintf( __( 'CRON support has been %s.', 'woo_ce' ), ( ( (int)$_POST['enable_cron'] == 1 ) ? __( 'enabled', 'woo_ce' ) : __( 'disabled', 'woo_ce' ) ) );
-						woo_ce_admin_notice( $message );
-					}
-					woo_ce_update_option( 'enable_cron', (int)$_POST['enable_cron'] );
-					woo_ce_update_option( 'secret_key', (string)$_POST['secret_key'] );
-					woo_ce_update_option( 'email_to', (string)$_POST['email_to'] );
-					woo_ce_update_option( 'post_to', (string)$_POST['post_to'] );
-				}
-
-				$message = __( 'Changes have been saved.', 'woo_ce' );
-				woo_ce_admin_notice( $message );
-				break;
-
 			// This is where the magic happens
 			case 'export':
 
@@ -163,26 +121,22 @@ if( is_admin() ) {
 				$export->start_time = time();
 				$export->idle_memory_start = woo_ce_current_memory_usage();
 				$export->delete_temporary_csv = woo_ce_get_option( 'delete_csv', 0 );
+				$export->encoding = woo_ce_get_option( 'encoding', get_option( 'blog_charset' ) );
 				$export->delimiter = woo_ce_get_option( 'delimiter', ',' );
 				$export->category_separator = woo_ce_get_option( 'category_separator', '|' );
 				$export->bom = woo_ce_get_option( 'bom', 1 );
-				$export->encoding = woo_ce_get_option( 'encoding', get_option( 'blog_charset' ) );
 				$export->escape_formatting = woo_ce_get_option( 'escape_formatting', 'all' );
 				$export->date_format = woo_ce_get_option( 'date_format', 'd/m/Y' );
 
 				// Save export option changes made on the Export screen
-				$export->limit_volume = -1;
-				if( !empty( $_POST['limit_volume'] ) ) {
-					$export->limit_volume = $_POST['limit_volume'];
-					if( $export->limit_volume <> woo_ce_get_option( 'limit_volume' ) )
-						woo_ce_update_option( 'limit_volume', $export->limit_volume );
-				}
-				$export->offset = 0;
-				if( !empty( $_POST['offset'] ) ) {
-					$export->offset = (int)$_POST['offset'];
-					if( $export->offset <> woo_ce_get_option( 'offset' ) )
-						woo_ce_update_option( 'offset', $export->offset );
-				}
+				$export->limit_volume = ( isset( $_POST['limit_volume'] ) ? $_POST['limit_volume'] : '' );
+				woo_ce_update_option( 'limit_volume', $export->limit_volume );
+				if( $export->limit_volume == '' )
+					$export->limit_volume = -1;
+				$export->offset = ( isset( $_POST['offset'] ) ? $_POST['offset'] : '' );
+				woo_ce_update_option( 'offset', $export->offset );
+				if( $export->offset == '' )
+					$export->offset = 0;
 				if( function_exists( 'woo_cd_admin_init' ) )
 					woo_ce_update_option( 'export_format', (string)$_POST['export_format'] );
 
@@ -358,7 +312,7 @@ if( is_admin() ) {
 					// Print file contents to debug export screen
 					if( WOO_CE_DEBUG ) {
 
-						woo_ce_export_dataset( $export->type, $export->args );
+						woo_ce_export_dataset( $export->type );
 						$export->idle_memory_end = woo_ce_current_memory_usage();
 						$export->end_time = time();
 
@@ -367,7 +321,7 @@ if( is_admin() ) {
 						if( $export->export_format == 'csv' ) {
 
 							// Generate CSV contents
-							$bits = woo_ce_export_dataset( $export->type, $export->args );
+							$bits = woo_ce_export_dataset( $export->type );
 							unset( $export->fields );
 							if( !$bits ) {
 								wp_redirect( add_query_arg( 'empty', true ) );
@@ -427,6 +381,51 @@ if( is_admin() ) {
 				}
 				break;
 
+			// Save changes on Settings screen
+			case 'save':
+				woo_ce_update_option( 'export_filename', (string)$_POST['export_filename'] );
+				woo_ce_update_option( 'delete_csv', (int)$_POST['delete_temporary_csv'] );
+				woo_ce_update_option( 'delimiter', (string)$_POST['delimiter'] );
+				woo_ce_update_option( 'category_separator', (string)$_POST['category_separator'] );
+				woo_ce_update_option( 'bom', (string)$_POST['bom'] );
+				woo_ce_update_option( 'encoding', (string)$_POST['encoding'] );
+				woo_ce_update_option( 'escape_formatting', (string)$_POST['escape_formatting'] );
+				woo_ce_update_option( 'date_format', (string)$_POST['date_format'] );
+
+				// Save Store Exporter Deluxe options if present
+				if( function_exists( 'woo_cd_admin_init' ) ) {
+					woo_ce_update_option( 'xml_attribute_url', (int)$_POST['xml_attribute_url'] );
+					woo_ce_update_option( 'xml_attribute_title', (int)$_POST['xml_attribute_title'] );
+					woo_ce_update_option( 'xml_attribute_date', (int)$_POST['xml_attribute_date'] );
+					woo_ce_update_option( 'xml_attribute_time', (int)$_POST['xml_attribute_time'] );
+					woo_ce_update_option( 'xml_attribute_export', (int)$_POST['xml_attribute_export'] );
+					// Display additional notice if Enabled Scheduled Exports is enabled/disabled
+					if( woo_ce_get_option( 'enable_auto', 0 ) <> (int)$_POST['enable_auto'] ) {
+						$message = sprintf( __( 'Scheduled exports has been %s.', 'woo_ce' ), ( ( (int)$_POST['enable_auto'] == 1 ) ? sprintf( __( 'activated, next scheduled export will run in %d minutes', 'woo_ce' ), (int)$_POST['auto_interval'] ) : __( 'de-activated, no further automated exports will occur', 'woo_ce' ) ) );
+						woo_ce_admin_notice( $message );
+					}
+					woo_ce_update_option( 'enable_auto', (int)$_POST['enable_auto'] );
+					woo_ce_update_option( 'auto_type', (string)$_POST['auto_type'] );
+					woo_ce_update_option( 'auto_interval', (int)$_POST['auto_interval'] );
+					woo_ce_update_option( 'auto_method', (string)$_POST['auto_method'] );
+					// Display additional notice if Enabled CRON is enabled/disabled
+					if( woo_ce_get_option( 'enable_cron', 0 ) <> (int)$_POST['enable_cron'] ) {
+						// Remove from WP-CRON schedule if disabled
+						if( (int)$POST['enable_cron'] == 0 && function_exists( 'woo_cd_admin_init' ) )
+							woo_cd_cron_activation();
+						$message = sprintf( __( 'CRON support has been %s.', 'woo_ce' ), ( ( (int)$_POST['enable_cron'] == 1 ) ? __( 'enabled', 'woo_ce' ) : __( 'disabled', 'woo_ce' ) ) );
+						woo_ce_admin_notice( $message );
+					}
+					woo_ce_update_option( 'enable_cron', (int)$_POST['enable_cron'] );
+					woo_ce_update_option( 'secret_key', (string)$_POST['secret_key'] );
+					woo_ce_update_option( 'email_to', (string)$_POST['email_to'] );
+					woo_ce_update_option( 'post_to', (string)$_POST['post_to'] );
+				}
+
+				$message = __( 'Changes have been saved.', 'woo_ce' );
+				woo_ce_admin_notice( $message );
+				break;
+
 			default:
 				// Detect other platform versions
 				woo_ce_detect_non_woo_install();
@@ -468,7 +467,7 @@ if( is_admin() ) {
 						$export_log = base64_decode( $export_log );
 					}
 					$output = '
-<h3>' . __( 'Export Details' ) . '</h3>
+<h3>' . __( 'Export Details', 'woo_ce' ) . '</h3>
 <textarea id="export_log">' . print_r( $export, true ) . '</textarea><hr />
 <h3>' . sprintf( __( 'Export Log: %s', 'woo_ce' ), $export->filename ) . '</h3>
 <textarea id="export_log">' . $export_log . '</textarea>

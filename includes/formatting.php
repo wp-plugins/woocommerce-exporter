@@ -41,7 +41,7 @@ function woo_ce_display_time_elapsed( $from, $to ) {
 	foreach ($tokens as $unit => $text) {
 		if ($time < $unit) continue;
 		$numberOfUnits = floor($time / $unit);
-		$output = $numberOfUnits.' '.$text.(($numberOfUnits>1)?'s':'');
+		$output = $numberOfUnits . ' ' . $text . ( ( $numberOfUnits > 1 ) ? 's' : '' );
 	}
 	return $output;
 

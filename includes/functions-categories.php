@@ -32,30 +32,25 @@ function woo_ce_get_category_fields( $format = 'full' ) {
 	$fields = array();
 	$fields[] = array(
 		'name' => 'term_id',
-		'label' => __( 'Term ID', 'woo_ce' ),
-		'default' => 1
+		'label' => __( 'Term ID', 'woo_ce' )
 	);
 	$fields[] = array(
 		'name' => 'name',
-		'label' => __( 'Category Name', 'woo_ce' ),
-		'default' => 1
+		'label' => __( 'Category Name', 'woo_ce' )
 	);
 	$fields[] = array(
 		'name' => 'slug',
-		'label' => __( 'Category Slug', 'woo_ce' ),
-		'default' => 1
+		'label' => __( 'Category Slug', 'woo_ce' )
 	);
 	$fields[] = array(
 		'name' => 'parent_id',
-		'label' => __( 'Parent Term ID', 'woo_ce' ),
-		'default' => 1
+		'label' => __( 'Parent Term ID', 'woo_ce' )
 	);
 
 /*
 	$fields[] = array(
 		'name' => '',
-		'label' => __( '', 'woo_ce' ),
-		'default' => 1
+		'label' => __( '', 'woo_ce' )
 	);
 */
 
@@ -67,6 +62,7 @@ function woo_ce_get_category_fields( $format = 'full' ) {
 		$size = count( $fields );
 		for( $i = 0; $i < $size; $i++ ) {
 			$fields[$i]['disabled'] = 0;
+			$fields[$i]['default'] = 1;
 			if( !array_key_exists( $fields[$i]['name'], $remember ) )
 				$fields[$i]['default'] = 0;
 		}

@@ -24,7 +24,7 @@ function woo_ce_products_custom_fields() { ?>
 				<p class="submit">
 					<input type="submit" value="<?php _e( 'Save Custom Fields', 'woo_ce' ); ?>" class="button button-disabled" />
 				</p>
-				<p class="description"><?php _e( 'For more information on custom Product meta consult our online documentation.', 'woo_ce' ); ?></p>
+				<p class="description"><?php printf( __( 'For more information on custom Product meta consult our <a href="%s" target="_blank">online documentation</a>.', 'woo_ce' ), $troubleshooting_url ); ?></p>
 			</div>
 			<!-- .inside -->
 		</div>
@@ -39,7 +39,7 @@ function woo_ce_products_custom_fields() { ?>
 
 }
 
-// Returns a list of WooCommerce Products to export process
+// Returns a list of WooCommerce Product IDs to export process
 function woo_ce_get_products( $args = array() ) {
 
 	$limit_volume = -1;
@@ -177,16 +177,12 @@ function woo_ce_get_product_data( $product_id = 0, $args = array() ) {
 	$product->virtual = woo_ce_format_switch( get_post_meta( $product->ID, '_virtual', true ) );
 	$product->downloadable = woo_ce_format_switch( get_post_meta( $product->ID, '_downloadable', true ) );
 	$product->weight = get_post_meta( $product->ID, '_weight', true );
-	// $product->weight_unit = $weight_unit;
 	$product->weight_unit = ( $product->weight != '' ? $weight_unit : '' );
 	$product->height = get_post_meta( $product->ID, '_height', true );
-	// $product->height_unit = $height_unit;
 	$product->height_unit = ( $product->height != '' ? $height_unit : '' );
 	$product->width = get_post_meta( $product->ID, '_width', true );
-	// $product->width_unit = $width_unit;
 	$product->width_unit = ( $product->width != '' ? $width_unit : '' );
 	$product->length = get_post_meta( $product->ID, '_length', true );
-	// $product->length_unit = $length_unit;
 	$product->length_unit = ( $product->length != '' ? $length_unit : '' );
 	$product->category = woo_ce_get_product_assoc_categories( $product->ID, $product->parent_id );
 	$product->tag = woo_ce_get_product_assoc_tags( $product->ID );
@@ -211,6 +207,8 @@ function woo_ce_get_product_data( $product_id = 0, $args = array() ) {
 	$product->product_status = woo_ce_format_product_status( $product->post_status );
 	$product->enable_reviews = woo_ce_format_comment_status( $product->comment_status );
 	$product->menu_order = $product->menu_order;
+
+	// Attributes
 	if( $attributes = woo_ce_get_product_attributes() ) {
 		if( $product->post_type == 'product_variation' ) {
 			foreach( $attributes as $attribute ) {
@@ -226,6 +224,53 @@ function woo_ce_get_product_data( $product_id = 0, $args = array() ) {
 			}
 		}
 	}
+
+	// Advanced Google Product Feed - http://plugins.leewillis.co.uk/downloads/wp-e-commerce-product-feeds/
+	if( function_exists( 'woocommerce_gpf_install' ) ) {
+		$product->gpf_data = get_post_meta( $product->ID, '_wpec_gpf_data', true );
+		$product->gpf_availability = ( isset( $product->gpf_data['availability'] ) ? woo_ce_format_gpf_availability( $product->gpf_data['availability'] ) : '' );
+		$product->gpf_condition = ( isset( $product->gpf_data['condition'] ) ? woo_ce_format_gpf_condition( $product->gpf_data['condition'] ) : '' );
+		$product->gpf_brand = ( isset( $product->gpf_data['brand'] ) ? $product->gpf_data['brand'] : '' );
+		$product->gpf_product_type = ( isset( $product->gpf_data['product_type'] ) ? $product->gpf_data['product_type'] : '' );
+		$product->gpf_google_product_category = ( isset( $product->gpf_data['google_product_category'] ) ? $product->gpf_data['google_product_category'] : '' );
+		$product->gpf_gtin = ( isset( $product->gpf_data['gtin'] ) ? $product->gpf_data['gtin'] : '' );
+		$product->gpf_mpn = ( isset( $product->gpf_data['mpn'] ) ? $product->gpf_data['mpn'] : '' );
+		$product->gpf_gender = ( isset( $product->gpf_data['gender'] ) ? $product->gpf_data['gender'] : '' );
+		$product->gpf_age_group = ( isset( $product->gpf_data['age_group'] ) ? $product->gpf_data['age_group'] : '' );
+		$product->gpf_color = ( isset( $product->gpf_data['color'] ) ? $product->gpf_data['color'] : '' );
+		$product->gpf_size = ( isset( $product->gpf_data['size'] ) ? $product->gpf_data['size'] : '' );
+	}
+
+	// All in One SEO Pack - http://wordpress.org/extend/plugins/all-in-one-seo-pack/
+	if( function_exists( 'aioseop_activate' ) ) {
+		$product->aioseop_keywords = get_post_meta( $product->ID, '_aioseop_keywords', true );
+		$product->aioseop_description = get_post_meta( $product->ID, '_aioseop_description', true );
+		$product->aioseop_title = get_post_meta( $product->ID, '_aioseop_title', true );
+		$product->aioseop_titleatr = get_post_meta( $product->ID, '_aioseop_titleatr', true );
+		$product->aioseop_menulabel = get_post_meta( $product->ID, '_aioseop_menulabel', true );
+	}
+
+	// WordPress SEO - http://wordpress.org/plugins/wordpress-seo/
+	if( function_exists( 'wpseo_admin_init' ) ) {
+		$product->wpseo_focuskw = get_post_meta( $product->ID, '_yoast_wpseo_focuskw', true );
+		$product->wpseo_metadesc = get_post_meta( $product->ID, '_yoast_wpseo_metadesc', true );
+		$product->wpseo_title = get_post_meta( $product->ID, '_yoast_wpseo_title', true );
+		$product->wpseo_googleplus_description = get_post_meta( $product->ID, '_yoast_wpseo_google-plus-description', true );
+		$product->wpseo_opengraph_description = get_post_meta( $product->ID, '_yoast_wpseo_opengraph-description', true );
+	}
+
+	// Ultimate SEO - http://wordpress.org/plugins/seo-ultimate/
+	if( function_exists( 'su_wp_incompat_notice' ) ) {
+		$product->useo_meta_title = get_post_meta( $product->ID, '_su_title', true );
+		$product->useo_meta_description = get_post_meta( $product->ID, '_su_description', true );
+		$product->useo_meta_keywords = get_post_meta( $product->ID, '_su_keywords', true );
+		$product->useo_social_title = get_post_meta( $product->ID, '_su_og_title', true );
+		$product->useo_social_description = get_post_meta( $product->ID, '_su_og_description', true );
+		$product->useo_meta_noindex = get_post_meta( $product->ID, '_su_meta_robots_noindex', true );
+		$product->useo_meta_noautolinks = get_post_meta( $product->ID, '_su_disable_autolinks', true );
+	}
+
+	// Allow Plugin/Theme authors to add support for additional Product columns
 	return apply_filters( 'woo_ce_product_item', $product, $product->ID );
 
 }
@@ -242,7 +287,7 @@ function woo_ce_get_product_assoc_categories( $product_id = 0, $parent_id = 0 ) 
 		$product_id = $parent_id;
 	if( $product_id )
 		$categories = wp_get_object_terms( $product_id, $term_taxonomy );
-	if( $categories ) {
+	if( is_wp_error( $categories ) == false ) {
 		$size = count( $categories );
 		for( $i = 0; $i < $size; $i++ ) {
 			if( $categories[$i]->parent == '0' ) {
@@ -280,7 +325,8 @@ function woo_ce_get_product_assoc_tags( $product_id = 0 ) {
 
 	$output = '';
 	$term_taxonomy = 'product_tag';
-	if( $tags = wp_get_object_terms( $product_id, $term_taxonomy ) ) {
+	$tags = wp_get_object_terms( $product_id, $term_taxonomy );
+	if( is_wp_error( $tags ) == false ) {
 		$size = count( $tags );
 		for( $i = 0; $i < $size; $i++ ) {
 			if( $tag = get_term( $tags[$i]->term_id, $term_taxonomy ) )
@@ -449,275 +495,353 @@ function woo_ce_get_product_fields( $format = 'full' ) {
 	$fields = array();
 	$fields[] = array(
 		'name' => 'parent_id',
-		'label' => __( 'Parent ID', 'woo_ce' ),
-		'default' => 1
+		'label' => __( 'Parent ID', 'woo_ce' )
 	);
 	$fields[] = array(
 		'name' => 'parent_sku',
-		'label' => __( 'Parent SKU', 'woo_ce' ),
-		'default' => 1
+		'label' => __( 'Parent SKU', 'woo_ce' )
 	);
 	$fields[] = array(
 		'name' => 'product_id',
-		'label' => __( 'Product ID', 'woo_ce' ),
-		'default' => 1
+		'label' => __( 'Product ID', 'woo_ce' )
 	);
 	$fields[] = array(
 		'name' => 'sku',
-		'label' => __( 'Product SKU', 'woo_ce' ),
-		'default' => 1
+		'label' => __( 'Product SKU', 'woo_ce' )
 	);
 	$fields[] = array(
 		'name' => 'name',
-		'label' => __( 'Product Name', 'woo_ce' ),
-		'default' => 1
+		'label' => __( 'Product Name', 'woo_ce' )
 	);
 	$fields[] = array(
 		'name' => 'slug',
-		'label' => __( 'Slug', 'woo_ce' ),
-		'default' => 1
+		'label' => __( 'Slug', 'woo_ce' )
 	);
 	$fields[] = array(
 		'name' => 'permalink',
-		'label' => __( 'Permalink', 'woo_ce' ),
-		'default' => 1
+		'label' => __( 'Permalink', 'woo_ce' )
 	);
 	$fields[] = array(
 		'name' => 'description',
-		'label' => __( 'Description', 'woo_ce' ),
-		'default' => 1
+		'label' => __( 'Description', 'woo_ce' )
 	);
 	$fields[] = array(
 		'name' => 'excerpt',
-		'label' => __( 'Excerpt', 'woo_ce' ),
-		'default' => 1
+		'label' => __( 'Excerpt', 'woo_ce' )
 	);
 	$fields[] = array(
 		'name' => 'post_date',
-		'label' => __( 'Product Published', 'woo_ce' ),
-		'default' => 1
+		'label' => __( 'Product Published', 'woo_ce' )
 	);
 	$fields[] = array(
 		'name' => 'post_modified',
-		'label' => __( 'Product Modified', 'woo_ce' ),
-		'default' => 1
+		'label' => __( 'Product Modified', 'woo_ce' )
 	);
 	$fields[] = array(
 		'name' => 'type',
-		'label' => __( 'Type', 'woo_ce' ),
-		'default' => 1
+		'label' => __( 'Type', 'woo_ce' )
 	);
 	$fields[] = array(
 		'name' => 'visibility',
-		'label' => __( 'Visibility', 'woo_ce' ),
-		'default' => 1
+		'label' => __( 'Visibility', 'woo_ce' )
 	);
 	$fields[] = array(
 		'name' => 'featured',
-		'label' => __( 'Featured', 'woo_ce' ),
-		'default' => 1
+		'label' => __( 'Featured', 'woo_ce' )
 	);
 	$fields[] = array(
 		'name' => 'virtual',
-		'label' => __( 'Virtual', 'woo_ce' ),
-		'default' => 1
+		'label' => __( 'Virtual', 'woo_ce' )
 	);
 	$fields[] = array(
 		'name' => 'downloadable',
-		'label' => __( 'Downloadable', 'woo_ce' ),
-		'default' => 1
+		'label' => __( 'Downloadable', 'woo_ce' )
 	);
 	$fields[] = array(
 		'name' => 'price',
-		'label' => __( 'Price', 'woo_ce' ),
-		'default' => 1
+		'label' => __( 'Price', 'woo_ce' )
 	);
 	$fields[] = array(
 		'name' => 'sale_price',
-		'label' => __( 'Sale Price', 'woo_ce' ),
-		'default' => 1
+		'label' => __( 'Sale Price', 'woo_ce' )
 	);
 	$fields[] = array(
 		'name' => 'sale_price_dates_from',
-		'label' => __( 'Sale Price Dates From', 'woo_ce' ),
-		'default' => 1
+		'label' => __( 'Sale Price Dates From', 'woo_ce' )
 	);
 	$fields[] = array(
 		'name' => 'sale_price_dates_to',
-		'label' => __( 'Sale Price Dates To', 'woo_ce' ),
-		'default' => 1
+		'label' => __( 'Sale Price Dates To', 'woo_ce' )
 	);
 	$fields[] = array(
 		'name' => 'weight',
-		'label' => __( 'Weight', 'woo_ce' ),
-		'default' => 1
+		'label' => __( 'Weight', 'woo_ce' )
 	);
 	$fields[] = array(
 		'name' => 'weight_unit',
-		'label' => __( 'Weight Unit', 'woo_ce' ),
-		'default' => 1
+		'label' => __( 'Weight Unit', 'woo_ce' )
 	);
 	$fields[] = array(
 		'name' => 'height',
-		'label' => __( 'Height', 'woo_ce' ),
-		'default' => 1
+		'label' => __( 'Height', 'woo_ce' )
 	);
 	$fields[] = array(
 		'name' => 'height_unit',
-		'label' => __( 'Height Unit', 'woo_ce' ),
-		'default' => 1
+		'label' => __( 'Height Unit', 'woo_ce' )
 	);
 	$fields[] = array(
 		'name' => 'width',
-		'label' => __( 'Width', 'woo_ce' ),
-		'default' => 1
+		'label' => __( 'Width', 'woo_ce' )
 	);
 	$fields[] = array(
 		'name' => 'width_unit',
-		'label' => __( 'Width Unit', 'woo_ce' ),
-		'default' => 1
+		'label' => __( 'Width Unit', 'woo_ce' )
 	);
 	$fields[] = array(
 		'name' => 'length',
-		'label' => __( 'Length', 'woo_ce' ),
-		'default' => 1
+		'label' => __( 'Length', 'woo_ce' )
 	);
 	$fields[] = array(
 		'name' => 'length_unit',
-		'label' => __( 'Length Unit', 'woo_ce' ),
-		'default' => 1
+		'label' => __( 'Length Unit', 'woo_ce' )
 	);
 	$fields[] = array(
 		'name' => 'category',
-		'label' => __( 'Category', 'woo_ce' ),
-		'default' => 1
+		'label' => __( 'Category', 'woo_ce' )
 	);
 	$fields[] = array(
 		'name' => 'tag',
-		'label' => __( 'Tag', 'woo_ce' ),
-		'default' => 1
+		'label' => __( 'Tag', 'woo_ce' )
 	);
 	$fields[] = array(
 		'name' => 'image',
-		'label' => __( 'Featured Image', 'woo_ce' ),
-		'default' => 1
+		'label' => __( 'Featured Image', 'woo_ce' )
 	);
 	$fields[] = array(
 		'name' => 'product_gallery',
-		'label' => __( 'Product Gallery', 'woo_ce' ),
-		'default' => 1
+		'label' => __( 'Product Gallery', 'woo_ce' )
 	);
 	$fields[] = array(
 		'name' => 'tax_status',
-		'label' => __( 'Tax Status', 'woo_ce' ),
-		'default' => 1
+		'label' => __( 'Tax Status', 'woo_ce' )
 	);
 	$fields[] = array(
 		'name' => 'tax_class',
-		'label' => __( 'Tax Class', 'woo_ce' ),
-		'default' => 1
+		'label' => __( 'Tax Class', 'woo_ce' )
 	);
 	$fields[] = array(
 		'name' => 'file_download',
-		'label' => __( 'File Download', 'woo_ce' ),
-		'default' => 1
+		'label' => __( 'File Download', 'woo_ce' )
 	);
 	$fields[] = array(
 		'name' => 'download_limit',
-		'label' => __( 'Download Limit', 'woo_ce' ),
-		'default' => 1
+		'label' => __( 'Download Limit', 'woo_ce' )
 	);
 	$fields[] = array(
 		'name' => 'download_expiry',
-		'label' => __( 'Download Expiry', 'woo_ce' ),
-		'default' => 1
+		'label' => __( 'Download Expiry', 'woo_ce' )
 	);
 	$fields[] = array(
 		'name' => 'download_type',
-		'label' => __( 'Download Type', 'woo_ce' ),
-		'default' => 1
+		'label' => __( 'Download Type', 'woo_ce' )
 	);
 	$fields[] = array(
 		'name' => 'manage_stock',
-		'label' => __( 'Manage Stock', 'woo_ce' ),
-		'default' => 1
+		'label' => __( 'Manage Stock', 'woo_ce' )
 	);
 	$fields[] = array(
 		'name' => 'quantity',
-		'label' => __( 'Quantity', 'woo_ce' ),
-		'default' => 1
+		'label' => __( 'Quantity', 'woo_ce' )
 	);
 	$fields[] = array(
 		'name' => 'stock_status',
-		'label' => __( 'Stock Status', 'woo_ce' ),
-		'default' => 1
+		'label' => __( 'Stock Status', 'woo_ce' )
 	);
 	$fields[] = array(
 		'name' => 'allow_backorders',
-		'label' => __( 'Allow Backorders', 'woo_ce' ),
-		'default' => 1
+		'label' => __( 'Allow Backorders', 'woo_ce' )
 	);
 	$fields[] = array(
 		'name' => 'sold_individually',
-		'label' => __( 'Sold Individually', 'woo_ce' ),
-		'default' => 1
+		'label' => __( 'Sold Individually', 'woo_ce' )
 	);
 	$fields[] = array(
 		'name' => 'upsell_ids',
-		'label' => __( 'Up-Sells', 'woo_ce' ),
-		'default' => 1
+		'label' => __( 'Up-Sells', 'woo_ce' )
 	);
 	$fields[] = array(
 		'name' => 'crosssell_ids',
-		'label' => __( 'Cross-Sells', 'woo_ce' ),
-		'default' => 1
+		'label' => __( 'Cross-Sells', 'woo_ce' )
 	);
 	$fields[] = array(
 		'name' => 'product_url',
-		'label' => __( 'Product URL', 'woo_ce' ),
-		'default' => 1
+		'label' => __( 'Product URL', 'woo_ce' )
 	);
 	$fields[] = array(
 		'name' => 'button_text',
-		'label' => __( 'Button Text', 'woo_ce' ),
-		'default' => 1
+		'label' => __( 'Button Text', 'woo_ce' )
 	);
 	$fields[] = array(
 		'name' => 'purchase_note',
-		'label' => __( 'Purchase Note', 'woo_ce' ),
-		'default' => 1
+		'label' => __( 'Purchase Note', 'woo_ce' )
 	);
 	$fields[] = array(
 		'name' => 'product_status',
-		'label' => __( 'Product Status', 'woo_ce' ),
-		'default' => 1
+		'label' => __( 'Product Status', 'woo_ce' )
 	);
 	$fields[] = array(
 		'name' => 'enable_reviews',
-		'label' => __( 'Enable Reviews', 'woo_ce' ),
-		'default' => 1
+		'label' => __( 'Enable Reviews', 'woo_ce' )
 	);
 	$fields[] = array(
 		'name' => 'menu_order',
-		'label' => __( 'Sort Order', 'woo_ce' ),
-		'default' => 1
+		'label' => __( 'Sort Order', 'woo_ce' )
 	);
 
 /*
 	$fields[] = array(
 		'name' => '',
-		'label' => __( '', 'woo_ce' ),
-		'default' => 1
+		'label' => __( '', 'woo_ce' )
 	);
 */
 
 	// Allow Plugin/Theme authors to add support for additional Product columns
 	$fields = apply_filters( 'woo_ce_product_fields', $fields );
 
-	if( $remember = woo_ce_get_option( 'products_fields' ) ) {
+	// Advanced Google Product Feed - http://www.leewillis.co.uk/wordpress-plugins/
+	if( function_exists( 'woocommerce_gpf_install' ) ) {
+		$fields[] = array(
+			'name' => 'gpf_availability',
+			'label' => __( 'Advanced Google Product Feed - Availability', 'woo_ce' )
+		);
+		$fields[] = array(
+			'name' => 'gpf_condition',
+			'label' => __( 'Advanced Google Product Feed - Condition', 'woo_ce' )
+		);
+		$fields[] = array(
+			'name' => 'gpf_brand',
+			'label' => __( 'Advanced Google Product Feed - Brand', 'woo_ce' )
+		);
+		$fields[] = array(
+			'name' => 'gpf_productype',
+			'label' => __( 'Advanced Google Product Feed - Product Type', 'woo_ce' )
+		);
+		$fields[] = array(
+			'name' => 'gpf_google_product_category',
+			'label' => __( 'Advanced Google Product Feed - Google Product Category', 'woo_ce' )
+		);
+		$fields[] = array(
+			'name' => 'gpf_gtin',
+			'label' => __( 'Advanced Google Product Feed - Global Trade Item Number (GTIN)', 'woo_ce' )
+		);
+		$fields[] = array(
+			'name' => 'gpf_mpn',
+			'label' => __( 'Advanced Google Product Feed - Manufacturer Part Number (MPN)', 'woo_ce' )
+		);
+		$fields[] = array(
+			'name' => 'gpf_gender',
+			'label' => __( 'Advanced Google Product Feed - Gender', 'woo_ce' )
+		);
+		$fields[] = array(
+			'name' => 'gpf_agegroup',
+			'label' => __( 'Advanced Google Product Feed - Age Group', 'woo_ce' )
+		);
+		$fields[] = array(
+			'name' => 'gpf_colour',
+			'label' => __( 'Advanced Google Product Feed - Colour', 'woo_ce' )
+		);
+		$fields[] = array(
+			'name' => 'gpf_size',
+			'label' => __( 'Advanced Google Product Feed - Size', 'woo_ce' )
+		);
+	}
+
+	// All in One SEO Pack - http://wordpress.org/extend/plugins/all-in-one-seo-pack/
+	if( function_exists( 'aioseop_activate' ) ) {
+		$fields[] = array(
+			'name' => 'aioseop_keywords',
+			'label' => __( 'All in One SEO - Keywords', 'woo_ce' )
+		);
+		$fields[] = array(
+			'name' => 'aioseop_description',
+			'label' => __( 'All in One SEO - Description', 'woo_ce' )
+		);
+		$fields[] = array(
+			'name' => 'aioseop_title',
+			'label' => __( 'All in One SEO - Title', 'woo_ce' )
+		);
+		$fields[] = array(
+			'name' => 'aioseop_title_attributes',
+			'label' => __( 'All in One SEO - Title Attributes', 'woo_ce' )
+		);
+		$fields[] = array(
+			'name' => 'aioseop_menu_label',
+			'label' => __( 'All in One SEO - Menu Label', 'woo_ce' )
+		);
+	}
+
+	// WordPress SEO - http://wordpress.org/plugins/wordpress-seo/
+	if( function_exists( 'wpseo_admin_init' ) ) {
+		$fields[] = array(
+			'name' => 'wpseo_focuskw',
+			'label' => __( 'WordPress SEO - Focus Keyword', 'woo_pd' )
+		);
+		$fields[] = array(
+			'name' => 'wpseo_metadesc',
+			'label' => __( 'WordPress SEO - Meta Description', 'woo_pd' )
+		);
+		$fields[] = array(
+			'name' => 'wpseo_title',
+			'label' => __( 'WordPress SEO - SEO Title', 'woo_pd' )
+		);
+		$fields[] = array(
+			'name' => 'wpseo_googleplus_description',
+			'label' => __( 'WordPress SEO - Google+ Description', 'woo_pd' )
+		);
+		$fields[] = array(
+			'name' => 'wpseo_opengraph_description',
+			'label' => __( 'WordPress SEO - Facebook Description', 'woo_pd' )
+		);
+	}
+
+	// Ultimate SEO - http://wordpress.org/plugins/seo-ultimate/
+	if( function_exists( 'su_wp_incompat_notice' ) ) {
+		$fields[] = array(
+			'name' => 'useo_meta_title',
+			'label' => __( 'Ultimate SEO - Title Tag', 'woo_pd' )
+		);
+		$fields[] = array(
+			'name' => 'useo_meta_description',
+			'label' => __( 'Ultimate SEO - Meta Description', 'woo_pd' )
+		);
+		$fields[] = array(
+			'name' => 'useo_meta_keywords',
+			'label' => __( 'Ultimate SEO - Meta Keywords', 'woo_pd' )
+		);
+		$fields[] = array(
+			'name' => 'useo_social_title',
+			'label' => __( 'Ultimate SEO - Social Title', 'woo_pd' )
+		);
+		$fields[] = array(
+			'name' => 'useo_social_description',
+			'label' => __( 'Ultimate SEO - Social Description', 'woo_pd' )
+		);
+		$fields[] = array(
+			'name' => 'useo_meta_noindex',
+			'label' => __( 'Ultimate SEO - NoIndex', 'woo_pd' )
+		);
+		$fields[] = array(
+			'name' => 'useo_meta_noautolinks',
+			'label' => __( 'Ultimate SEO - Disable Autolinks', 'woo_pd' )
+		);
+	}
+
+	if( $remember = woo_ce_get_option( 'products_fields', array() ) ) {
 		$remember = maybe_unserialize( $remember );
 		$size = count( $fields );
 		for( $i = 0; $i < $size; $i++ ) {
+			$fields[$i]['disabled'] = 0;
+			$fields[$i]['default'] = 1;
 			if( !array_key_exists( $fields[$i]['name'], $remember ) )
 				$fields[$i]['default'] = 0;
 		}
@@ -750,8 +874,7 @@ function woo_ce_extend_product_fields( $fields ) {
 				$attribute->attribute_label = $attribute->attribute_name;
 			$fields[] = array(
 				'name' => sprintf( 'attribute_%s', $attribute->attribute_name ),
-				'label' => sprintf( __( 'Attribute: %s', 'woo_ce' ), ucwords( $attribute->attribute_label ) ),
-				'default' => 1
+				'label' => sprintf( __( 'Attribute: %s', 'woo_ce' ), ucwords( $attribute->attribute_label ) )
 			);
 		}
 	}

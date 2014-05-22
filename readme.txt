@@ -5,7 +5,7 @@ Donate link: http://www.visser.com.au/#donations
 Tags: e-commerce, woocommerce, shop, cart, ecommerce, export, csv, xml, customers, products, sales, coupons
 Requires at least: 2.9.2
 Tested up to: 3.9.1
-Stable tag: 1.5.8
+Stable tag: 1.6
 
 == Description ==
 
@@ -40,20 +40,17 @@ For more information visit: http://www.visser.com.au/woocommerce/
 == Installation ==
 
 1. Upload the folder 'woocommerce-exporter' to the '/wp-content/plugins/' directory
-
 2. Activate 'WooCommerce - Store Exporter' through the 'Plugins' menu in WordPress
 
-That's it!
+See Usage section before for instructions on how to generate export files.
 
 == Usage ==
 
 1. Open WooCommerce > Store Export from the WordPress Administration
-
 2. Select the Export tab on the Store Exporter screen
-
-3. Select which data type and WooCommerce details you would like to export and click Export
-
-4. Download archived copies of previous exports from the Archives tab
+3. Select which data type and WooCommerce details you would like to export
+4. Click Export
+5. Download archived copies of previous exports from the Archives tab
 
 Done!
 
@@ -74,6 +71,23 @@ http://www.visser.com.au/woocommerce/forums/
 7. Download achived copies of previous exports
 
 == Changelog ==
+
+= 1.6 =
+* Fixed: Coupon export as XML
+* Fixed: Order export as XML
+* Fixed: Customer export as XML
+* Fixed: Compatibility with WordPress 3.9.1
+* Added: Product export support for Advanced Google Product Feed
+* Added: Product export support for All in One SEO Pack
+* Added: Product export support for WordPress SEO
+* Added: Product export support for Ultimate SEO
+* Fixed: Fatal error affecting CRON export for XML export
+* Fixed: Remember column options after exporting Orders
+
+= 1.5.9 =
+* Fixed: Clearing the Limit Volume or Offset values would not be saved
+* Fixed: Force file extension if removed from the Filename option on Settings screen
+* Changed: Reduced memory load by storing $args in $export global
 
 = 1.5.8 =
 * Fixed: Fatal error if Store Exporter is not activated

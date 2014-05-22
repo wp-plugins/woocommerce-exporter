@@ -1,9 +1,13 @@
 <?php
 // Function to generate filename of CSV file based on the Export type
-function woo_ce_generate_csv_filename( $dataset = '' ) {
+function woo_ce_generate_csv_filename( $export_type = '' ) {
 
 	// Get the filename from WordPress options
-	$filename = woo_ce_get_option( 'export_filename', 'woo-export_%dataset%-%date%.csv' );
+	$filename = sanitize_file_name( woo_ce_get_option( 'export_filename', 'woo-export_%dataset%-%date%.csv' ) );
+
+	// Add file extension if it has been removed
+	if( strpos( $filename, '.csv' ) === false )
+		$filename .= '.csv';
 
 	// Populate the available tags
 	$date = date( 'Y_m_d' );
@@ -11,7 +15,7 @@ function woo_ce_generate_csv_filename( $dataset = '' ) {
 	$store_name = sanitize_title( get_bloginfo( 'name' ) );
 
 	// Switch out the tags for filled values
-	$filename = str_replace( '%dataset%', $dataset, $filename );
+	$filename = str_replace( '%dataset%', $export_type, $filename );
 	$filename = str_replace( '%date%', $date, $filename );
 	$filename = str_replace( '%time%', $time, $filename );
 	$filename = str_replace( '%store_name%', $store_name, $filename );
@@ -22,11 +26,11 @@ function woo_ce_generate_csv_filename( $dataset = '' ) {
 }
 
 // File output header for CSV file
-function woo_ce_generate_csv_header( $dataset = '' ) {
+function woo_ce_generate_csv_header( $export_type = '' ) {
 
 	global $export;
 
-	if( $filename = woo_ce_generate_csv_filename( $dataset ) ) {
+	if( $filename = woo_ce_generate_csv_filename( $export_type ) ) {
 		header( sprintf( 'Content-Encoding: %s', $export->encoding ) );
 		header( sprintf( 'Content-Type: text/csv; charset=%s', $export->encoding ) );
 		header( 'Content-Transfer-Encoding: binary' );

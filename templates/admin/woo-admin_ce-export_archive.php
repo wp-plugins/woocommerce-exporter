@@ -7,6 +7,7 @@
 	<li><a href="<?php echo add_query_arg( 'filter', 'customers' ); ?>"<?php woo_ce_archives_quicklink_current( 'customers' ); ?>><?php _e( 'Customers', 'woo_ce' ); ?> <span class="count">(<?php woo_ce_archives_quicklink_count( 'customers' ); ?>)</span></a> |</li>
 	<li><a href="<?php echo add_query_arg( 'filter', 'coupons' ); ?>"<?php woo_ce_archives_quicklink_current( 'coupons' ); ?>><?php _e( 'Coupons', 'woo_ce' ); ?> <span class="count">(<?php woo_ce_archives_quicklink_count( 'coupons' ); ?>)</span></a></li>
 </ul>
+<!-- .subsubsub -->
 <br class="clear" />
 <form action="" method="GET">
 	<table class="widefat fixed media" cellspacing="0">

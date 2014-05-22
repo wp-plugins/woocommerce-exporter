@@ -9,8 +9,8 @@
 	<tbody>
 
 		<tr>
-			<th style="width:20%;"><?php _e( 'Dataset', 'woo_ce' ); ?></th>
-			<td><?php echo woo_ce_export_type_label( $dataset ); ?></td>
+			<th style="width:20%;"><?php _e( 'Export type', 'woo_ce' ); ?></th>
+			<td><?php echo woo_ce_export_type_label( $export_type ); ?></td>
 		</tr>
 		<tr>
 			<th><?php _e( 'Filepath', 'woo_ce' ); ?></th>
@@ -33,11 +33,11 @@
 			<td><?php echo ( ( $idle_memory_start != false ) ? woo_ce_display_memory( $idle_memory_start ) : '-' ); ?></td>
 		</tr>
 		<tr>
-			<th><?php _e( 'Memory usage prior to loading dataset', 'woo_ce' ); ?></th>
+			<th><?php _e( 'Memory usage prior to loading export type', 'woo_ce' ); ?></th>
 			<td><?php echo ( ( $data_memory_start != false ) ? woo_ce_display_memory( $data_memory_start ) : '-' ); ?></td>
 		</tr>
 		<tr>
-			<th><?php _e( 'Memory usage after loading dataset', 'woo_ce' ); ?></th>
+			<th><?php _e( 'Memory usage after loading export type', 'woo_ce' ); ?></th>
 			<td><?php echo ( ( $data_memory_end != false ) ? woo_ce_display_memory( $data_memory_end ) : '-' ); ?></td>
 		</tr>
 		<tr>

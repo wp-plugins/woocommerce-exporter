@@ -16,7 +16,7 @@
 
 					<tr>
 						<th>
-							<input type="radio" id="products" name="dataset" value="products"<?php disabled( $products, 0 ); ?><?php checked( $dataset, 'products' ); ?> />
+							<input type="radio" id="products" name="dataset" value="products"<?php disabled( $products, 0 ); ?><?php checked( $export_type, 'products' ); ?> />
 							<label for="products"><?php _e( 'Products', 'woo_ce' ); ?></label>
 						</th>
 						<td>
@@ -26,7 +26,7 @@
 
 					<tr>
 						<th>
-							<input type="radio" id="categories" name="dataset" value="categories"<?php disabled( $categories, 0 ); ?><?php checked( $dataset, 'categories' ); ?> />
+							<input type="radio" id="categories" name="dataset" value="categories"<?php disabled( $categories, 0 ); ?><?php checked( $export_type, 'categories' ); ?> />
 							<label for="categories"><?php _e( 'Categories', 'woo_ce' ); ?></label>
 						</th>
 						<td>
@@ -36,7 +36,7 @@
 
 					<tr>
 						<th>
-							<input type="radio" id="tags" name="dataset" value="tags"<?php disabled( $tags, 0 ); ?><?php checked( $dataset, 'tags' ); ?> />
+							<input type="radio" id="tags" name="dataset" value="tags"<?php disabled( $tags, 0 ); ?><?php checked( $export_type, 'tags' ); ?> />
 							<label for="tags"><?php _e( 'Tags', 'woo_ce' ); ?></label>
 						</th>
 						<td>
@@ -46,7 +46,7 @@
 
 					<tr>
 						<th>
-							<input type="radio" id="orders" name="dataset" value="orders"<?php disabled( $orders, 0 ); ?><?php checked( $dataset, 'orders' ); ?>/>
+							<input type="radio" id="orders" name="dataset" value="orders"<?php disabled( $orders, 0 ); ?><?php checked( $export_type, 'orders' ); ?>/>
 							<label for="orders"><?php _e( 'Orders', 'woo_ce' ); ?></label>
 						</th>
 						<td>
@@ -59,7 +59,7 @@
 
 					<tr>
 						<th>
-							<input type="radio" id="customers" name="dataset" value="customers"<?php disabled( $customers, 0 ); ?><?php checked( $dataset, 'customers' ); ?>/>
+							<input type="radio" id="customers" name="dataset" value="customers"<?php disabled( $customers, 0 ); ?><?php checked( $export_type, 'customers' ); ?>/>
 							<label for="customers"><?php _e( 'Customers', 'woo_ce' ); ?></label>
 						</th>
 						<td>
@@ -72,7 +72,7 @@
 
 					<tr>
 						<th>
-							<input type="radio" id="coupons" name="dataset" value="coupons"<?php disabled( $coupons, 0 ); ?><?php checked( $dataset, 'coupons' ); ?> />
+							<input type="radio" id="coupons" name="dataset" value="coupons"<?php disabled( $coupons, 0 ); ?><?php checked( $export_type, 'coupons' ); ?> />
 							<label for="coupons"><?php _e( 'Coupons', 'woo_ce' ); ?></label>
 						</th>
 						<td>
@@ -108,7 +108,7 @@
 						<tr>
 							<td>
 								<label>
-									<input type="checkbox" name="product_fields[<?php echo $product_field['name']; ?>]" class="product_field"<?php checked( $product_field['default'], 1 ); ?><?php disabled( $product_field['disabled'], 1 ); ?> />
+									<input type="checkbox" name="product_fields[<?php echo $product_field['name']; ?>]" class="product_field"<?php ( isset( $product_field['default'] ) ? checked( $product_field['default'], 1 ) : '' ); ?><?php disabled( $product_field['disabled'], 1 ); ?> />
 									<?php echo $product_field['label']; ?>
 								</label>
 							</td>
@@ -222,7 +222,7 @@
 						<tr>
 							<td>
 								<label>
-									<input type="checkbox" name="category_fields[<?php echo $category_field['name']; ?>]" class="category_field"<?php checked( $category_field['default'], 1 ); ?><?php disabled( $category_field['disabled'], 1 ); ?> />
+									<input type="checkbox" name="category_fields[<?php echo $category_field['name']; ?>]" class="category_field"<?php ( isset( $category_field['default'] ) ? checked( $category_field['default'], 1 ) : '' ); ?><?php disabled( $category_field['disabled'], 1 ); ?> />
 									<?php echo $category_field['label']; ?>
 								</label>
 							</td>
@@ -277,7 +277,7 @@
 						<tr>
 							<td>
 								<label>
-									<input type="checkbox" name="tag_fields[<?php echo $tag_field['name']; ?>]" class="tag_field"<?php checked( $tag_field['default'], 1 ); ?><?php disabled( $tag_field['disabled'], 1 ); ?> />
+									<input type="checkbox" name="tag_fields[<?php echo $tag_field['name']; ?>]" class="tag_field"<?php ( isset( $tag_field['default'] ) ? checked( $tag_field['default'], 1 ) : '' ); ?><?php disabled( $tag_field['disabled'], 1 ); ?> />
 									<?php echo $tag_field['label']; ?>
 								</label>
 							</td>
@@ -335,7 +335,7 @@
 						<tr>
 							<td>
 								<label>
-									<input type="checkbox" name="order_fields[<?php echo $order_field['name']; ?>]" class="order_field"<?php checked( $order_field['default'], 1 ); ?><?php disabled( $woo_cd_exists, false ); ?> />
+									<input type="checkbox" name="order_fields[<?php echo $order_field['name']; ?>]" class="order_field"<?php ( isset( $order_field['default'] ) ? checked( $order_field['default'], 1 ) : '' ); ?><?php disabled( $woo_cd_exists, false ); ?> />
 									<?php echo $order_field['label']; ?>
 								</label>
 							</td>
@@ -393,7 +393,7 @@
 					<tr>
 						<td>
 							<label>
-								<input type="checkbox" name="customer_fields[<?php echo $customer_field['name']; ?>]" class="customer_field"<?php checked( $customer_field['default'], 1 ); ?><?php disabled( $woo_cd_exists, false ); ?> />
+								<input type="checkbox" name="customer_fields[<?php echo $customer_field['name']; ?>]" class="customer_field"<?php ( isset( $customer_field['default'] ) ? checked( $customer_field['default'], 1 ) : '' ); ?><?php disabled( $woo_cd_exists, false ); ?> />
 								<?php echo $customer_field['label']; ?>
 							</label>
 						</td>
@@ -430,7 +430,7 @@
 					<tr>
 						<td>
 							<label>
-								<input type="checkbox" name="coupon_fields[<?php echo $coupon_field['name']; ?>]" class="coupon_field"<?php checked( $coupon_field['default'], 1 ); ?><?php disabled( $woo_cd_exists, false ); ?> />
+								<input type="checkbox" name="coupon_fields[<?php echo $coupon_field['name']; ?>]" class="coupon_field"<?php ( isset( $coupon_field['default'] ) ? checked( $coupon_field['default'], 1 ) : '' ); ?><?php disabled( $woo_cd_exists, false ); ?> />
 								<?php echo $coupon_field['label']; ?>
 							</label>
 						</td>
@@ -489,7 +489,7 @@
 						</th>
 						<td>
 							<input type="text" size="3" id="offset" name="offset" value="<?php echo $offset; ?>" size="5" class="text" /> <?php _e( 'to', 'woo_ce' ); ?> <input type="text" size="3" id="limit_volume" name="limit_volume" value="<?php echo $limit_volume; ?>" size="5" class="text" />
-							<p class="description"><?php _e( 'Volume offset and limit allows for partial exporting of a dataset (e.g. records 0 to 500, etc.). This is useful when encountering timeout and/or memory errors during the a large or memory intensive export. To be used effectively both fields must be filled. By default this is not used and is left empty.', 'woo_ce' ); ?></p>
+							<p class="description"><?php _e( 'Volume offset and limit allows for partial exporting of an export type (e.g. records 0 to 500, etc.). This is useful when encountering timeout and/or memory errors during the a large or memory intensive export. To be used effectively both fields must be filled. By default this is not used and is left empty.', 'woo_ce' ); ?></p>
 						</td>
 					</tr>
 
