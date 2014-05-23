@@ -667,7 +667,7 @@ function woo_ce_export_dataset( $export_type, &$output = null ) {
 		// Products
 		case 'products':
 			$fields = woo_ce_get_product_fields( 'summary' );
-			if( $export->fields = array_intersect_assoc( $fields, $export->fields ) ) {
+			if( $export->fields = array_intersect_assoc( $fields, (array)$export->fields ) ) {
 				foreach( $export->fields as $key => $field )
 					$export->columns[] = woo_ce_get_product_field( $key );
 			}
@@ -729,7 +729,7 @@ function woo_ce_export_dataset( $export_type, &$output = null ) {
 		// Categories
 		case 'categories':
 			$fields = woo_ce_get_category_fields( 'summary' );
-			if( $export->fields = array_intersect_assoc( $fields, $export->fields ) ) {
+			if( $export->fields = array_intersect_assoc( $fields, (array)$export->fields ) ) {
 				foreach( $export->fields as $key => $field )
 					$export->columns[] = woo_ce_get_category_field( $key );
 			}
@@ -777,7 +777,7 @@ function woo_ce_export_dataset( $export_type, &$output = null ) {
 		// Tags
 		case 'tags':
 			$fields = woo_ce_get_tag_fields( 'summary' );
-			if( $export->fields = array_intersect_assoc( $fields, $export->fields ) ) {
+			if( $export->fields = array_intersect_assoc( $fields, (array)$export->fields ) ) {
 				foreach( $export->fields as $key => $field )
 					$export->columns[] = woo_ce_get_tag_field( $key );
 			}
@@ -838,7 +838,7 @@ function woo_ce_export_dataset( $export_type, &$output = null ) {
 	// Export completed successfully
 	delete_transient( WOO_CE_PREFIX . '_running' );
 	// Check that the export file is populated, export columns have been assigned and rows counted
-	if( $output && $export->total_rows && !empty( $export->columns ) ) {
+	if( $output && $export->total_rows && $export->total_columns ) {
 		if( $export->export_format == 'csv' ) {
 			if( $export->bom ) {
 				// $output .= chr(239) . chr(187) . chr(191) . '';
@@ -965,7 +965,7 @@ function woo_ce_get_option( $option = null, $default = false, $allow_empty = fal
 	if( isset( $option ) ) {
 		$separator = '_';
 		$output = get_option( WOO_CE_PREFIX . $separator . $option, $default );
-		if( $allow_empty == false && ( $output == false || $output == '' ) )
+		if( $allow_empty == false && $output != 0 && ( $output == false || $output == '' ) )
 			$output = $default;
 	}
 	return $output;

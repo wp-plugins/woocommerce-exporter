@@ -9,7 +9,8 @@ function woo_ce_get_product_tags( $args = array() ) {
 		'hide_empty' => 0
 	);
 	$args = wp_parse_args( $args, $defaults );
-	if( $tags = get_terms( $term_taxonomy, $args ) ) {
+	$tags = get_terms( $term_taxonomy, $args );
+	if( !empty( $tags ) && is_wp_error( $tags ) == false ) {
 		$size = count( $tags );
 		for( $i = 0; $i < $size; $i++ ) {
 			$tags[$i]->disabled = 0;

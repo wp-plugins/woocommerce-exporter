@@ -187,4 +187,24 @@ function woo_ce_get_customer_field( $name = null, $format = 'name' ) {
 	return $output;
 
 }
+// HTML template for disabled Filter Customers by Order Status widget on Store Exporter screen
+function woo_ce_customers_filter_by_status() {
+
+	$order_statuses = woo_ce_get_order_statuses();
+	ob_start(); ?>
+<p><label><input type="checkbox" id="customers-filters-status" /> <?php _e( 'Filter Customers by Order Status', 'woo_ce' ); ?></label></p>
+<div id="export-customers-filters-status" class="separator">
+	<ul>
+<?php foreach( $order_statuses as $order_status ) { ?>
+		<li><label><input type="checkbox" name="customer_filter_status[<?php echo $order_status->name; ?>]" value="<?php echo $order_status->name; ?>" disabled="disabled" /> <?php echo ucfirst( $order_status->name ); ?></label></li>
+<?php } ?>
+	</ul>
+	<p class="description"><?php _e( 'Select the Order Status you want to filter exported Customers by. Default is to include all Order Status options.', 'woo_ce' ); ?></p>
+</div>
+<!-- #export-customers-filters-status -->
+<?php
+	ob_end_flush();
+
+}
+
 ?>

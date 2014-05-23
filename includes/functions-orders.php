@@ -115,87 +115,87 @@ function woo_ce_get_order_fields( $format = 'full' ) {
 		'name' => 'billing_last_name',
 		'label' => __( 'Billing: Last Name', 'woo_ce' )
 	);
-	$fields[] = array( 
+	$fields[] = array(
 		'name' => 'billing_company',
 		'label' => __( 'Billing: Company', 'woo_ce' )
 	);
-	$fields[] = array( 
+	$fields[] = array(
 		'name' => 'billing_address',
 		'label' => __( 'Billing: Street Address', 'woo_ce' )
 	);
-	$fields[] = array( 
+	$fields[] = array(
 		'name' => 'billing_city',
 		'label' => __( 'Billing: City', 'woo_ce' )
 	);
-	$fields[] = array( 
+	$fields[] = array(
 		'name' => 'billing_postcode',
 		'label' => __( 'Billing: ZIP Code', 'woo_ce' )
 	);
-	$fields[] = array( 
+	$fields[] = array(
 		'name' => 'billing_state',
 		'label' => __( 'Billing: State (prefix)', 'woo_ce' )
 	);
-	$fields[] = array( 
+	$fields[] = array(
 		'name' => 'billing_state_full',
 		'label' => __( 'Billing: State', 'woo_ce' )
 	);
-	$fields[] = array( 
+	$fields[] = array(
 		'name' => 'billing_country',
 		'label' => __( 'Billing: Country (prefix)', 'woo_ce' )
 	);
-	$fields[] = array( 
+	$fields[] = array(
 		'name' => 'billing_country_full',
 		'label' => __( 'Billing: Country', 'woo_ce' )
 	);
-	$fields[] = array( 
+	$fields[] = array(
 		'name' => 'billing_phone',
 		'label' => __( 'Billing: Phone Number', 'woo_ce' )
 	);
-	$fields[] = array( 
+	$fields[] = array(
 		'name' => 'billing_email',
 		'label' => __( 'Billing: E-mail Address', 'woo_ce' )
 	);
-	$fields[] = array( 
+	$fields[] = array(
 		'name' => 'shipping_full_name',
 		'label' => __( 'Shipping: Full Name', 'woo_ce' )
 	);
-	$fields[] = array( 
+	$fields[] = array(
 		'name' => 'shipping_first_name',
 		'label' => __( 'Shipping: First Name', 'woo_ce' )
 	);
-	$fields[] = array( 
+	$fields[] = array(
 		'name' => 'shipping_last_name',
 		'label' => __( 'Shipping: Last Name', 'woo_ce' )
 	);
-	$fields[] = array( 
+	$fields[] = array(
 		'name' => 'shipping_company',
 		'label' => __( 'Shipping: Company', 'woo_ce' )
 	);
-	$fields[] = array( 
+	$fields[] = array(
 		'name' => 'shipping_address',
 		'label' => __( 'Shipping: Street Address', 'woo_ce' )
 	);
-	$fields[] = array( 
+	$fields[] = array(
 		'name' => 'shipping_city',
 		'label' => __( 'Shipping: City', 'woo_ce' )
 	);
-	$fields[] = array( 
+	$fields[] = array(
 		'name' => 'shipping_postcode',
 		'label' => __( 'Shipping: ZIP Code', 'woo_ce' )
 	);
-	$fields[] = array( 
+	$fields[] = array(
 		'name' => 'shipping_state',
 		'label' => __( 'Shipping: State (prefix)', 'woo_ce' )
 	);
-	$fields[] = array( 
+	$fields[] = array(
 		'name' => 'shipping_state_full',
 		'label' => __( 'Shipping: State', 'woo_ce' )
 	);
-	$fields[] = array( 
+	$fields[] = array(
 		'name' => 'shipping_country',
 		'label' => __( 'Shipping: Country (prefix)', 'woo_ce' )
 	);
-	$fields[] = array( 
+	$fields[] = array(
 		'name' => 'shipping_country_full',
 		'label' => __( 'Shipping: Country', 'woo_ce' )
 	);
@@ -341,7 +341,8 @@ function woo_ce_get_order_statuses() {
 		'hide_empty' => false
 	);
 	$terms = get_terms( 'shop_order_status', $args );
-	return $terms;
+	if( !empty( $terms ) && is_wp_error( $terms ) == false )
+		return $terms;
 
 }
 

@@ -5,7 +5,7 @@ Donate link: http://www.visser.com.au/#donations
 Tags: e-commerce, woocommerce, shop, cart, ecommerce, export, csv, xml, customers, products, sales, coupons
 Requires at least: 2.9.2
 Tested up to: 3.9.1
-Stable tag: 1.6
+Stable tag: 1.6.1
 
 == Description ==
 
@@ -71,6 +71,14 @@ http://www.visser.com.au/woocommerce/forums/
 7. Download achived copies of previous exports
 
 == Changelog ==
+
+= 1.6.1 =
+* Fixed: Empty exports
+* Changed: Better detection of empty exports
+* Changed: Better detection of empty data types
+* Added: Customer Filter to Export screen
+* Added: Filter Customers by Order Status option 
+* Added: Using is_wp_error() throughout CPT and Term requests
 
 = 1.6 =
 * Fixed: Coupon export as XML

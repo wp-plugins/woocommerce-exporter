@@ -50,6 +50,10 @@ $j(function() {
 	if( $j('#orders-filters-user_role').attr('checked') ) {
 		$j('#export-orders-filters-user_role').show();
 	}
+	$j('#export-customers-filters-status').hide();
+	if( $j('#customers-filters-status').attr('checked') ) {
+		$j('#export-customers-filters-status').show();
+	}
 	$j('#export-customers').hide();
 	$j('#export-coupons').hide();
 
@@ -73,6 +77,9 @@ $j(function() {
 	});
 	$j('#orders-filters-user_role').click(function(){
 		$j('#export-orders-filters-user_role').toggle();
+	});
+	$j('#customers-filters-status').click(function(){
+		$j('#export-customers-filters-status').toggle();
 	});
 
 	// Export types

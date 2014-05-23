@@ -3,7 +3,7 @@
 Plugin Name: WooCommerce - Store Exporter
 Plugin URI: http://www.visser.com.au/woocommerce/plugins/exporter/
 Description: Export store details out of WooCommerce into simple formatted files (e.g. CSV, XML, TXT, etc.).
-Version: 1.6
+Version: 1.6.1
 Author: Visser Labs
 Author URI: http://www.visser.com.au/about/
 License: GPL2
@@ -121,7 +121,9 @@ if( is_admin() ) {
 				$export->start_time = time();
 				$export->idle_memory_start = woo_ce_current_memory_usage();
 				$export->delete_temporary_csv = woo_ce_get_option( 'delete_csv', 0 );
-				$export->encoding = woo_ce_get_option( 'encoding', get_option( 'blog_charset' ) );
+				$export->encoding = woo_ce_get_option( 'encoding', get_option( 'blog_charset', 'UTF-8' ) );
+				if( $export->encoding == 'System default' )
+					$export->encoding = 'UTF-8';
 				$export->delimiter = woo_ce_get_option( 'delimiter', ',' );
 				$export->category_separator = woo_ce_get_option( 'category_separator', '|' );
 				$export->bom = woo_ce_get_option( 'bom', 1 );
@@ -259,6 +261,7 @@ if( is_admin() ) {
 					case 'customers':
 						// Set up dataset specific options
 						$export->fields = $_POST['customer_fields'];
+						$export->order_status = ( isset( $_POST['customer_filter_status'] ) ? woo_ce_format_product_filters( $_POST['customer_filter_status'] ) : false );
 						break;
 
 					case 'coupons':
@@ -434,6 +437,7 @@ if( is_admin() ) {
 				add_action( 'woo_ce_export_order_options_before_table', 'woo_ce_orders_filter_by_status' );
 				add_action( 'woo_ce_export_order_options_before_table', 'woo_ce_orders_filter_by_customer' );
 				add_action( 'woo_ce_export_order_options_after_table', 'woo_ce_orders_order_sorting' );
+				add_action( 'woo_ce_export_customer_options_before_table', 'woo_ce_customers_filter_by_status' );
 				add_action( 'woo_ce_export_after_form', 'woo_ce_products_custom_fields' );
 				add_action( 'woo_ce_export_after_form', 'woo_ce_orders_custom_fields' );
 				add_action( 'woo_ce_export_options', 'woo_ce_export_options_export_format' );

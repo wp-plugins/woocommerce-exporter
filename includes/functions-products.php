@@ -287,7 +287,7 @@ function woo_ce_get_product_assoc_categories( $product_id = 0, $parent_id = 0 ) 
 		$product_id = $parent_id;
 	if( $product_id )
 		$categories = wp_get_object_terms( $product_id, $term_taxonomy );
-	if( is_wp_error( $categories ) == false ) {
+	if( !empty( $categories ) && is_wp_error( $categories ) == false ) {
 		$size = count( $categories );
 		for( $i = 0; $i < $size; $i++ ) {
 			if( $categories[$i]->parent == '0' ) {
@@ -326,7 +326,7 @@ function woo_ce_get_product_assoc_tags( $product_id = 0 ) {
 	$output = '';
 	$term_taxonomy = 'product_tag';
 	$tags = wp_get_object_terms( $product_id, $term_taxonomy );
-	if( is_wp_error( $tags ) == false ) {
+	if( !empty( $tags ) && is_wp_error( $tags ) == false ) {
 		$size = count( $tags );
 		for( $i = 0; $i < $size; $i++ ) {
 			if( $tag = get_term( $tags[$i]->term_id, $term_taxonomy ) )
@@ -446,9 +446,10 @@ function woo_ce_get_product_assoc_attributes( $product_id = 0, $attribute = arra
 
 	$output = '';
 	if( $product_id ) {
+		$terms = array();
 		if( $attribute['is_taxonomy'] == 1 )
 			$terms = wp_get_object_terms( $product_id, $attribute['name'] );
-		if( $terms && !is_wp_error( $terms ) ) {
+		if( !empty( $terms ) && is_wp_error( $terms ) == false ) {
 			$size = count( $terms );
 			for( $i = 0; $i < $size; $i++ )
 				$output .= $terms[$i]->slug . $export->category_separator;
@@ -914,12 +915,12 @@ function woo_ce_get_product_field( $name = null, $format = 'name' ) {
 // Returns a list of WooCommerce Product Types to export process
 function woo_ce_get_product_types() {
 
-	$output = '';
 	$term_taxonomy = 'product_type';
 	$args = array(
 		'hide_empty' => 0
 	);
-	if( $types = get_terms( $term_taxonomy, $args ) ) {
+	$types = get_terms( $term_taxonomy, $args );
+	if( !empty( $types ) && is_wp_error( $types ) == false ) {
 		$size = count( $types );
 		for( $i = 0; $i < $size; $i++ ) {
 			$output[$types[$i]->slug] = array(
@@ -932,8 +933,8 @@ function woo_ce_get_product_types() {
 			'count' => woo_ce_get_product_type_variation_count()
 		);
 		asort( $output );
+		return $output;
 	}
-	return $output;
 
 }
 

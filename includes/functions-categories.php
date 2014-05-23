@@ -9,7 +9,8 @@ function woo_ce_get_product_categories( $args = array() ) {
 		'hide_empty' => 0
 	);
 	$args = wp_parse_args( $args, $defaults );
-	if( $categories = get_terms( $term_taxonomy, $args ) ) {
+	$categories = get_terms( $term_taxonomy, $args );
+	if( !empty( $categories ) && is_wp_error( $categories ) == false ) {
 		foreach( $categories as $key => $category ) {
 			$categories[$key]->parent_name = '';
 			if( $categories[$key]->parent_id = $category->parent ) {
