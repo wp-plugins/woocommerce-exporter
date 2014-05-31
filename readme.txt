@@ -5,7 +5,7 @@ Donate link: http://www.visser.com.au/#donations
 Tags: e-commerce, woocommerce, shop, cart, ecommerce, export, csv, xml, customers, products, sales, coupons
 Requires at least: 2.9.2
 Tested up to: 3.9.1
-Stable tag: 1.6.1
+Stable tag: 1.6.2
 
 == Description ==
 
@@ -32,7 +32,7 @@ Features include:
 * Supports external CRON commands (**)
 * Supports scheduled exports (**)
 
-(*) Compatible with Product Importer Deluxe, All in One SEO Pack, Advanced Google Product Feed, Product Addons, Sequential Order Number Pro, WooCommerce Checkout Manager, Cost of Goods, Per-Product Shipping, Local Pickups Plus and more.
+(*) Compatible with Product Importer Deluxe, All in One SEO Pack, Advanced Google Product Feed, Product Addons, Sequential Order Number Pro, WooCommerce Checkout Manager, Checkout Field Editor, Cost of Goods, Per-Product Shipping, Local Pickups Plus and more.
 (**) Requries the Pro upgrade to enable additional store export functionality.
 
 For more information visit: http://www.visser.com.au/woocommerce/
@@ -71,6 +71,20 @@ http://www.visser.com.au/woocommerce/forums/
 7. Download achived copies of previous exports
 
 == Changelog ==
+
+= 1.6.2 =
+* Added: MSRP Pricing support for Products
+* Added: WooCommerce Print Invoice & Delivery Note Invoice Number support for Orders
+* Added: WooCommerce Sequential Order Numbers (free) support for Orders
+* Changed: Get 3rd Party Plugin support from woo_ce_product_fields filter
+* Changed: Preparations for sortable export column
+* Fixed: URL to Add New export button after empty export
+* Added: jQuery checks for functions before running
+* Fixed: Conflicts with other WooCommerce Plugins due to shared 'save' form action
+* Fixed: Support for WooCommerce Checkout Manager (Free!)
+* Added: Support for WooCommerce Checkout Manager Pro
+* Added: Support for Currency Switcher in Orders export
+* Added: Support for Checkout Field Editor
 
 = 1.6.1 =
 * Fixed: Empty exports

@@ -3,7 +3,7 @@
 Plugin Name: WooCommerce - Store Exporter
 Plugin URI: http://www.visser.com.au/woocommerce/plugins/exporter/
 Description: Export store details out of WooCommerce into simple formatted files (e.g. CSV, XML, TXT, etc.).
-Version: 1.6.1
+Version: 1.6.2
 Author: Visser Labs
 Author URI: http://www.visser.com.au/about/
 License: GPL2
@@ -77,7 +77,7 @@ if( is_admin() ) {
 
 			// Common
 			wp_enqueue_style( 'woo_ce_styles', plugins_url( '/templates/admin/woo-admin_ce-export.css', __FILE__ ) );
-			wp_enqueue_script( 'woo_ce_scripts', plugins_url( '/templates/admin/woo-admin_ce-export.js', __FILE__ ), array( 'jquery' ) );
+			wp_enqueue_script( 'woo_ce_scripts', plugins_url( '/templates/admin/woo-admin_ce-export.js', __FILE__ ), array( 'jquery', 'jquery-ui-sortable' ) );
 		}
 
 	}
@@ -87,6 +87,11 @@ if( is_admin() ) {
 	function woo_ce_admin_init() {
 
 		global $export, $wp_roles;
+
+		// Check that we are on the Store Exporter screen
+		$page = ( isset($_GET['page'] ) ? $_GET['page'] : false );
+		if( $page != strtolower( WOO_CE_PREFIX ) )
+			return;
 
 		$action = woo_get_action();
 		switch( $action ) {
@@ -182,6 +187,7 @@ if( is_admin() ) {
 					case 'products':
 						// Set up dataset specific options
 						$export->fields = ( isset( $_POST['product_fields'] ) ? $_POST['product_fields'] : false );
+						$export->fields_order = ( isset( $_POST['product_fields_order'] ) ? $_POST['product_fields_order'] : false );
 						$export->product_categories = ( isset( $_POST['product_filter_categories'] ) ? woo_ce_format_product_filters( $_POST['product_filter_categories'] ) : false );
 						$export->product_tags = ( isset( $_POST['product_filter_tags'] ) ? woo_ce_format_product_filters( $_POST['product_filter_tags'] ) : false );
 						$export->product_status = ( isset( $_POST['product_filter_status'] ) ? woo_ce_format_product_filters( $_POST['product_filter_status'] ) : false );

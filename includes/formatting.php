@@ -434,8 +434,10 @@ if( !function_exists( 'woo_ce_expand_state_name' ) ) {
 		$output = $state_prefix;
 		if( $output ) {
 			if( isset( $woocommerce->countries ) ) {
-				if( $states = $woocommerce->countries->get_states( $country_prefix ) )
-					$output = $states[$state_prefix];
+				if( $states = $woocommerce->countries->get_states( $country_prefix ) ) {
+					if( isset( $states[$state_prefix] ) )
+						$output = $states[$state_prefix];
+				}
 				unset( $states );
 			}
 		}

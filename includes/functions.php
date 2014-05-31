@@ -105,7 +105,7 @@ if( is_admin() ) {
 	<div id="icon-<?php echo $icon; ?>" class="icon32 icon32-woocommerce-importer"><br /></div>
 	<h2>
 		<?php echo $output; ?>
-		<a href="<?php echo add_query_arg( 'tab', 'export' ); ?>" class="add-new-h2"><?php _e( 'Add New', 'woo_ce' ); ?></a>
+		<a href="<?php echo add_query_arg( array( 'tab' => 'export', 'empty' => null ) ); ?>" class="add-new-h2"><?php _e( 'Add New', 'woo_ce' ); ?></a>
 	</h2>
 <?php
 	}
@@ -933,6 +933,7 @@ function woo_ce_post_statuses( $extra_status = array(), $override = false ) {
 function woo_ce_get_user_roles() {
 
 	global $wp_roles;
+
 	$user_roles = $wp_roles->roles;
 	return $user_roles;
 

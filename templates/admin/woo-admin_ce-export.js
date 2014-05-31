@@ -6,14 +6,51 @@ $j(function() {
 	});
 
 	// Date Picker
-	$j('.datepicker').datepicker({
-		dateFormat: 'dd/mm/yy'
-	});
+	if( $j.isFunction($j.fn.datepicker) ) {
+		$j('.datepicker').datepicker({
+			dateFormat: 'dd/mm/yy'
+		});
+	}
 
 	// Chosen
-	$j(".chzn-select").chosen({
-		search_contains: true
-	});
+	if( $j.isFunction($j.fn.chosen) ) {
+		$j(".chzn-select").chosen({
+			search_contains: true
+		});
+	}
+
+	// Sortable export columns
+/*
+	if( $j.isFunction($j.fn.sortable) ) {
+		$j('#export-products table').sortable({
+			items:'tr',
+			cursor:'move',
+			axis:'y',
+			handle: 'td',
+			scrollSensitivity:40,
+			helper:function(e,ui){
+				ui.children().each(function(){
+					jQuery(this).width(jQuery(this).width());
+				});
+				ui.css('left', '0');
+				return ui;
+			},
+			start:function(event,ui){
+				ui.item.css('background-color','#f6f6f6');
+			},
+			stop:function(event,ui){
+				ui.item.removeAttr('style');
+				field_row_indexes();
+			}
+		});
+	
+		function field_row_indexes() {
+			jQuery('#export-products table tr').each(function(index, el){
+				jQuery('input.field_order', el).val( parseInt( jQuery(el).index('#export-products table tr') ) );
+			});
+		};
+	}
+*/
 
 	$j('#export-products').show();
 	// Categories

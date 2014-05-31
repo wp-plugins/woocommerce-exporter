@@ -241,6 +241,13 @@ function woo_ce_get_product_data( $product_id = 0, $args = array() ) {
 		$product->gpf_size = ( isset( $product->gpf_data['size'] ) ? $product->gpf_data['size'] : '' );
 	}
 
+	// WooCommerce MSRP Pricing - http://woothemes.com/woocommerce/
+	if( function_exists( 'woocommerce_msrp_activate' ) ) {
+		$product->msrp = get_post_meta( $product->ID, '_msrp_price', true );
+		if( $product->msrp == false && $product->post_type == 'product_variation' )
+			$product->msrp = get_post_meta( $product->ID, '_msrp', true );
+	}
+
 	// All in One SEO Pack - http://wordpress.org/extend/plugins/all-in-one-seo-pack/
 	if( function_exists( 'aioseop_activate' ) ) {
 		$product->aioseop_keywords = get_post_meta( $product->ID, '_aioseop_keywords', true );
@@ -709,6 +716,53 @@ function woo_ce_get_product_fields( $format = 'full' ) {
 	// Allow Plugin/Theme authors to add support for additional Product columns
 	$fields = apply_filters( 'woo_ce_product_fields', $fields );
 
+	if( $remember = woo_ce_get_option( 'products_fields', array() ) ) {
+		$remember = maybe_unserialize( $remember );
+		$size = count( $fields );
+		for( $i = 0; $i < $size; $i++ ) {
+			$fields[$i]['disabled'] = 0;
+			$fields[$i]['default'] = 1;
+			if( !array_key_exists( $fields[$i]['name'], $remember ) )
+				$fields[$i]['default'] = 0;
+		}
+	}
+
+	switch( $format ) {
+
+		case 'summary':
+			$output = array();
+			$size = count( $fields );
+			for( $i = 0; $i < $size; $i++ )
+				$output[$fields[$i]['name']] = 'on';
+			return $output;
+			break;
+
+		case 'full':
+		default:
+			$size = count( $fields );
+			for( $i = 0; $i < $size; $i++ )
+				$fields[$i]['order'] = $i;
+			return $fields;
+			break;
+
+	}
+
+}
+
+function woo_ce_extend_product_fields( $fields ) {
+
+	// Attributes
+	if( $attributes = woo_ce_get_product_attributes() ) {
+		foreach( $attributes as $attribute ) {
+			if( empty( $attribute->attribute_label ) )
+				$attribute->attribute_label = $attribute->attribute_name;
+			$fields[] = array(
+				'name' => sprintf( 'attribute_%s', $attribute->attribute_name ),
+				'label' => sprintf( __( 'Attribute: %s', 'woo_ce' ), ucwords( $attribute->attribute_label ) )
+			);
+		}
+	}
+
 	// Advanced Google Product Feed - http://www.leewillis.co.uk/wordpress-plugins/
 	if( function_exists( 'woocommerce_gpf_install' ) ) {
 		$fields[] = array(
@@ -754,6 +808,14 @@ function woo_ce_get_product_fields( $format = 'full' ) {
 		$fields[] = array(
 			'name' => 'gpf_size',
 			'label' => __( 'Advanced Google Product Feed - Size', 'woo_ce' )
+		);
+	}
+
+	// WooCommerce MSRP Pricing - http://woothemes.com/woocommerce/
+	if( function_exists( 'woocommerce_msrp_activate' ) ) {
+		$fields[] = array(
+			'name' => 'msrp',
+			'label' => __( 'Manufacturer Suggested Retail Price (MSRP)', 'woo_ce' )
 		);
 	}
 
@@ -837,48 +899,6 @@ function woo_ce_get_product_fields( $format = 'full' ) {
 		);
 	}
 
-	if( $remember = woo_ce_get_option( 'products_fields', array() ) ) {
-		$remember = maybe_unserialize( $remember );
-		$size = count( $fields );
-		for( $i = 0; $i < $size; $i++ ) {
-			$fields[$i]['disabled'] = 0;
-			$fields[$i]['default'] = 1;
-			if( !array_key_exists( $fields[$i]['name'], $remember ) )
-				$fields[$i]['default'] = 0;
-		}
-	}
-
-	switch( $format ) {
-
-		case 'summary':
-			$output = array();
-			$size = count( $fields );
-			for( $i = 0; $i < $size; $i++ )
-				$output[$fields[$i]['name']] = 'on';
-			return $output;
-			break;
-
-		case 'full':
-		default:
-			return $fields;
-			break;
-
-	}
-
-}
-
-function woo_ce_extend_product_fields( $fields ) {
-
-	if( $attributes = woo_ce_get_product_attributes() ) {
-		foreach( $attributes as $attribute ) {
-			if( empty( $attribute->attribute_label ) )
-				$attribute->attribute_label = $attribute->attribute_name;
-			$fields[] = array(
-				'name' => sprintf( 'attribute_%s', $attribute->attribute_name ),
-				'label' => sprintf( __( 'Attribute: %s', 'woo_ce' ), ucwords( $attribute->attribute_label ) )
-			);
-		}
-	}
 	return $fields;
 
 }

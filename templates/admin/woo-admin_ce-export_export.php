@@ -102,14 +102,15 @@
 	<?php if( $products ) { ?>
 					<p class="description"><?php _e( 'Select the Product fields you would like to export, your field selection is saved for future exports.', 'woo_ce' ); ?></p>
 					<p><a href="javascript:void(0)" id="products-checkall" class="checkall"><?php _e( 'Check All', 'woo_ce' ); ?></a> | <a href="javascript:void(0)" id="products-uncheckall" class="uncheckall"><?php _e( 'Uncheck All', 'woo_ce' ); ?></a></p>
-					<table>
+					<table class="ui-sortable">
 
-		<?php foreach( $product_fields as $product_field ) { ?>
+		<?php foreach( $product_fields as $key => $product_field ) { ?>
 						<tr>
 							<td>
 								<label>
 									<input type="checkbox" name="product_fields[<?php echo $product_field['name']; ?>]" class="product_field"<?php ( isset( $product_field['default'] ) ? checked( $product_field['default'], 1 ) : '' ); ?><?php disabled( $product_field['disabled'], 1 ); ?> />
 									<?php echo $product_field['label']; ?>
+									<input type="hidden" name="product_fields_order[<?php echo $product_field['name']; ?>]" class="field_order" value="" />
 								</label>
 							</td>
 						</tr>

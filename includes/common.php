@@ -15,7 +15,7 @@ if( is_admin() ) {
 
 	/* Start of: WordPress Administration */
 
-	include_once( 'common-dashboard_widgets.php' );
+	include_once( WOO_CE_PATH . 'includes/common-dashboard_widgets.php' );
 
 	/* End of: WordPress Administration */
 
