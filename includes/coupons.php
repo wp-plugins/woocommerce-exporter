@@ -1,4 +1,36 @@
 <?php
+if( is_admin() ) {
+
+	/* Start of: WordPress Administration */
+
+	// HTML template for disabled Coupon Sorting widget on Store Exporter screen
+	function woo_ce_coupons_coupon_sorting() {
+
+		ob_start(); ?>
+<p><label><?php _e( 'Coupon Sorting', 'woo_ce' ); ?></label></p>
+<div>
+	<select name="coupon_orderby" disabled="disabled">
+		<option value="ID"><?php _e( 'Coupon ID', 'woo_ce' ); ?></option>
+		<option value="title"><?php _e( 'Coupon Code', 'woo_ce' ); ?></option>
+		<option value="date"><?php _e( 'Date Created', 'woo_ce' ); ?></option>
+		<option value="modified"><?php _e( 'Date Modified', 'woo_ce' ); ?></option>
+		<option value="rand"><?php _e( 'Random', 'woo_ce' ); ?></option>
+	</select>
+	<select name="coupon_order" disabled="disabled">
+		<option value="ASC"><?php _e( 'Ascending', 'woo_ce' ); ?></option>
+		<option value="DESC"><?php _e( 'Descending', 'woo_ce' ); ?></option>
+	</select>
+	<p class="description"><?php _e( 'Select the sorting of Coupons within the exported file. By default this is set to export Coupons by Coupon ID in Desending order.', 'woo_ce' ); ?></p>
+</div>
+<?php
+		ob_end_flush();
+
+	}
+
+	/* End of: WordPress Administration */
+
+}
+
 // Returns a list of Coupon export columns
 function woo_ce_get_coupon_fields( $format = 'full' ) {
 
@@ -74,17 +106,6 @@ function woo_ce_get_coupon_fields( $format = 'full' ) {
 	// Allow Plugin/Theme authors to add support for additional Coupon columns
 	$fields = apply_filters( 'woo_ce_coupon_fields', $fields );
 
-	if( $remember = woo_ce_get_option( 'coupons_fields', array() ) ) {
-		$remember = maybe_unserialize( $remember );
-		$size = count( $fields );
-		for( $i = 0; $i < $size; $i++ ) {
-			$fields[$i]['disabled'] = 0;
-			$fields[$i]['default'] = 1;
-			if( !array_key_exists( $fields[$i]['name'], $remember ) )
-				$fields[$i]['default'] = 0;
-		}
-	}
-
 	switch( $format ) {
 
 		case 'summary':
@@ -104,31 +125,42 @@ function woo_ce_get_coupon_fields( $format = 'full' ) {
 
 }
 
-// Returns the export column header label based on an export column slug
-function woo_ce_get_coupon_field( $name = null, $format = 'name' ) {
+// Returns a list of Coupon IDs
+function woo_ce_get_coupons( $args = array() ) {
 
-	$output = '';
-	if( $name ) {
-		$fields = woo_ce_get_coupon_fields();
-		$size = count( $fields );
-		for( $i = 0; $i < $size; $i++ ) {
-			if( $fields[$i]['name'] == $name ) {
-				switch( $format ) {
+	global $export;
 
-					case 'name':
-						$output = $fields[$i]['label'];
-						break;
+	$limit_volume = -1;
+	$offset = 0;
 
-					case 'full':
-						$output = $fields[$i];
-						break;
-
-				}
-				$i = $size;
-			}
-		}
+	if( $args ) {
+		$limit_volume = ( isset( $args['limit_volume'] ) ? $args['limit_volume'] : false );
+		$offset = ( isset( $args['offset'] ) ? $args['offset'] : false );
+		$orderby = ( isset( $args['coupon_orderby'] ) ? $args['coupon_orderby'] : 'ID' );
+		$order = ( isset( $args['coupon_order'] ) ? $args['coupon_order'] : 'ASC' );
 	}
-	return $output;
+
+	$post_type = 'shop_coupon';
+	$args = array(
+		'post_type' => $post_type,
+		'orderby' => $orderby,
+		'order' => $order,
+		'offset' => $offset,
+		'posts_per_page' => $limit_volume,
+		'post_status' => woo_ce_post_statuses(),
+		'no_found_rows' => false,
+		'fields' => 'ids'
+	);
+	$coupons = array();
+	$coupon_ids = new WP_Query( $args );
+	if( $coupon_ids->posts ) {
+		foreach( $coupon_ids->posts as $coupon_id ) {
+			$coupons[] = $coupon_id;
+		}
+		unset( $coupon_ids, $coupon_id );
+	}
+	return $coupons;
 
 }
+
 ?>

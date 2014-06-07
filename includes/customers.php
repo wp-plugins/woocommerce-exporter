@@ -1,4 +1,32 @@
 <?php
+if( is_admin() ) {
+
+	/* Start of: WordPress Administration */
+
+	// HTML template for disabled Filter Customers by Order Status widget on Store Exporter screen
+	function woo_ce_customers_filter_by_status() {
+
+		$order_statuses = woo_ce_get_order_statuses();
+		ob_start(); ?>
+<p><label><input type="checkbox" id="customers-filters-status" /> <?php _e( 'Filter Customers by Order Status', 'woo_ce' ); ?></label></p>
+<div id="export-customers-filters-status" class="separator">
+	<ul>
+<?php foreach( $order_statuses as $order_status ) { ?>
+		<li><label><input type="checkbox" name="customer_filter_status[<?php echo $order_status->name; ?>]" value="<?php echo $order_status->name; ?>" disabled="disabled" /> <?php echo ucfirst( $order_status->name ); ?></label></li>
+<?php } ?>
+	</ul>
+	<p class="description"><?php _e( 'Select the Order Status you want to filter exported Customers by. Default is to include all Order Status options.', 'woo_ce' ); ?></p>
+</div>
+<!-- #export-customers-filters-status -->
+<?php
+		ob_end_flush();
+
+	}
+
+	/* End of: WordPress Administration */
+
+}
+
 // Returns a list of Customer export columns
 function woo_ce_get_customer_fields( $format = 'full' ) {
 
@@ -130,17 +158,6 @@ function woo_ce_get_customer_fields( $format = 'full' ) {
 	// Allow Plugin/Theme authors to add support for additional Customer columns
 	$fields = apply_filters( 'woo_ce_customer_fields', $fields );
 
-	if( $remember = woo_ce_get_option( 'customers_fields', array() ) ) {
-		$remember = maybe_unserialize( $remember );
-		$size = count( $fields );
-		for( $i = 0; $i < $size; $i++ ) {
-			$fields[$i]['disabled'] = 0;
-			$fields[$i]['default'] = 1;
-			if( !array_key_exists( $fields[$i]['name'], $remember ) )
-				$fields[$i]['default'] = 0;
-		}
-	}
-
 	switch( $format ) {
 
 		case 'summary':
@@ -159,52 +176,4 @@ function woo_ce_get_customer_fields( $format = 'full' ) {
 	}
 
 }
-
-// Returns the export column header label based on an export column slug
-function woo_ce_get_customer_field( $name = null, $format = 'name' ) {
-
-	$output = '';
-	if( $name ) {
-		$fields = woo_ce_get_customer_fields();
-		$size = count( $fields );
-		for( $i = 0; $i < $size; $i++ ) {
-			if( $fields[$i]['name'] == $name ) {
-				switch( $format ) {
-
-					case 'name':
-						$output = $fields[$i]['label'];
-						break;
-
-					case 'full':
-						$output = $fields[$i];
-						break;
-
-				}
-				$i = $size;
-			}
-		}
-	}
-	return $output;
-
-}
-// HTML template for disabled Filter Customers by Order Status widget on Store Exporter screen
-function woo_ce_customers_filter_by_status() {
-
-	$order_statuses = woo_ce_get_order_statuses();
-	ob_start(); ?>
-<p><label><input type="checkbox" id="customers-filters-status" /> <?php _e( 'Filter Customers by Order Status', 'woo_ce' ); ?></label></p>
-<div id="export-customers-filters-status" class="separator">
-	<ul>
-<?php foreach( $order_statuses as $order_status ) { ?>
-		<li><label><input type="checkbox" name="customer_filter_status[<?php echo $order_status->name; ?>]" value="<?php echo $order_status->name; ?>" disabled="disabled" /> <?php echo ucfirst( $order_status->name ); ?></label></li>
-<?php } ?>
-	</ul>
-	<p class="description"><?php _e( 'Select the Order Status you want to filter exported Customers by. Default is to include all Order Status options.', 'woo_ce' ); ?></p>
-</div>
-<!-- #export-customers-filters-status -->
-<?php
-	ob_end_flush();
-
-}
-
 ?>

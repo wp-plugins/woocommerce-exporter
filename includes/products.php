@@ -1,6 +1,8 @@
 <?php
-// HTML template for Custom Products widget on Store Exporter screen
-function woo_ce_products_custom_fields() { ?>
+if( is_admin() ) {
+
+	// HTML template for Custom Products widget on Store Exporter screen
+	function woo_ce_products_custom_fields() { ?>
 <form method="post" id="export-products-custom-fields" class="export-options product-options">
 	<div id="poststuff">
 
@@ -34,8 +36,11 @@ function woo_ce_products_custom_fields() { ?>
 	<!-- #poststuff -->
 	<input type="hidden" name="action" value="update" />
 </form>
+<!-- #export-products-custom-fields -->
 <?php
-	ob_end_flush();
+		ob_end_flush();
+
+	}
 
 }
 
@@ -161,10 +166,16 @@ function woo_ce_get_product_data( $product_id = 0, $args = array() ) {
 	$product->description = $product->post_content;
 	$product->excerpt = $product->post_excerpt;
 	$product->regular_price = get_post_meta( $product->ID, '_regular_price', true );
+	if( isset( $product->regular_price ) && $product->regular_price != '' )
+		$product->regular_price = wc_format_localized_price( $product->regular_price );
 	$product->price = get_post_meta( $product->ID, '_price', true );
-	if( !empty( $product->regular_price ) && ( $product->regular_price <> $product->price ) )
+	if( $product->regular_price != '' && ( $product->regular_price <> $product->price ) )
 		$product->price = $product->regular_price;
+	if( isset( $product->price ) && $product->price != '' )
+		$product->price = wc_format_localized_price( $product->price );
 	$product->sale_price = get_post_meta( $product->ID, '_sale_price', true );
+	if( isset( $product->sale_price ) && $product->sale_price != '' )
+		$product->sale_price = wc_format_localized_price( $product->sale_price );
 	$product->sale_price_dates_from = woo_ce_format_sale_price_dates( get_post_meta( $product->ID, '_sale_price_dates_from', true ) );
 	$product->sale_price_dates_to = woo_ce_format_sale_price_dates( get_post_meta( $product->ID, '_sale_price_dates_to', true ) );
 	$product->post_date = woo_ce_format_date( $product->post_date );
@@ -246,6 +257,8 @@ function woo_ce_get_product_data( $product_id = 0, $args = array() ) {
 		$product->msrp = get_post_meta( $product->ID, '_msrp_price', true );
 		if( $product->msrp == false && $product->post_type == 'product_variation' )
 			$product->msrp = get_post_meta( $product->ID, '_msrp', true );
+			if( isset( $product->msrp ) && $product->msrp != '' )
+				$product->msrp = wc_format_localized_price( $product->msrp );
 	}
 
 	// All in One SEO Pack - http://wordpress.org/extend/plugins/all-in-one-seo-pack/
@@ -362,14 +375,12 @@ function woo_ce_get_product_assoc_product_gallery( $product_id = 0 ) {
 
 	global $export;
 
-	$output = '';
 	if( $product_id ) {
 		if( $images = get_post_meta( $product_id, '_product_image_gallery', true ) ) {
-			$images = str_replace( ',', $export->category_separator, $images );
-			$output = $images;
+			$output = str_replace( ',', $export->category_separator, $images );
+			return $output;
 		}
 	}
-	return $output;
 
 }
 

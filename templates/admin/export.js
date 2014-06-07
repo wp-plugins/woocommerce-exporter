@@ -52,7 +52,19 @@ $j(function() {
 	}
 */
 
-	$j('#export-products').show();
+	// Select all
+	$j('.checkall').click(function () {
+		$j(this).closest('.postbox').find(':checkbox').attr('checked', true);
+	});
+	$j('.uncheckall').click(function () {
+		$j(this).closest('.postbox').find(':checkbox').attr('checked', false);
+	});
+
+	// Show Products widgets by default
+	$j('.export-options').hide();
+	$j('#products').trigger('click');
+	$j('.product-options').show();
+
 	// Categories
 	$j('#export-products-filters-categories').hide();
 	if( $j('#products-filters-categories').attr('checked') ) {
@@ -87,11 +99,16 @@ $j(function() {
 	if( $j('#orders-filters-user_role').attr('checked') ) {
 		$j('#export-orders-filters-user_role').show();
 	}
+	$j('#export-orders-filters-coupon').hide();
+	if( $j('#orders-filters-coupon').attr('checked') ) {
+		$j('#export-orders-filters-coupon').show();
+	}
 	$j('#export-customers-filters-status').hide();
 	if( $j('#customers-filters-status').attr('checked') ) {
 		$j('#export-customers-filters-status').show();
 	}
 	$j('#export-customers').hide();
+	$j('#export-users').hide();
 	$j('#export-coupons').hide();
 
 	$j('#products-filters-categories').click(function(){
@@ -115,6 +132,9 @@ $j(function() {
 	$j('#orders-filters-user_role').click(function(){
 		$j('#export-orders-filters-user_role').toggle();
 	});
+	$j('#orders-filters-coupon').click(function(){
+		$j('#export-orders-filters-coupon').toggle();
+	});
 	$j('#customers-filters-status').click(function(){
 		$j('#export-customers-filters-status').toggle();
 	});
@@ -126,6 +146,7 @@ $j(function() {
 		$j('#export-tags').hide();
 		$j('#export-orders').hide();
 		$j('#export-customers').hide();
+		$j('#export-users').hide();
 		$j('#export-coupons').hide();
 
 		$j('.export-options').hide();
@@ -137,6 +158,7 @@ $j(function() {
 		$j('#export-tags').hide();
 		$j('#export-orders').hide();
 		$j('#export-customers').hide();
+		$j('#export-users').hide();
 		$j('#export-coupons').hide();
 
 		$j('.export-options').hide();
@@ -148,6 +170,7 @@ $j(function() {
 		$j('#export-tags').show();
 		$j('#export-orders').hide();
 		$j('#export-customers').hide();
+		$j('#export-users').hide();
 		$j('#export-coupons').hide();
 
 		$j('.export-options').hide();
@@ -159,6 +182,7 @@ $j(function() {
 		$j('#export-tags').hide();
 		$j('#export-orders').show();
 		$j('#export-customers').hide();
+		$j('#export-users').hide();
 		$j('#export-coupons').hide();
 
 		$j('.export-options').hide();
@@ -170,10 +194,23 @@ $j(function() {
 		$j('#export-tags').hide();
 		$j('#export-orders').hide();
 		$j('#export-customers').show();
+		$j('#export-users').hide();
 		$j('#export-coupons').hide();
 
 		$j('.export-options').hide();
 		$j('.customer-options').show();
+	});
+	$j('#users').click(function(){
+		$j('#export-products').hide();
+		$j('#export-categories').hide();
+		$j('#export-tags').hide();
+		$j('#export-orders').hide();
+		$j('#export-customers').hide();
+		$j('#export-users').show();
+		$j('#export-coupons').hide();
+
+		$j('.export-options').hide();
+		$j('.user-options').show();
 	});
 	$j('#coupons').click(function(){
 		$j('#export-products').hide();
@@ -181,6 +218,7 @@ $j(function() {
 		$j('#export-tags').hide();
 		$j('#export-orders').hide();
 		$j('#export-customers').hide();
+		$j('#export-users').hide();
 		$j('#export-coupons').show();
 
 		$j('.export-options').hide();
@@ -197,18 +235,14 @@ $j(function() {
 	$j('#export_customers').click(function(){
 		$j('input:radio[name=dataset]:nth(4)').attr('checked',true);
 	});
-	$j('#export_coupons').click(function(){
+	$j('#export_users').click(function(){
 		$j('input:radio[name=dataset]:nth(5)').attr('checked',true);
 	});
-
-	// Select all
-	$j('.checkall').click(function () {
-		$j(this).closest('.postbox').find(':checkbox').attr('checked', true);
-	});
-	$j('.uncheckall').click(function () {
-		$j(this).closest('.postbox').find(':checkbox').attr('checked', false);
+	$j('#export_coupons').click(function(){
+		$j('input:radio[name=dataset]:nth(6)').attr('checked',true);
 	});
 
+	// Export jump link from Overview tab
 	$j(document).ready(function() {
 		var href = jQuery(location).attr('href');
 		if (href.toLowerCase().indexOf('tab=export') >= 0) {

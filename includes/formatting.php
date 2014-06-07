@@ -399,6 +399,15 @@ function woo_ce_format_product_type( $type_id = '' ) {
 
 }
 
+function woo_ce_format_price( $price = '' ) {
+
+	if( isset( $price ) && $price != '' )
+		return wc_format_localized_price( $price );
+	else
+		return $price;
+
+}
+
 function woo_ce_format_sale_price_dates( $sale_date = '' ) {
 
 	$output = $sale_date;

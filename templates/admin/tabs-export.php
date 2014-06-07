@@ -51,9 +51,7 @@
 						</th>
 						<td>
 							<span class="description">(<?php echo $orders; ?>)</span>
-<?php if( !function_exists( 'woo_cd_admin_init' ) ) { ?>
 							<span class="description"> - <?php printf( __( 'available in %s', 'woo_ce' ), $woo_cd_link ); ?></span>
-<?php } ?>
 						</td>
 					</tr>
 
@@ -64,9 +62,18 @@
 						</th>
 						<td>
 							<span class="description">(<?php echo $customers; ?>)</span>
-<?php if( !function_exists( 'woo_cd_admin_init' ) ) { ?>
 							<span class="description"> - <?php printf( __( 'available in %s', 'woo_ce' ), $woo_cd_link ); ?></span>
-<?php } ?>
+						</td>
+					</tr>
+
+					<tr>
+						<th>
+							<input type="radio" id="users" name="dataset" value="users"<?php disabled( $users, 0 ); ?><?php checked( $export_type, 'users' ); ?>/>
+							<label for="users"><?php _e( 'Users', 'woo_ce' ); ?></label>
+						</th>
+						<td>
+							<span class="description">(<?php echo $users; ?>)</span>
+							<span class="description"> - <?php printf( __( 'available in %s', 'woo_ce' ), $woo_cd_link ); ?></span>
 						</td>
 					</tr>
 
@@ -77,9 +84,7 @@
 						</th>
 						<td>
 							<span class="description">(<?php echo $coupons; ?>)</span>
-<?php if( !function_exists( 'woo_cd_admin_init' ) ) { ?>
 							<span class="description"> - <?php printf( __( 'available in %s', 'woo_ce' ), $woo_cd_link ); ?></span>
-<?php } ?>
 						</td>
 					</tr>
 
@@ -336,7 +341,7 @@
 						<tr>
 							<td>
 								<label>
-									<input type="checkbox" name="order_fields[<?php echo $order_field['name']; ?>]" class="order_field"<?php ( isset( $order_field['default'] ) ? checked( $order_field['default'], 1 ) : '' ); ?><?php disabled( $woo_cd_exists, false ); ?> />
+									<input type="checkbox" name="order_fields[<?php echo $order_field['name']; ?>]" class="order_field"<?php ( isset( $order_field['default'] ) ? checked( $order_field['default'], 1 ) : '' ); ?> disabled="disabled" />
 									<?php echo $order_field['label']; ?>
 								</label>
 							</td>
@@ -345,11 +350,7 @@
 		<?php } ?>
 					</table>
 					<p class="submit">
-		<?php if( function_exists( 'woo_cd_admin_init' ) ) { ?>
-						<input type="submit" id="export_orders" value="<?php _e( 'Export Orders', 'woo_ce' ); ?> " class="button-primary" />
-		<?php } else { ?>
 						<input type="button" class="button button-disabled" value="<?php _e( 'Export Orders', 'woo_ce' ); ?>" />
-		<?php } ?>
 					</p>
 					<p class="description"><?php _e( 'Can\'t find a particular Order field in the above export list?', 'woo_ce' ); ?> <a href="<?php echo $troubleshooting_url; ?>" target="_blank"><?php _e( 'Get in touch', 'woo_ce' ); ?></a>.</p>
 	<?php } else { ?>
@@ -396,7 +397,7 @@
 						<tr>
 							<td>
 								<label>
-									<input type="checkbox" name="customer_fields[<?php echo $customer_field['name']; ?>]" class="customer_field"<?php ( isset( $customer_field['default'] ) ? checked( $customer_field['default'], 1 ) : '' ); ?><?php disabled( $woo_cd_exists, false ); ?> />
+									<input type="checkbox" name="customer_fields[<?php echo $customer_field['name']; ?>]" class="customer_field"<?php ( isset( $customer_field['default'] ) ? checked( $customer_field['default'], 1 ) : '' ); ?> disabled="disabled" />
 									<?php echo $customer_field['label']; ?>
 								</label>
 							</td>
@@ -405,11 +406,7 @@
 		<?php } ?>
 					</table>
 					<p class="submit">
-		<?php if( function_exists( 'woo_cd_admin_init' ) ) { ?>
-						<input type="submit" id="export_customers" value="<?php _e( 'Export Customers', 'woo_ce' ); ?>" class="button-primary" />
-		<?php } else { ?>
 						<input type="button" class="button button-disabled" value="<?php _e( 'Export Customers', 'woo_ce' ); ?>" />
-		<?php } ?>
 					</p>
 					<p class="description"><?php _e( 'Can\'t find a particular Customer field in the above export list?', 'woo_ce' ); ?> <a href="<?php echo $troubleshooting_url; ?>" target="_blank"><?php _e( 'Get in touch', 'woo_ce' ); ?></a>.</p>
 	<?php } else { ?>
@@ -441,41 +438,114 @@
 		<!-- #export-customers -->
 
 <?php } ?>
+<?php if( $user_fields ) { ?>
+		<div id="export-users">
+
+			<div class="postbox">
+				<h3 class="hndle"><?php _e( 'User Fields', 'woo_ce' ); ?></h3>
+				<div class="inside">
+	<?php if( $users ) { ?>
+					<p class="description"><?php _e( 'Select the User fields you would like to export.', 'woo_ce' ); ?></p>
+					<p><a href="javascript:void(0)" id="users-checkall" class="checkall"><?php _e( 'Check All', 'woo_ce' ); ?></a> | <a href="javascript:void(0)" id="users-uncheckall" class="uncheckall"><?php _e( 'Uncheck All', 'woo_ce' ); ?></a></p>
+					<table>
+
+		<?php foreach( $user_fields as $user_field ) { ?>
+						<tr>
+							<td>
+								<label>
+									<input type="checkbox" name="user_fields[<?php echo $user_field['name']; ?>]" class="user_field"<?php ( isset( $user_field['default'] ) ? checked( $user_field['default'], 1 ) : '' ); ?> disabled="disabled" />
+									<?php echo $user_field['label']; ?>
+								</label>
+							</td>
+						</tr>
+
+		<?php } ?>
+					</table>
+					<p class="submit">
+						<input type="button" class="button button-disabled" value="<?php _e( 'Export Users', 'woo_ce' ); ?>" />
+					</p>
+					<p class="description"><?php _e( 'Can\'t find a particular User field in the above export list?', 'woo_ce' ); ?> <a href="<?php echo $troubleshooting_url; ?>" target="_blank"><?php _e( 'Get in touch', 'woo_ce' ); ?></a>.</p>
+	<?php } else { ?>
+					<p><?php _e( 'No Users have been found.', 'woo_ce' ); ?></p>
+	<?php } ?>
+				</div>
+				<!-- .inside -->
+			</div>
+			<!-- .postbox -->
+
+			<div id="export-users-filters" class="postbox">
+				<h3 class="hndle"><?php _e( 'User Filters', 'woo_ce' ); ?></h3>
+				<div class="inside">
+
+					<?php do_action( 'woo_ce_export_user_options_before_table' ); ?>
+
+					<table class="form-table">
+						<?php do_action( 'woo_ce_export_user_options_table' ); ?>
+					</table>
+
+					<?php do_action( 'woo_ce_export_user_options_after_table' ); ?>
+
+				</div>
+				<!-- .inside -->
+			</div>
+			<!-- .postbox -->
+
+		</div>
+		<!-- #export-users -->
+
+<?php } ?>
 <?php if( $coupon_fields ) { ?>
-		<div class="postbox" id="export-coupons">
-			<h3 class="hndle"><?php _e( 'Coupon Fields', 'woo_ce' ); ?></h3>
-			<div class="inside">
+		<div id="export-coupons">
+			<div class="postbox">
+				<h3 class="hndle"><?php _e( 'Coupon Fields', 'woo_ce' ); ?></h3>
+				<div class="inside">
 	<?php if( $coupons ) { ?>
-				<p class="description"><?php _e( 'Select the Coupon fields you would like to export.', 'woo_ce' ); ?></p>
-				<p><a href="javascript:void(0)" id="coupons-checkall" class="checkall"><?php _e( 'Check All', 'woo_ce' ); ?></a> | <a href="javascript:void(0)" id="coupons-uncheckall" class="uncheckall"><?php _e( 'Uncheck All', 'woo_ce' ); ?></a></p>
-				<table>
+					<p class="description"><?php _e( 'Select the Coupon fields you would like to export.', 'woo_ce' ); ?></p>
+					<p><a href="javascript:void(0)" id="coupons-checkall" class="checkall"><?php _e( 'Check All', 'woo_ce' ); ?></a> | <a href="javascript:void(0)" id="coupons-uncheckall" class="uncheckall"><?php _e( 'Uncheck All', 'woo_ce' ); ?></a></p>
+					<table>
 
 		<?php foreach( $coupon_fields as $coupon_field ) { ?>
-					<tr>
-						<td>
-							<label>
-								<input type="checkbox" name="coupon_fields[<?php echo $coupon_field['name']; ?>]" class="coupon_field"<?php ( isset( $coupon_field['default'] ) ? checked( $coupon_field['default'], 1 ) : '' ); ?><?php disabled( $woo_cd_exists, false ); ?> />
-								<?php echo $coupon_field['label']; ?>
-							</label>
-						</td>
-					</tr>
+						<tr>
+							<td>
+								<label>
+									<input type="checkbox" name="coupon_fields[<?php echo $coupon_field['name']; ?>]" class="coupon_field"<?php ( isset( $coupon_field['default'] ) ? checked( $coupon_field['default'], 1 ) : '' ); ?> disabled="disabled" />
+									<?php echo $coupon_field['label']; ?>
+								</label>
+							</td>
+						</tr>
 
 		<?php } ?>
-				</table>
-				<p class="submit">
-		<?php if( function_exists( 'woo_cd_admin_init' ) ) { ?>
-					<input type="submit" id="export_coupons" value="<?php _e( 'Export Coupons', 'woo_ce' ); ?>" class="button-primary" />
-		<?php } else { ?>
-					<input type="button" class="button button-disabled" value="<?php _e( 'Export Coupons', 'woo_ce' ); ?>" />
-		<?php } ?>
-				</p>
-				<p class="description"><?php _e( 'Can\'t find a particular Coupon field in the above export list?', 'woo_ce' ); ?> <a href="<?php echo $troubleshooting_url; ?>" target="_blank"><?php _e( 'Get in touch', 'woo_ce' ); ?></a>.</p>
+					</table>
+					<p class="submit">
+						<input type="button" class="button button-disabled" value="<?php _e( 'Export Coupons', 'woo_ce' ); ?>" />
+					</p>
+					<p class="description"><?php _e( 'Can\'t find a particular Coupon field in the above export list?', 'woo_ce' ); ?> <a href="<?php echo $troubleshooting_url; ?>" target="_blank"><?php _e( 'Get in touch', 'woo_ce' ); ?></a>.</p>
 	<?php } else { ?>
-				<p><?php _e( 'No Coupons have been found.', 'woo_ce' ); ?></p>
+					<p><?php _e( 'No Coupons have been found.', 'woo_ce' ); ?></p>
 	<?php } ?>
+				</div>
 			</div>
+			<!-- .postbox -->
+
+			<div id="export-coupons-filters" class="postbox">
+				<h3 class="hndle"><?php _e( 'Coupon Filters', 'woo_ce' ); ?></h3>
+				<div class="inside">
+
+					<?php do_action( 'woo_ce_export_coupon_options_before_table' ); ?>
+
+					<table class="form-table">
+						<?php do_action( 'woo_ce_export_coupon_options_table' ); ?>
+					</table>
+
+					<?php do_action( 'woo_ce_export_coupon_options_after_table' ); ?>
+
+				</div>
+				<!-- .inside -->
+			</div>
+			<!-- .postbox -->
+
 		</div>
-		<!-- .postbox -->
+		<!-- #export-coupons -->
 
 <?php } ?>
 		<div class="postbox" id="export-options">

@@ -13,7 +13,7 @@ if( !function_exists( 'woo_vl_dashboard_setup' ) ) {
 
 	function woo_vl_dashboard_setup() {
 
-		wp_add_dashboard_widget( 'woo_vl_news_widget', __( 'WooCommerce Plugin News - by Visser Labs', 'woo_vl' ), 'woo_vl_news_widget' );
+		wp_add_dashboard_widget( 'woo_vl_news_widget', __( 'Plugin News - by Visser Labs', 'woo_vl' ), 'woo_vl_news_widget' );
 
 	}
 	add_action( 'wp_dashboard_setup', 'woo_vl_dashboard_setup' );

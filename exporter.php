@@ -3,7 +3,7 @@
 Plugin Name: WooCommerce - Store Exporter
 Plugin URI: http://www.visser.com.au/woocommerce/plugins/exporter/
 Description: Export store details out of WooCommerce into simple formatted files (e.g. CSV, XML, TXT, etc.).
-Version: 1.6.2
+Version: 1.7
 Author: Visser Labs
 Author URI: http://www.visser.com.au/about/
 License: GPL2
@@ -19,9 +19,11 @@ define( 'WOO_CE_PREFIX', 'woo_ce' );
 // Turn this on to enable additional debugging options at export time
 define( 'WOO_CE_DEBUG', false );
 
-include_once( WOO_CE_PATH . 'includes/common.php' );
-include_once( WOO_CE_PATH . 'includes/functions.php' );
-include_once( WOO_CE_PATH . 'includes/functions-alternatives.php' );
+// Avoid conflicts if Store Exporter Deluxe is activated
+if( defined( 'WOO_CD_PREFIX' ) == false ) {
+	include_once( WOO_CE_PATH . 'includes/common.php' );
+	include_once( WOO_CE_PATH . 'includes/functions.php' );
+}
 
 function woo_ce_i18n() {
 
@@ -34,64 +36,41 @@ if( is_admin() ) {
 
 	/* Start of: WordPress Administration */
 
-	// Add Export and Docs links to the Plugins screen
-	function woo_ce_add_settings_link( $links, $file ) {
-
-		static $this_plugin;
-
-		if( !$this_plugin ) $this_plugin = plugin_basename( __FILE__ );
-		if( $file == $this_plugin ) {
-			$docs_url = 'http://www.visser.com.au/docs/';
-			$docs_link = sprintf( '<a href="%s" target="_blank">' . __( 'Docs', 'woo_ce' ) . '</a>', $docs_url );
-			$export_link = sprintf( '<a href="%s">' . __( 'Export', 'woo_ce' ) . '</a>', add_query_arg( 'page', 'woo_ce', 'admin.php' ) );
-			array_unshift( $links, $docs_link );
-			array_unshift( $links, $export_link );
-		}
-		return $links;
-
-	}
-	add_filter( 'plugin_action_links', 'woo_ce_add_settings_link', 10, 2 );
-
-	// Load CSS and jQuery scripts for Store Exporter screen
-	function woo_ce_enqueue_scripts( $hook ) {
-
-		$page = 'woocommerce_page_woo_ce';
-		if( $page == $hook ) {
-
-			// Simple check that WooCommerce is activated
-			if( class_exists( 'woocommerce' ) ) {
-
-				global $woocommerce;
-
-				// Load WooCommerce default Admin styling
-				wp_enqueue_style( 'woocommerce_admin_styles', $woocommerce->plugin_url() . '/assets/css/admin.css' );
-			}
-
-			// Date Picker
-			wp_enqueue_script( 'jquery-ui-datepicker' );
-			wp_enqueue_style( 'jquery-ui-datepicker', plugins_url( '/templates/admin/jquery-ui-datepicker.css', __FILE__ ) );
-
-			// Chosen
-			wp_enqueue_script( 'jquery-chosen', plugins_url( '/js/chosen.jquery.js', __FILE__ ), array( 'jquery' ) );
-			wp_enqueue_style( 'jquery-chosen', plugins_url( '/templates/admin/chosen.css', __FILE__ ) );
-
-			// Common
-			wp_enqueue_style( 'woo_ce_styles', plugins_url( '/templates/admin/woo-admin_ce-export.css', __FILE__ ) );
-			wp_enqueue_script( 'woo_ce_scripts', plugins_url( '/templates/admin/woo-admin_ce-export.js', __FILE__ ), array( 'jquery', 'jquery-ui-sortable' ) );
-		}
-
-	}
-	add_action( 'admin_enqueue_scripts', 'woo_ce_enqueue_scripts' );
-
 	// Initial scripts and export process
 	function woo_ce_admin_init() {
 
 		global $export, $wp_roles;
 
+		// Now is the time to de-activate Store Exporter if Store Exporter Deluxe is activated
+		if( defined( 'WOO_CD_PREFIX' ) ) {
+			include_once( WOO_CE_PATH . 'includes/install.php' );
+			woo_ce_deactivate_ce();
+		}
+
 		// Check that we are on the Store Exporter screen
 		$page = ( isset($_GET['page'] ) ? $_GET['page'] : false );
 		if( $page != strtolower( WOO_CE_PREFIX ) )
 			return;
+
+		// Detect other platform versions
+		woo_ce_detect_non_woo_install();
+
+		// Add Store Exporter widgets to Export screen
+		add_action( 'woo_ce_export_order_options_before_table', 'woo_ce_orders_filter_by_date' );
+		add_action( 'woo_ce_export_order_options_before_table', 'woo_ce_orders_filter_by_status' );
+		add_action( 'woo_ce_export_order_options_before_table', 'woo_ce_orders_filter_by_customer' );
+		add_action( 'woo_ce_export_order_options_before_table', 'woo_ce_orders_filter_by_user_role' );
+		add_action( 'woo_ce_export_order_options_before_table', 'woo_ce_orders_filter_by_coupon' );
+		add_action( 'woo_ce_export_order_options_after_table', 'woo_ce_orders_order_sorting' );
+		add_action( 'woo_ce_export_customer_options_before_table', 'woo_ce_customers_filter_by_status' );
+		add_action( 'woo_ce_export_user_options_after_table', 'woo_ce_users_user_sorting' );
+		add_action( 'woo_ce_export_coupon_options_before_table', 'woo_ce_coupons_coupon_sorting' );
+		add_action( 'woo_ce_export_options', 'woo_ce_orders_items_formatting' );
+		add_action( 'woo_ce_export_options', 'woo_ce_orders_max_order_items' );
+		add_action( 'woo_ce_export_after_form', 'woo_ce_products_custom_fields' );
+		add_action( 'woo_ce_export_after_form', 'woo_ce_orders_custom_fields' );
+		add_action( 'woo_ce_export_options', 'woo_ce_export_options_export_format' );
+		add_action( 'woo_ce_export_options', 'woo_ce_export_options_gallery_format' );
 
 		$action = woo_get_action();
 		switch( $action ) {
@@ -144,8 +123,6 @@ if( is_admin() ) {
 				woo_ce_update_option( 'offset', $export->offset );
 				if( $export->offset == '' )
 					$export->offset = 0;
-				if( function_exists( 'woo_cd_admin_init' ) )
-					woo_ce_update_option( 'export_format', (string)$_POST['export_format'] );
 
 				// Set default values for all export options to be later passed onto the export process
 				$export->fields = false;
@@ -235,45 +212,6 @@ if( is_admin() ) {
 							woo_ce_update_option( 'tag_order', $export->tag_order );
 						break;
 
-					case 'orders':
-						// Set up dataset specific options
-						$export->fields = ( isset( $_POST['order_fields'] ) ? $_POST['order_fields'] : false );
-						$export->order_dates_filter = ( isset( $_POST['order_dates_filter'] ) ? $_POST['order_dates_filter'] : false );
-						$export->order_dates_from = $_POST['order_dates_from'];
-						$export->order_dates_to = $_POST['order_dates_to'];
-						$export->order_status = ( isset( $_POST['order_filter_status'] ) ? woo_ce_format_product_filters( $_POST['order_filter_status'] ) : false );
-						$export->order_customer = ( isset( $_POST['order_customer'] ) ? $_POST['order_customer'] : false );
-						$export->order_user_roles = ( isset( $_POST['order_filter_user_role'] ) ? woo_ce_format_user_role_filters( $_POST['order_filter_user_role'] ) : false );
-						$export->order_orderby = ( isset( $_POST['order_orderby'] ) ? $_POST['order_orderby'] : false );
-						$export->order_order = ( isset( $_POST['order_order'] ) ? $_POST['order_order'] : false );
-
-						// Save dataset export specific options
-						if( isset( $_POST['order_items'] ) ) {
-							$export->order_items = $_POST['order_items'];
-							if( $export->order_items <> woo_ce_get_option( 'order_items_formatting' ) )
-								woo_ce_update_option( 'order_items_formatting', $export->order_items );
-						}
-						if( isset( $_POST['max_order_items'] ) ) {
-							$export->max_order_items = (int)$_POST['max_order_items'];
-							if( $export->max_order_items <> woo_ce_get_option( 'max_order_items' ) )
-								woo_ce_update_option( 'max_order_items', $export->max_order_items );
-						}
-						if( $export->order_orderby <> woo_ce_get_option( 'order_orderby' ) )
-							woo_ce_update_option( 'order_orderby', $export->order_orderby );
-						if( $export->order_order <> woo_ce_get_option( 'order_order' ) )
-							woo_ce_update_option( 'order_order', $export->order_order );
-						break;
-
-					case 'customers':
-						// Set up dataset specific options
-						$export->fields = $_POST['customer_fields'];
-						$export->order_status = ( isset( $_POST['customer_filter_status'] ) ? woo_ce_format_product_filters( $_POST['customer_filter_status'] ) : false );
-						break;
-
-					case 'coupons':
-						// Set up dataset specific options
-						$export->fields = $_POST['coupon_fields'];
-						break;
 
 				}
 				if( $export->type ) {
@@ -316,8 +254,10 @@ if( is_admin() ) {
 						'order_order' => $export->order_order
 					);
 					woo_ce_save_fields( $export->type, $export->fields );
+
 					if( $export->export_format == 'csv' )
 						$export->filename = woo_ce_generate_csv_filename( $export->type );
+
 					// Print file contents to debug export screen
 					if( WOO_CE_DEBUG ) {
 
@@ -400,59 +340,14 @@ if( is_admin() ) {
 				woo_ce_update_option( 'encoding', (string)$_POST['encoding'] );
 				woo_ce_update_option( 'escape_formatting', (string)$_POST['escape_formatting'] );
 				woo_ce_update_option( 'date_format', (string)$_POST['date_format'] );
-
-				// Save Store Exporter Deluxe options if present
-				if( function_exists( 'woo_cd_admin_init' ) ) {
-					woo_ce_update_option( 'xml_attribute_url', (int)$_POST['xml_attribute_url'] );
-					woo_ce_update_option( 'xml_attribute_title', (int)$_POST['xml_attribute_title'] );
-					woo_ce_update_option( 'xml_attribute_date', (int)$_POST['xml_attribute_date'] );
-					woo_ce_update_option( 'xml_attribute_time', (int)$_POST['xml_attribute_time'] );
-					woo_ce_update_option( 'xml_attribute_export', (int)$_POST['xml_attribute_export'] );
-					// Display additional notice if Enabled Scheduled Exports is enabled/disabled
-					if( woo_ce_get_option( 'enable_auto', 0 ) <> (int)$_POST['enable_auto'] ) {
-						$message = sprintf( __( 'Scheduled exports has been %s.', 'woo_ce' ), ( ( (int)$_POST['enable_auto'] == 1 ) ? sprintf( __( 'activated, next scheduled export will run in %d minutes', 'woo_ce' ), (int)$_POST['auto_interval'] ) : __( 'de-activated, no further automated exports will occur', 'woo_ce' ) ) );
-						woo_ce_admin_notice( $message );
-					}
-					woo_ce_update_option( 'enable_auto', (int)$_POST['enable_auto'] );
-					woo_ce_update_option( 'auto_type', (string)$_POST['auto_type'] );
-					woo_ce_update_option( 'auto_interval', (int)$_POST['auto_interval'] );
-					woo_ce_update_option( 'auto_method', (string)$_POST['auto_method'] );
-					// Display additional notice if Enabled CRON is enabled/disabled
-					if( woo_ce_get_option( 'enable_cron', 0 ) <> (int)$_POST['enable_cron'] ) {
-						// Remove from WP-CRON schedule if disabled
-						if( (int)$POST['enable_cron'] == 0 && function_exists( 'woo_cd_admin_init' ) )
-							woo_cd_cron_activation();
-						$message = sprintf( __( 'CRON support has been %s.', 'woo_ce' ), ( ( (int)$_POST['enable_cron'] == 1 ) ? __( 'enabled', 'woo_ce' ) : __( 'disabled', 'woo_ce' ) ) );
-						woo_ce_admin_notice( $message );
-					}
-					woo_ce_update_option( 'enable_cron', (int)$_POST['enable_cron'] );
-					woo_ce_update_option( 'secret_key', (string)$_POST['secret_key'] );
-					woo_ce_update_option( 'email_to', (string)$_POST['email_to'] );
-					woo_ce_update_option( 'post_to', (string)$_POST['post_to'] );
-				}
-
 				$message = __( 'Changes have been saved.', 'woo_ce' );
 				woo_ce_admin_notice( $message );
-				break;
-
-			default:
-				// Detect other platform versions
-				woo_ce_detect_non_woo_install();
-
-				add_action( 'woo_ce_export_order_options_before_table', 'woo_ce_orders_filter_by_date' );
-				add_action( 'woo_ce_export_order_options_before_table', 'woo_ce_orders_filter_by_status' );
-				add_action( 'woo_ce_export_order_options_before_table', 'woo_ce_orders_filter_by_customer' );
-				add_action( 'woo_ce_export_order_options_after_table', 'woo_ce_orders_order_sorting' );
-				add_action( 'woo_ce_export_customer_options_before_table', 'woo_ce_customers_filter_by_status' );
-				add_action( 'woo_ce_export_after_form', 'woo_ce_products_custom_fields' );
-				add_action( 'woo_ce_export_after_form', 'woo_ce_orders_custom_fields' );
-				add_action( 'woo_ce_export_options', 'woo_ce_export_options_export_format' );
 				break;
 
 		}
 
 	}
-	add_action( 'admin_init', 'woo_ce_admin_init' );
+	add_action( 'admin_init', 'woo_ce_admin_init', 11 );
 
 	// HTML templates and form processor for Store Exporter screen
 	function woo_ce_html_page() {
@@ -552,7 +447,7 @@ if( is_admin() ) {
 		$url = add_query_arg( 'page', 'woo_ce' );
 		woo_ce_fail_notices();
 
-		include_once( WOO_CE_PATH . 'templates/admin/woo-admin_ce-export.php' );
+		include_once( WOO_CE_PATH . 'templates/admin/tabs.php' );
 
 	}
 

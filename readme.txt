@@ -2,10 +2,10 @@
 
 Contributors: visser
 Donate link: http://www.visser.com.au/#donations
-Tags: e-commerce, woocommerce, shop, cart, ecommerce, export, csv, xml, customers, products, sales, coupons
+Tags: e-commerce, woocommerce, shop, cart, ecommerce, export, csv, xml, customers, products, sales, coupons, users
 Requires at least: 2.9.2
 Tested up to: 3.9.1
-Stable tag: 1.6.2
+Stable tag: 1.7
 
 == Description ==
 
@@ -23,7 +23,10 @@ Features include:
 * Export Orders by Order Status (**)
 * Export Orders by Order Date (**)
 * Export Orders by Customers (**)
+* Export Orders by Coupon Code (**)
 * Export Customers (**)
+* Export Customers by Order Status (**)
+* Export Users (**)
 * Export Coupons (**)
 * Toggle and save export fields
 * Works with WordPress Multisite
@@ -33,6 +36,7 @@ Features include:
 * Supports scheduled exports (**)
 
 (*) Compatible with Product Importer Deluxe, All in One SEO Pack, Advanced Google Product Feed, Product Addons, Sequential Order Number Pro, WooCommerce Checkout Manager, Checkout Field Editor, Cost of Goods, Per-Product Shipping, Local Pickups Plus and more.
+
 (**) Requries the Pro upgrade to enable additional store export functionality.
 
 For more information visit: http://www.visser.com.au/woocommerce/
@@ -48,7 +52,7 @@ See Usage section before for instructions on how to generate export files.
 
 1. Open WooCommerce > Store Export from the WordPress Administration
 2. Select the Export tab on the Store Exporter screen
-3. Select which data type and WooCommerce details you would like to export
+3. Select which WooCommerce details you would like to export
 4. Click Export
 5. Download archived copies of previous exports from the Archives tab
 
@@ -71,6 +75,26 @@ http://www.visser.com.au/woocommerce/forums/
 7. Download achived copies of previous exports
 
 == Changelog ==
+
+= 1.7 =
+* Added: Rename of export files across Plugin
+* Added: Coupon Code to Orders export
+* Added: Export Users
+* Added: Support for User ID in Users export
+* Added: Support for Username in Users export
+* Added: Support for User Role in Users export
+* Added: Support for First Name in Users export
+* Added: Support for Last Name in Users export
+* Added: Support for Full Name in Users export
+* Added: Support for Nickname in Users export
+* Added: Support for E-mail in Users export
+* Added: Support for Website in Users export
+* Added: Support for Date Registered in Users export
+* Added: Support for WooCommerce User Profile fields in Users export
+* Added: Product Gallery formatting support includes Media URL
+* Added: Sorting support for Users export
+* Added: Sorting options for Coupons
+* Added: Filter Orders by Coupon Codes
 
 = 1.6.2 =
 * Added: MSRP Pricing support for Products
