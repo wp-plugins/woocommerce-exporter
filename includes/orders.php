@@ -129,6 +129,29 @@ if( is_admin() ) {
 
 	}
 
+	// HTML template for disabled Order Items Types on Store Exporter screen
+	function woo_ce_orders_items_types() {
+
+		$types = woo_ce_get_order_items_types();
+		$order_items_types = woo_ce_get_option( 'order_items_types', array() );
+
+		ob_start(); ?>
+<tr class="export-options order-options">
+	<th><label><?php _e( 'Order items types', 'woo_ce' ); ?></label></th>
+	<td>
+		<ul>
+<?php foreach( $types as $key => $type ) { ?>
+			<li><label><input type="checkbox" name="order_filter_order_item_types[<?php echo $key; ?>]" value="<?php echo $key; ?>" disabled="disabled" /> <?php echo ucfirst( $type ); ?></label></li>
+<?php } ?>
+		</ul>
+		<p class="description"><?php _e( 'Choose what Order Item types are included within the Orders export. Default is to include all Order Item types.', 'woo_ce' ); ?></p>
+	</td>
+</tr>
+<?php
+		ob_end_flush();
+
+	}
+
 	// HTML template for disabled Max Order Items widget on Store Exporter screen
 	function woo_ce_orders_max_order_items() {
 
@@ -312,8 +335,12 @@ function woo_ce_get_order_fields( $format = 'full' ) {
 		'label' => __( 'Shipping Cost', 'woo_ce' )
 	);
 	$fields[] = array(
+		'name' => 'shipping_weight',
+		'label' => __( 'Shipping Weight', 'woo_ce' )
+	);
+	$fields[] = array(
 		'name' => 'payment_status',
-		'label' => __( 'Payment Status', 'woo_ce' )
+		'label' => __( 'Order Status', 'woo_ce' )
 	);
 	$fields[] = array(
 		'name' => 'order_key',
@@ -507,6 +534,14 @@ function woo_ce_get_order_fields( $format = 'full' ) {
 		'name' => 'order_items_tag',
 		'label' => __( 'Order Items: Tag', 'woo_ce' )
 	);
+	$fields[] = array(
+		'name' => 'order_items_weight',
+		'label' => __( 'Order Items: Weight', 'woo_ce' )
+	);
+	$fields[] = array(
+		'name' => 'order_items_total_weight',
+		'label' => __( 'Order Items: Total Weight', 'woo_ce' )
+	);
 /*
 	$fields[] = array(
 		'name' => '',
@@ -557,4 +592,17 @@ function woo_ce_get_order_statuses() {
 
 }
 
+function woo_ce_get_order_items_types() {
+
+	$types = array(
+		'line_item' => __( 'Line Item', 'woo_ce' ),
+		'coupon' => __( 'Coupon', 'woo_ce' ),
+		'fee' => __( 'Fee', 'woo_ce' ),
+		'tax' => __( 'Tax', 'woo_ce' ),
+		'shipping' => __( 'Shipping', 'woo_ce' )
+	);
+	$types = apply_filters( 'woo_ce_order_item_types', $types );
+	return $types;
+
+}
 ?>

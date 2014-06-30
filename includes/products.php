@@ -1,6 +1,8 @@
 <?php
 if( is_admin() ) {
 
+	/* Start of: WordPress Administration */
+
 	// HTML template for Custom Products widget on Store Exporter screen
 	function woo_ce_products_custom_fields() { ?>
 <form method="post" id="export-products-custom-fields" class="export-options product-options">
@@ -41,6 +43,8 @@ if( is_admin() ) {
 		ob_end_flush();
 
 	}
+
+	/* End of: WordPress Administration */
 
 }
 
@@ -166,15 +170,18 @@ function woo_ce_get_product_data( $product_id = 0, $args = array() ) {
 	$product->description = $product->post_content;
 	$product->excerpt = $product->post_excerpt;
 	$product->regular_price = get_post_meta( $product->ID, '_regular_price', true );
-	if( isset( $product->regular_price ) && $product->regular_price != '' )
+	// Check that a valid price has been provided and that wc_format_localized_price() exists
+	if( isset( $product->regular_price ) && $product->regular_price != '' && function_exists( 'wc_format_localized_price' ) )
 		$product->regular_price = wc_format_localized_price( $product->regular_price );
 	$product->price = get_post_meta( $product->ID, '_price', true );
 	if( $product->regular_price != '' && ( $product->regular_price <> $product->price ) )
 		$product->price = $product->regular_price;
-	if( isset( $product->price ) && $product->price != '' )
+	// Check that a valid price has been provided and that wc_format_localized_price() exists
+	if( isset( $product->price ) && $product->price != '' && function_exists( 'wc_format_localized_price' ) )
 		$product->price = wc_format_localized_price( $product->price );
 	$product->sale_price = get_post_meta( $product->ID, '_sale_price', true );
-	if( isset( $product->sale_price ) && $product->sale_price != '' )
+	// Check that a valid price has been provided and that wc_format_localized_price() exists
+	if( isset( $product->sale_price ) && $product->sale_price != '' && function_exists( 'wc_format_localized_price' ) )
 		$product->sale_price = wc_format_localized_price( $product->sale_price );
 	$product->sale_price_dates_from = woo_ce_format_sale_price_dates( get_post_meta( $product->ID, '_sale_price_dates_from', true ) );
 	$product->sale_price_dates_to = woo_ce_format_sale_price_dates( get_post_meta( $product->ID, '_sale_price_dates_to', true ) );
@@ -252,15 +259,6 @@ function woo_ce_get_product_data( $product_id = 0, $args = array() ) {
 		$product->gpf_size = ( isset( $product->gpf_data['size'] ) ? $product->gpf_data['size'] : '' );
 	}
 
-	// WooCommerce MSRP Pricing - http://woothemes.com/woocommerce/
-	if( function_exists( 'woocommerce_msrp_activate' ) ) {
-		$product->msrp = get_post_meta( $product->ID, '_msrp_price', true );
-		if( $product->msrp == false && $product->post_type == 'product_variation' )
-			$product->msrp = get_post_meta( $product->ID, '_msrp', true );
-			if( isset( $product->msrp ) && $product->msrp != '' )
-				$product->msrp = wc_format_localized_price( $product->msrp );
-	}
-
 	// All in One SEO Pack - http://wordpress.org/extend/plugins/all-in-one-seo-pack/
 	if( function_exists( 'aioseop_activate' ) ) {
 		$product->aioseop_keywords = get_post_meta( $product->ID, '_aioseop_keywords', true );
@@ -288,6 +286,16 @@ function woo_ce_get_product_data( $product_id = 0, $args = array() ) {
 		$product->useo_social_description = get_post_meta( $product->ID, '_su_og_description', true );
 		$product->useo_meta_noindex = get_post_meta( $product->ID, '_su_meta_robots_noindex', true );
 		$product->useo_meta_noautolinks = get_post_meta( $product->ID, '_su_disable_autolinks', true );
+	}
+
+	// WooCommerce MSRP Pricing - http://woothemes.com/woocommerce/
+	if( function_exists( 'woocommerce_msrp_activate' ) ) {
+		$product->msrp = get_post_meta( $product->ID, '_msrp_price', true );
+		if( $product->msrp == false && $product->post_type == 'product_variation' )
+			$product->msrp = get_post_meta( $product->ID, '_msrp', true );
+			// Check that a valid price has been provided and that wc_format_localized_price() exists
+			if( isset( $product->msrp ) && $product->msrp != '' && function_exists( 'wc_format_localized_price' ) )
+				$product->msrp = wc_format_localized_price( $product->msrp );
 	}
 
 	// Allow Plugin/Theme authors to add support for additional Product columns
@@ -822,14 +830,6 @@ function woo_ce_extend_product_fields( $fields ) {
 		);
 	}
 
-	// WooCommerce MSRP Pricing - http://woothemes.com/woocommerce/
-	if( function_exists( 'woocommerce_msrp_activate' ) ) {
-		$fields[] = array(
-			'name' => 'msrp',
-			'label' => __( 'Manufacturer Suggested Retail Price (MSRP)', 'woo_ce' )
-		);
-	}
-
 	// All in One SEO Pack - http://wordpress.org/extend/plugins/all-in-one-seo-pack/
 	if( function_exists( 'aioseop_activate' ) ) {
 		$fields[] = array(
@@ -907,6 +907,24 @@ function woo_ce_extend_product_fields( $fields ) {
 		$fields[] = array(
 			'name' => 'useo_meta_noautolinks',
 			'label' => __( 'Ultimate SEO - Disable Autolinks', 'woo_pd' )
+		);
+	}
+
+	// WooCommerce MSRP Pricing - http://woothemes.com/woocommerce/
+	if( function_exists( 'woocommerce_msrp_activate' ) ) {
+		$fields[] = array(
+			'name' => 'msrp',
+			'label' => __( 'Manufacturer Suggested Retail Price (MSRP)', 'woo_ce' ),
+			'disabled' => 1
+		);
+	}
+
+	// WooCommerce Brands Addon - http://woothemes.com/woocommerce/
+	if( class_exists( 'WC_Brands' ) ) {
+		$fields[] = array(
+			'name' => 'brands',
+			'label' => __( 'Brands', 'woo_ce' ),
+			'disabled' => 1
 		);
 	}
 

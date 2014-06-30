@@ -401,7 +401,8 @@ function woo_ce_format_product_type( $type_id = '' ) {
 
 function woo_ce_format_price( $price = '' ) {
 
-	if( isset( $price ) && $price != '' )
+	// Check that a valid price has been provided and that wc_format_localized_price() exists
+	if( isset( $price ) && $price != '' && function_exists( 'wc_format_localized_price' ) )
 		return wc_format_localized_price( $price );
 	else
 		return $price;
@@ -461,9 +462,10 @@ if( !function_exists( 'woo_ce_expand_country_name' ) ) {
 		global $woocommerce;
 
 		$output = $country_prefix;
-		if( $output ) {
-			if( isset( $woocommerce->countries ) )
-				$output = $woocommerce->countries->countries[$country_prefix];
+		if( $output && method_exists( $woocommerce, 'countries' ) ) {
+			$countries = $woocommerce->countries;
+			if( isset( $countries[$country_prefix] ) )
+				$output = $countries[$country_prefix];
 			unset( $countries );
 		}
 		return $output;

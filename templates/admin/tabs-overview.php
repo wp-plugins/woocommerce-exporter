@@ -13,29 +13,31 @@
 			<a href="<?php echo add_query_arg( 'tab', 'export' ); ?>#export-tags"><?php _e( 'Export Tags', 'woo_ce' ); ?></a>
 		</li>
 		<li>
-			<a href="<?php echo add_query_arg( 'tab', 'export' ); ?>#export-orders"><?php _e( 'Export Orders', 'woo_ce' ); ?></a>
-<?php if( !function_exists( 'woo_cd_admin_init' ) ) { ?>
+			<a href="<?php echo add_query_arg( 'tab', 'export' ); ?>#export-brands"><?php _e( 'Export Brands', 'woo_ce' ); ?></a>
 			<span class="description">(<?php printf( __( 'available in %s', 'woo_ce' ), $woo_cd_link ); ?>)</span>
-<?php } ?>
+		</li>
+		<li>
+			<a href="<?php echo add_query_arg( 'tab', 'export' ); ?>#export-orders"><?php _e( 'Export Orders', 'woo_ce' ); ?></a>
+			<span class="description">(<?php printf( __( 'available in %s', 'woo_ce' ), $woo_cd_link ); ?>)</span>
 		</li>
 		<li>
 			<a href="<?php echo add_query_arg( 'tab', 'export' ); ?>#export-customers"><?php _e( 'Export Customers', 'woo_ce' ); ?></a>
-<?php if( !function_exists( 'woo_cd_admin_init' ) ) { ?>
 			<span class="description">(<?php printf( __( 'available in %s', 'woo_ce' ), $woo_cd_link ); ?>)</span>
-<?php } ?>
 		</li>
 		<li>
 			<a href="<?php echo add_query_arg( 'tab', 'export' ); ?>#export-users"><?php _e( 'Export Users', 'woo_ce' ); ?></a>
-<?php if( !function_exists( 'woo_cd_admin_init' ) ) { ?>
 			<span class="description">(<?php printf( __( 'available in %s', 'woo_ce' ), $woo_cd_link ); ?>)</span>
-<?php } ?>
 		</li>
 		<li>
 			<a href="<?php echo add_query_arg( 'tab', 'export' ); ?>#export-coupons"><?php _e( 'Export Coupons', 'woo_ce' ); ?></a>
-<?php if( !function_exists( 'woo_cd_admin_init' ) ) { ?>
 			<span class="description">(<?php printf( __( 'available in %s', 'woo_ce' ), $woo_cd_link ); ?>)</span>
-<?php } ?>
 		</li>
+<!--
+		<li>
+			<a href="<?php echo add_query_arg( 'tab', 'export' ); ?>#export-attributes"><?php _e( 'Export Attributes', 'woo_ce' ); ?></a>
+			<span class="description">(<?php printf( __( 'available in %s', 'woo_ce' ), $woo_cd_link ); ?>)</span>
+		</li>
+-->
 	</ul>
 
 	<h3><a href="<?php echo add_query_arg( 'tab', 'archive' ); ?>"><?php _e( 'Archives', 'woo_ce' ); ?></a></h3>
@@ -48,21 +50,13 @@
 	<p><?php _e( 'Export tools for WooCommerce.', 'woo_ce' ); ?></p>
 
 	<hr />
-<?php if( !function_exists( 'woo_cd_admin_init' ) ) { ?>
 	<label class="description">
 		<input type="checkbox" disabled="disabled" /> <?php _e( 'Jump to Export screen in the future', 'woo_ce' ); ?>
 		<span class="description"> - <?php printf( __( 'available in %s', 'woo_ce' ), $woo_cd_link ); ?></span>
 	</label>
-<?php } else { ?>
-	<form id="skip_overview_form" method="post">
-		<label><input type="checkbox" id="skip_overview" name="skip_overview"<?php checked( $skip_overview ); ?> /> <?php _e( 'Jump to Export screen in the future', 'woo_ce' ); ?></label>
-		<input type="hidden" name="action" value="skip_overview" />
-	</form>
-<?php } ?>
 
 </div>
 <!-- .overview-left -->
-<?php if( !function_exists( 'woo_cd_admin_init' ) ) { ?>
 <div class="welcome-panel overview-right">
 	<h3>
 		<!-- <span><a href="#"><attr title="<?php _e( 'Dismiss this message', 'woo_ce' ); ?>"><?php _e( 'Dismiss', 'woo_ce' ); ?></attr></a></span> -->
@@ -88,4 +82,3 @@
 	</p>
 </div>
 <!-- .overview-right -->
-<?php } ?>

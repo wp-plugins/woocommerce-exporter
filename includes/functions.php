@@ -2,6 +2,7 @@
 include_once( WOO_CE_PATH . 'includes/products.php' );
 include_once( WOO_CE_PATH . 'includes/categories.php' );
 include_once( WOO_CE_PATH . 'includes/tags.php' );
+include_once( WOO_CE_PATH . 'includes/brands.php' );
 include_once( WOO_CE_PATH . 'includes/orders.php' );
 include_once( WOO_CE_PATH . 'includes/customers.php' );
 include_once( WOO_CE_PATH . 'includes/users.php' );
@@ -153,6 +154,11 @@ if( is_admin() ) {
 
 			case 'tags':
 				$term_taxonomy = 'product_tag';
+				$count = wp_count_terms( $term_taxonomy );
+				break;
+
+			case 'brands':
+				$term_taxonomy = 'product_brand';
 				$count = wp_count_terms( $term_taxonomy );
 				break;
 
@@ -374,7 +380,7 @@ if( is_admin() ) {
 </tr>
 <?php
 		ob_end_flush();
-	
+
 	}
 
 	// Returns a list of archived exports
@@ -470,7 +476,7 @@ if( is_admin() ) {
 }
 
 // Export process for CSV file
-function woo_ce_export_dataset( $export_type, &$output = null ) {
+function woo_ce_export_dataset( $export_type = null, &$output = null ) {
 
 	global $export;
 
@@ -646,7 +652,7 @@ function woo_ce_export_dataset( $export_type, &$output = null ) {
 	// Check that the export file is populated, export columns have been assigned and rows counted
 	if( $output && $export->total_rows && $export->total_columns ) {
 		if( $export->export_format == 'csv' ) {
-			if( $export->bom ) {
+			if( $export->bom && WOO_CE_DEBUG == false ) {
 				// $output .= chr(239) . chr(187) . chr(191) . '';
 				$output = "\xEF\xBB\xBF" . $output;
 			}
@@ -764,7 +770,6 @@ function woo_ce_add_post_mime_type( $post_mime_types = array() ) {
 }
 add_filter( 'post_mime_types', 'woo_ce_add_post_mime_type' );
 
-
 function woo_ce_current_memory_usage() {
 
 	$output = '';
@@ -797,6 +802,4 @@ function woo_ce_update_option( $option = null, $value = null ) {
 	return $output;
 
 }
-
-/* End of: Common */
 ?>

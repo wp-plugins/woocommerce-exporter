@@ -4,8 +4,14 @@ function woo_ce_admin_notice( $message = '', $priority = 'updated', $screen = ''
 
 	if( $priority == false || $priority == '' )
 		$priority = 'updated';
-	if( $message <> '' )
-		add_action( 'admin_notices', woo_ce_admin_notice_html( $message, $priority, $screen ) );
+	if( $message <> '' ) {
+		ob_start();
+		woo_ce_admin_notice_html( $message, $priority, $screen );
+		$output = ob_get_contents();
+		ob_end_clean();
+		if( $output !== false )
+			add_action( 'admin_notices', $output );
+	}
 
 }
 
@@ -96,12 +102,17 @@ function woo_ce_enqueue_scripts( $hook ) {
 		wp_enqueue_style( 'jquery-ui-datepicker', plugins_url( '/templates/admin/jquery-ui-datepicker.css', WOO_CE_RELPATH ) );
 
 		// Chosen
-		wp_enqueue_script( 'jquery-chosen', plugins_url( '/js/chosen.jquery.js', WOO_CE_RELPATH ), array( 'jquery' ) );
 		wp_enqueue_style( 'jquery-chosen', plugins_url( '/templates/admin/chosen.css', WOO_CE_RELPATH ) );
+		wp_enqueue_script( 'jquery-chosen', plugins_url( '/js/jquery.chosen.js', WOO_CE_RELPATH ), array( 'jquery' ) );
 
 		// Common
 		wp_enqueue_style( 'woo_ce_styles', plugins_url( '/templates/admin/export.css', WOO_CE_RELPATH ) );
 		wp_enqueue_script( 'woo_ce_scripts', plugins_url( '/templates/admin/export.js', WOO_CE_RELPATH ), array( 'jquery', 'jquery-ui-sortable' ) );
+
+		if( WOO_CE_DEBUG ) {
+			wp_enqueue_style( 'jquery-csvToTable', plugins_url( '/templates/admin/jquery-csvtable.css', WOO_CE_RELPATH ) );
+			wp_enqueue_script( 'jquery-csvToTable', plugins_url( '/js/jquery.csvToTable.js', WOO_CE_RELPATH ), array( 'jquery' ) );
+		}
 
 	}
 
@@ -150,10 +161,12 @@ function woo_ce_tab_template( $tab = '' ) {
 			$products = woo_ce_return_count( 'products' );
 			$categories = woo_ce_return_count( 'categories' );
 			$tags = woo_ce_return_count( 'tags' );
+			$brands = woo_ce_return_count( 'brands' );
 			$orders = woo_ce_return_count( 'orders' );
 			$customers = woo_ce_return_count( 'customers' );
 			$users = woo_ce_return_count( 'users' );
 			$coupons = woo_ce_return_count( 'coupons' );
+			$attributes = woo_ce_return_count( 'attributes' );
 
 			if( $product_fields = woo_ce_get_product_fields() ) {
 				foreach( $product_fields as $key => $product_field ) {
@@ -182,6 +195,7 @@ function woo_ce_tab_template( $tab = '' ) {
 				$tag_orderby = woo_ce_get_option( 'tag_orderby', 'ID' );
 				$tag_order = woo_ce_get_option( 'tag_order', 'DESC' );
 			}
+			$brand_fields = woo_ce_get_brand_fields();
 			$order_fields = woo_ce_get_order_fields();
 			$customer_fields = woo_ce_get_customer_fields();
 			$user_fields = woo_ce_get_user_fields();

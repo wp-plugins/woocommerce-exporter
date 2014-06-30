@@ -5,7 +5,7 @@ Donate link: http://www.visser.com.au/#donations
 Tags: e-commerce, woocommerce, shop, cart, ecommerce, export, csv, xml, customers, products, sales, coupons, users
 Requires at least: 2.9.2
 Tested up to: 3.9.1
-Stable tag: 1.7
+Stable tag: 1.7.2
 
 == Description ==
 
@@ -19,6 +19,7 @@ Features include:
 * Export Products by Type including Variations
 * Export Categories
 * Export Tags
+* Export Brands (**)
 * Export Orders (**)
 * Export Orders by Order Status (**)
 * Export Orders by Order Date (**)
@@ -52,7 +53,7 @@ See Usage section before for instructions on how to generate export files.
 
 1. Open WooCommerce > Store Export from the WordPress Administration
 2. Select the Export tab on the Store Exporter screen
-3. Select which WooCommerce details you would like to export
+3. Select which export type and WooCommerce details you would like to export
 4. Click Export
 5. Download archived copies of previous exports from the Archives tab
 
@@ -75,6 +76,26 @@ http://www.visser.com.au/woocommerce/forums/
 7. Download achived copies of previous exports
 
 == Changelog ==
+
+= 1.7.2 =
+* Fixed: Check for wc_format_localized_price() in older releases of WooCommerce
+* Added: Brands export type
+* Added: Support for Brand Name in Brands export
+* Added: Support for Brand Description in Brands export
+* Added: Support for Brand Slug in Brands export
+* Added: Support for Parent ID in Brands export
+* Added: Support for Brand Image in Brands export
+* Added: Support for sorting options in Brands export
+* Fixed: Added checks for 3rd party classes and legacy WooCommerce functions for 2.0.20
+* Added: Support for Category Description in Categories export
+* Added: Support for Category Image in Categories export
+* Added: Support for Display Type in Categories export
+
+= 1.7.1 =
+* Added: Brands support to Orders export
+* Added: Brands support for Order Items in Orders export
+* Fixed: PHP warning notice in Orders export
+* Added: Option to filter different Order Items types from Orders export
 
 = 1.7 =
 * Added: Rename of export files across Plugin

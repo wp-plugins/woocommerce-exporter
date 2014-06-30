@@ -21,6 +21,8 @@ function woo_ce_get_product_categories( $args = array() ) {
 			} else {
 				$categories[$key]->parent_id = '';
 			}
+			$categories[$key]->image = woo_ce_get_category_thumbnail_url( $category->term_id );
+			$categories[$key]->display_type = get_woocommerce_term_meta( $category->term_id, 'display_type', true );
 		}
 		return $categories;
 	}
@@ -46,6 +48,18 @@ function woo_ce_get_category_fields( $format = 'full' ) {
 	$fields[] = array(
 		'name' => 'parent_id',
 		'label' => __( 'Parent Term ID', 'woo_ce' )
+	);
+	$fields[] = array(
+		'name' => 'description',
+		'label' => __( 'Category Description', 'woo_ce' )
+	);
+	$fields[] = array(
+		'name' => 'display_type',
+		'label' => __( 'Display Type', 'woo_ce' )
+	);
+	$fields[] = array(
+		'name' => 'image',
+		'label' => __( 'Category Image', 'woo_ce' )
 	);
 
 /*
@@ -113,6 +127,15 @@ function woo_ce_get_category_field( $name = null, $format = 'name' ) {
 		}
 	}
 	return $output;
+
+}
+
+function woo_ce_get_category_thumbnail_url( $category_id, $size = 'full' ) {
+
+	$thumbnail_id = get_woocommerce_term_meta( $category_id, 'thumbnail_id', true );
+
+	if ( $thumbnail_id )
+		return current( wp_get_attachment_image_src( $thumbnail_id, $size ) );
 
 }
 ?>

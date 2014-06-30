@@ -3,7 +3,7 @@
 Plugin Name: WooCommerce - Store Exporter
 Plugin URI: http://www.visser.com.au/woocommerce/plugins/exporter/
 Description: Export store details out of WooCommerce into simple formatted files (e.g. CSV, XML, TXT, etc.).
-Version: 1.7
+Version: 1.7.2
 Author: Visser Labs
 Author URI: http://www.visser.com.au/about/
 License: GPL2
@@ -66,6 +66,7 @@ if( is_admin() ) {
 		add_action( 'woo_ce_export_user_options_after_table', 'woo_ce_users_user_sorting' );
 		add_action( 'woo_ce_export_coupon_options_before_table', 'woo_ce_coupons_coupon_sorting' );
 		add_action( 'woo_ce_export_options', 'woo_ce_orders_items_formatting' );
+		add_action( 'woo_ce_export_options', 'woo_ce_orders_items_types' );
 		add_action( 'woo_ce_export_options', 'woo_ce_orders_max_order_items' );
 		add_action( 'woo_ce_export_after_form', 'woo_ce_products_custom_fields' );
 		add_action( 'woo_ce_export_after_form', 'woo_ce_orders_custom_fields' );
@@ -146,18 +147,6 @@ if( is_admin() ) {
 				$export->tag_orderby = false;
 				$export->tag_order = false;
 
-				// Order sorting
-				$export->order_dates_filter = false;
-				$export->order_dates_from = '';
-				$export->order_dates_to = '';
-				$export->order_status = false;
-				$export->order_customer = false;
-				$export->order_user_roles = false;
-				$export->order_items = 'combined';
-				$export->order_orderby = false;
-				$export->order_order = false;
-				$export->max_order_items = false;
-
 				$export->type = ( isset( $_POST['dataset'] ) ? $_POST['dataset'] : false );
 				switch( $export->type ) {
 
@@ -212,7 +201,6 @@ if( is_admin() ) {
 							woo_ce_update_option( 'tag_order', $export->tag_order );
 						break;
 
-
 				}
 				if( $export->type ) {
 
@@ -242,16 +230,7 @@ if( is_admin() ) {
 						'category_orderby' => $export->category_orderby,
 						'category_order' => $export->category_order,
 						'tag_orderby' => $export->tag_orderby,
-						'tag_order' => $export->tag_order,
-						'order_status' => $export->order_status,
-						'order_dates_filter' => $export->order_dates_filter,
-						'order_dates_from' => woo_ce_format_order_date( $export->order_dates_from ),
-						'order_dates_to' => woo_ce_format_order_date( $export->order_dates_to ),
-						'order_customer' => $export->order_customer,
-						'order_user_roles' => $export->order_user_roles,
-						'order_items' => $export->order_items,
-						'order_orderby' => $export->order_orderby,
-						'order_order' => $export->order_order
+						'tag_order' => $export->tag_order
 					);
 					woo_ce_save_fields( $export->type, $export->fields );
 
@@ -340,6 +319,7 @@ if( is_admin() ) {
 				woo_ce_update_option( 'encoding', (string)$_POST['encoding'] );
 				woo_ce_update_option( 'escape_formatting', (string)$_POST['escape_formatting'] );
 				woo_ce_update_option( 'date_format', (string)$_POST['date_format'] );
+
 				$message = __( 'Changes have been saved.', 'woo_ce' );
 				woo_ce_admin_notice( $message );
 				break;
@@ -395,6 +375,7 @@ if( is_admin() ) {
 						woo_ce_update_option( 'custom_products', $custom_products );
 					}
 				}
+
 				// Save Custom Order Meta
 				if( isset( $_POST['custom_orders'] ) ) {
 					$custom_orders = $_POST['custom_orders'];
@@ -406,6 +387,7 @@ if( is_admin() ) {
 						woo_ce_update_option( 'custom_orders', $custom_orders );
 					}
 				}
+
 				// Save Custom Order Item Meta
 				if( isset( $_POST['custom_order_items'] ) ) {
 					$custom_order_items = $_POST['custom_order_items'];
@@ -421,6 +403,7 @@ if( is_admin() ) {
 						woo_ce_update_option( 'custom_order_items', '' );
 					}
 				}
+
 				$message = __( 'Custom Fields saved.', 'woo_ce' );
 				woo_ce_admin_notice( $message );
 				woo_ce_manage_form();

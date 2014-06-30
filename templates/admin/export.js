@@ -1,6 +1,7 @@
 var $j = jQuery.noConflict();
 $j(function() {
 
+	// This controls the Skip Overview link on the Overview screen
 	$j('#skip_overview').click(function(){
 		$j('#skip_overview_form').submit();
 	});
@@ -52,15 +53,16 @@ $j(function() {
 	}
 */
 
-	// Select all
+	// Select all field options for this export type
 	$j('.checkall').click(function () {
 		$j(this).closest('.postbox').find(':checkbox').attr('checked', true);
 	});
+	// Unselect all field options for this export type
 	$j('.uncheckall').click(function () {
 		$j(this).closest('.postbox').find(':checkbox').attr('checked', false);
 	});
 
-	// Show Products widgets by default
+	// Show Products as default export type
 	$j('.export-options').hide();
 	$j('#products').trigger('click');
 	$j('.product-options').show();
@@ -75,6 +77,11 @@ $j(function() {
 	if( $j('#products-filters-tags').attr('checked') ) {
 		$j('#export-products-filters-tags').show();
 	}
+	// Brands
+	$j('#export-products-filters-brands').hide();
+	if( $j('#products-filters-brands').attr('checked') ) {
+		$j('#export-products-filters-brands').show();
+	}
 	// Product Status
 	$j('#export-products-filters-status').hide();
 	if( $j('#products-filters-status').attr('checked') ) {
@@ -86,6 +93,7 @@ $j(function() {
 	}
 	$j('#export-categories').hide();
 	$j('#export-tags').hide();
+	$j('#export-brands').hide();
 	$j('#export-orders').hide();
 	$j('#export-orders-filters-status').hide();
 	if( $j('#orders-filters-status').attr('checked') ) {
@@ -141,84 +149,56 @@ $j(function() {
 
 	// Export types
 	$j('#products').click(function(){
+		$j('.export-types').hide();
 		$j('#export-products').show();
-		$j('#export-categories').hide();
-		$j('#export-tags').hide();
-		$j('#export-orders').hide();
-		$j('#export-customers').hide();
-		$j('#export-users').hide();
-		$j('#export-coupons').hide();
 
 		$j('.export-options').hide();
 		$j('.product-options').show();
 	});
 	$j('#categories').click(function(){
-		$j('#export-products').hide();
+		$j('.export-types').hide();
 		$j('#export-categories').show();
-		$j('#export-tags').hide();
-		$j('#export-orders').hide();
-		$j('#export-customers').hide();
-		$j('#export-users').hide();
-		$j('#export-coupons').hide();
 
 		$j('.export-options').hide();
 		$j('.category-options').show();
 	});
 	$j('#tags').click(function(){
-		$j('#export-products').hide();
-		$j('#export-categories').hide();
+		$j('.export-types').hide();
 		$j('#export-tags').show();
-		$j('#export-orders').hide();
-		$j('#export-customers').hide();
-		$j('#export-users').hide();
-		$j('#export-coupons').hide();
 
 		$j('.export-options').hide();
 		$j('.tag-options').show();
 	});
+	$j('#brands').click(function(){
+		$j('.export-types').hide();
+		$j('#export-brands').show();
+
+		$j('.export-options').hide();
+		$j('.brand-options').show();
+	});
 	$j('#orders').click(function(){
-		$j('#export-products').hide();
-		$j('#export-categories').hide();
-		$j('#export-tags').hide();
+		$j('.export-types').hide();
 		$j('#export-orders').show();
-		$j('#export-customers').hide();
-		$j('#export-users').hide();
-		$j('#export-coupons').hide();
 
 		$j('.export-options').hide();
 		$j('.order-options').show();
 	});
 	$j('#customers').click(function(){
-		$j('#export-products').hide();
-		$j('#export-categories').hide();
-		$j('#export-tags').hide();
-		$j('#export-orders').hide();
+		$j('.export-types').hide();
 		$j('#export-customers').show();
-		$j('#export-users').hide();
-		$j('#export-coupons').hide();
 
 		$j('.export-options').hide();
 		$j('.customer-options').show();
 	});
 	$j('#users').click(function(){
-		$j('#export-products').hide();
-		$j('#export-categories').hide();
-		$j('#export-tags').hide();
-		$j('#export-orders').hide();
-		$j('#export-customers').hide();
+		$j('.export-types').hide();
 		$j('#export-users').show();
-		$j('#export-coupons').hide();
 
 		$j('.export-options').hide();
 		$j('.user-options').show();
 	});
 	$j('#coupons').click(function(){
-		$j('#export-products').hide();
-		$j('#export-categories').hide();
-		$j('#export-tags').hide();
-		$j('#export-orders').hide();
-		$j('#export-customers').hide();
-		$j('#export-users').hide();
+		$j('.export-types').hide();
 		$j('#export-coupons').show();
 
 		$j('.export-options').hide();
@@ -229,20 +209,29 @@ $j(function() {
 	$j('#export_products').click(function(){
 		$j('input:radio[name=dataset]:nth(0)').attr('checked',true);
 	});
-	$j('#export_orders').click(function(){
+	$j('#export_categories').click(function(){
+		$j('input:radio[name=dataset]:nth(1)').attr('checked',true);
+	});
+	$j('#export_tags').click(function(){
+		$j('input:radio[name=dataset]:nth(2)').attr('checked',true);
+	});
+	$j('#export_brands').click(function(){
 		$j('input:radio[name=dataset]:nth(3)').attr('checked',true);
 	});
-	$j('#export_customers').click(function(){
+	$j('#export_orders').click(function(){
 		$j('input:radio[name=dataset]:nth(4)').attr('checked',true);
 	});
-	$j('#export_users').click(function(){
+	$j('#export_customers').click(function(){
 		$j('input:radio[name=dataset]:nth(5)').attr('checked',true);
 	});
-	$j('#export_coupons').click(function(){
+	$j('#export_users').click(function(){
 		$j('input:radio[name=dataset]:nth(6)').attr('checked',true);
 	});
+	$j('#export_coupons').click(function(){
+		$j('input:radio[name=dataset]:nth(7)').attr('checked',true);
+	});
 
-	// Export jump link from Overview tab
+	// This auto-selects the export type based on the link from the Overview screen
 	$j(document).ready(function() {
 		var href = jQuery(location).attr('href');
 		if (href.toLowerCase().indexOf('tab=export') >= 0) {
