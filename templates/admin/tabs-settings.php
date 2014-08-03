@@ -147,6 +147,7 @@
 	<p class="submit">
 		<input type="submit" name="submit" id="submit" class="button button-primary" value="<?php _e( 'Save Changes', 'woo_ce' ); ?>" />
 	</p>
-	<input type="hidden" name="action" value="save" />
+
+	<input type="hidden" name="action" value="save-settings" />
 </form>
 <?php do_action( 'woo_ce_export_settings_bottom' ); ?>

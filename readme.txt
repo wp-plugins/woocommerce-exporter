@@ -2,10 +2,10 @@
 
 Contributors: visser
 Donate link: http://www.visser.com.au/#donations
-Tags: e-commerce, woocommerce, shop, cart, ecommerce, export, csv, xml, customers, products, sales, coupons, users
+Tags: e-commerce, woocommerce, shop, cart, ecommerce, export, csv, xml, customers, products, sales, orders, coupons, users, attributes, subscriptions
 Requires at least: 2.9.2
 Tested up to: 3.9.1
-Stable tag: 1.7.2
+Stable tag: 1.7.4
 
 == Description ==
 
@@ -29,14 +29,17 @@ Features include:
 * Export Customers by Order Status (**)
 * Export Users (**)
 * Export Coupons (**)
+* Export Subscriptions (**)
+* Export Attributes (**)
 * Toggle and save export fields
+* Field label editor (**)
 * Works with WordPress Multisite
 * Export to CSV file
 * Export to XML file (**)
 * Supports external CRON commands (**)
 * Supports scheduled exports (**)
 
-(*) Compatible with Product Importer Deluxe, All in One SEO Pack, Advanced Google Product Feed, Product Addons, Sequential Order Number Pro, WooCommerce Checkout Manager, Checkout Field Editor, Cost of Goods, Per-Product Shipping, Local Pickups Plus and more.
+(*) Compatible with Product Importer Deluxe, All in One SEO Pack, Advanced Google Product Feed, Product Addons, Sequential Order Number Pro, WooCommerce Checkout Manager, Checkout Field Editor, Cost of Goods, Per-Product Shipping, Local Pickups Plus, WooCommerce Subscriptions and more.
 
 (**) Requries the Pro upgrade to enable additional store export functionality.
 
@@ -76,6 +79,36 @@ http://www.visser.com.au/woocommerce/forums/
 7. Download achived copies of previous exports
 
 == Changelog ==
+
+= 1.7.4 =
+* Added: Subscriptions export type
+* Added: Support for Subscription Key in Subscriptions export
+* Added: Support for Subscription Status in Subscriptions export
+* Added: Support for Subscription Name in Subscriptions export
+* Added: Support for User in Subscriptions export
+* Added: Support for User ID in Subscriptions export
+* Added: Support for Order ID in Subscriptions export
+* Added: Support for Order Status in Subscriptions export
+* Added: Support for Post Status in Subscriptions export
+* Added: Support for Start Date in Subscriptions export
+* Added: Support for Expiration in Subscriptions export
+* Added: Support for End Date in Subscriptions export
+* Added: Support for Trial End Date in Subscriptions export
+* Added: Support for Last Payment in Subscriptions export
+* Added: Support for Next Payment in Subscriptions export
+* Added: Support for Renewals in Subscriptions export
+* Added: Support for Product ID in Subscriptions export
+* Added: Support for Product SKU in Subscriptions export
+* Added: Support for Variation ID in Subscriptions export
+* Added: Support for Coupon Code in Subscription export
+* Added: Support for Limit Volume in Subscription export
+
+= 1.7.3 =
+* Added: Export type is remembered between screen refreshes
+* Changed: Moved Product Sorting widget to products.php
+* Changed: Moved Filter Products by Product Category widget to products.php
+* Changed: Moved Filter Products by Product Tag widget to products.php
+* Changed: Moved Filter Products by Product Status widget to products.php
 
 = 1.7.2 =
 * Fixed: Check for wc_format_localized_price() in older releases of WooCommerce

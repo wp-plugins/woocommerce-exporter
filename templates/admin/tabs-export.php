@@ -99,7 +99,18 @@
 						</td>
 					</tr>
 
-<!-- 
+					<tr>
+						<th>
+							<input type="radio" id="subscriptions" name="dataset" value="subscriptions"<?php disabled( $subscriptions, 0 ); ?><?php checked( $export_type, 'subscriptions' ); ?> />
+							<label for="subscriptions"><?php _e( 'Subscriptions', 'woo_ce' ); ?></label>
+						</th>
+						<td>
+							<span class="description">(<?php echo $subscriptions; ?>)</span>
+							<span class="description"> - <?php printf( __( 'available in %s', 'woo_ce' ), $woo_cd_link ); ?></span>
+						</td>
+					</tr>
+
+<!--
 					<tr>
 						<th>
 							<input type="radio" id="attributes" name="dataset" value="attributes"<?php disabled( $attributes, 0 ); ?><?php checked( $export_type, 'attributes' ); ?> />
@@ -155,77 +166,17 @@
 				<h3 class="hndle"><?php _e( 'Product Filters', 'woo_ce' ); ?></h3>
 				<div class="inside">
 
-					<p><label><input type="checkbox" id="products-filters-categories" /> <?php _e( 'Filter Products by Product Categories', 'woo_ce' ); ?></label></p>
-					<div id="export-products-filters-categories" class="separator">
-<?php if( $product_categories ) { ?>
-						<ul>
-	<?php foreach( $product_categories as $product_category ) { ?>
-							<li><label><input type="checkbox" name="product_filter_categories[<?php echo $product_category->term_id; ?>]" value="<?php echo $product_category->term_id; ?>" title="<?php printf( __( 'Term ID: %d', 'woo_ce' ), $product_category->term_id ); ?>"<?php disabled( $product_category->count, 0 ); ?> /> <?php echo woo_ce_format_product_category_label( $product_category->name, $product_category->parent_name ); ?> (<?php echo $product_category->count; ?>)</label></li>
-	<?php } ?>
-						</ul>
-						<p class="description"><?php _e( 'Select the Product Categories you want to filter exported Products by. Default is to include all Product Categories.', 'woo_ce' ); ?></p>
-<?php } else { ?>
-						<p><?php _e( 'No Product Categories have been found.', 'woo_ce' ); ?></p>
-<?php } ?>
-					</div>
-					<!-- #export-products-filters-categories -->
+					<?php do_action( 'woo_ce_export_product_options_before_table' ); ?>
 
-					<p><label><input type="checkbox" id="products-filters-tags" /> <?php _e( 'Filter Products by Product Tags', 'woo_ce' ); ?></label></p>
-					<div id="export-products-filters-tags" class="separator">
-<?php if( $product_tags ) { ?>
-						<ul>
-	<?php foreach( $product_tags as $product_tag ) { ?>
-							<li><label><input type="checkbox" name="product_filter_tags[<?php echo $product_tag->term_id; ?>]" value="<?php echo $product_tag->term_id; ?>" title="<?php printf( __( 'Term ID: %d', 'woo_ce' ), $product_tag->term_id ); ?>"<?php disabled( $product_tag->count, 0 ); ?> /> <?php echo $product_tag->name; ?> (<?php echo $product_tag->count; ?>)</label></li>
-	<?php } ?>
-						</ul>
-						<p class="description"><?php _e( 'Select the Product Tags you want to filter exported Products by. Default is to include all Product Tags.', 'woo_ce' ); ?></p>
-<?php } else { ?>
-						<p><?php _e( 'No Product Tags have been found.', 'woo_ce' ); ?></p>
-<?php } ?>
-					</div>
-					<!-- #export-products-filters-tags -->
+					<table class="form-table">
+						<?php do_action( 'woo_ce_export_product_options_table' ); ?>
+					</table>
 
-					<p><label><input type="checkbox" id="products-filters-status" /> <?php _e( 'Filter Products by Product Status', 'woo_ce' ); ?></label></p>
-					<div id="export-products-filters-status" class="separator">
-						<ul>
-<?php foreach( $product_statuses as $key => $product_status ) { ?>
-							<li><label><input type="checkbox" name="product_filter_status[<?php echo $key; ?>]" value="<?php echo $key; ?>" /> <?php echo $product_status; ?></label></li>
-<?php } ?>
-						</ul>
-						<p class="description"><?php _e( 'Select the Product Status options you want to filter exported Products by. Default is to include all Product Status options.', 'woo_ce' ); ?></p>
-					</div>
-					<!-- #export-products-filters-status -->
-
-					<p><label><input type="checkbox" id="products-filters-type" /> <?php _e( 'Filter Products by Product Type', 'woo_ce' ); ?></label></p>
-					<div id="export-products-filters-type" class="separator">
-						<ul>
-<?php foreach( $product_types as $key => $product_type ) { ?>
-							<li><label><input type="checkbox" name="product_filter_type[<?php echo $key; ?>]" value="<?php echo $key; ?>" /> <?php echo woo_ce_format_product_type( $product_type['name'] ); ?> (<?php echo $product_type['count']; ?>)</label></li>
-<?php } ?>
-						</ul>
-						<p class="description"><?php _e( 'Select the Product Type\'s you want to filter exported Products by. Default is to include all Product Types and Variations.', 'woo_ce' ); ?></p>
-					</div>
-					<!-- #export-products-filters-type -->
-
-					<p><label><?php _e( 'Product Sorting', 'woo_ce' ); ?></label></p>
-					<div>
-						<select name="product_orderby">
-							<option value="ID"<?php selected( 'ID', $product_orderby ); ?>><?php _e( 'Product ID', 'woo_ce' ); ?></option>
-							<option value="title"<?php selected( 'title', $product_orderby ); ?>><?php _e( 'Product Name', 'woo_ce' ); ?></option>
-							<option value="date"<?php selected( 'date', $product_orderby ); ?>><?php _e( 'Date Created', 'woo_ce' ); ?></option>
-							<option value="modified"<?php selected( 'modified', $product_orderby ); ?>><?php _e( 'Date Modified', 'woo_ce' ); ?></option>
-							<option value="rand"<?php selected( 'rand', $product_orderby ); ?>><?php _e( 'Random', 'woo_ce' ); ?></option>
-							<option value="menu_order"<?php selected( 'menu_order', $product_orderby ); ?>><?php _e( 'Sort Order', 'woo_ce' ); ?></option>
-						</select>
-						<select name="product_order">
-							<option value="ASC"<?php selected( 'ASC', $product_order ); ?>><?php _e( 'Ascending', 'woo_ce' ); ?></option>
-							<option value="DESC"<?php selected( 'DESC', $product_order ); ?>><?php _e( 'Descending', 'woo_ce' ); ?></option>
-						</select>
-						<p class="description"><?php _e( 'Select the sorting of Products within the exported file. By default this is set to export Products by Product ID in Desending order.', 'woo_ce' ); ?></p>
-					</div>
+					<?php do_action( 'woo_ce_export_product_options_after_table' ); ?>
 
 				</div>
 				<!-- .inside -->
+
 			</div>
 			<!-- .postbox -->
 
@@ -240,7 +191,7 @@
 				<div class="inside">
 					<p class="description"><?php _e( 'Select the Category fields you would like to export.', 'woo_ce' ); ?></p>
 					<p><a href="javascript:void(0)" id="categories-checkall" class="checkall"><?php _e( 'Check All', 'woo_ce' ); ?></a> | <a href="javascript:void(0)" id="categories-uncheckall" class="uncheckall"><?php _e( 'Uncheck All', 'woo_ce' ); ?></a></p>
-					<table>
+					<table class="ui-sortable">
 
 <?php foreach( $category_fields as $category_field ) { ?>
 						<tr>
@@ -295,7 +246,7 @@
 				<div class="inside">
 					<p class="description"><?php _e( 'Select the Tag fields you would like to export.', 'woo_ce' ); ?></p>
 					<p><a href="javascript:void(0)" id="tags-checkall" class="checkall"><?php _e( 'Check All', 'woo_ce' ); ?></a> | <a href="javascript:void(0)" id="tags-uncheckall" class="uncheckall"><?php _e( 'Uncheck All', 'woo_ce' ); ?></a></p>
-					<table>
+					<table class="ui-sortable">
 
 <?php foreach( $tag_fields as $tag_field ) { ?>
 						<tr>
@@ -352,7 +303,7 @@
 	<?php if( $brands ) { ?>
 					<p class="description"><?php _e( 'Select the Brand fields you would like to export.', 'woo_ce' ); ?></p>
 					<p><a href="javascript:void(0)" id="brands-checkall" class="checkall"><?php _e( 'Check All', 'woo_ce' ); ?></a> | <a href="javascript:void(0)" id="brands-uncheckall" class="uncheckall"><?php _e( 'Uncheck All', 'woo_ce' ); ?></a></p>
-					<table>
+					<table class="ui-sortable">
 
 		<?php foreach( $brand_fields as $brand_field ) { ?>
 						<tr>
@@ -408,13 +359,15 @@
 		<div id="export-orders" class="export-types">
 
 			<div class="postbox">
-				<h3 class="hndle"><?php _e( 'Order Fields', 'woo_ce' ); ?></h3>
+				<h3 class="hndle">
+					<?php _e( 'Order Fields', 'woo_ce' ); ?>
+				</h3>
 				<div class="inside">
 
 	<?php if( $orders ) { ?>
 					<p class="description"><?php _e( 'Select the Order fields you would like to export.', 'woo_ce' ); ?></p>
 					<p><a href="javascript:void(0)" id="orders-checkall" class="checkall"><?php _e( 'Check All', 'woo_ce' ); ?></a> | <a href="javascript:void(0)" id="orders-uncheckall" class="uncheckall"><?php _e( 'Uncheck All', 'woo_ce' ); ?></a></p>
-					<table>
+					<table class="ui-sortable">
 
 		<?php foreach( $order_fields as $order_field ) { ?>
 						<tr>
@@ -470,7 +423,7 @@
 	<?php if( $customers ) { ?>
 					<p class="description"><?php _e( 'Select the Customer fields you would like to export.', 'woo_ce' ); ?></p>
 					<p><a href="javascript:void(0)" id="customers-checkall" class="checkall"><?php _e( 'Check All', 'woo_ce' ); ?></a> | <a href="javascript:void(0)" id="customers-uncheckall" class="uncheckall"><?php _e( 'Uncheck All', 'woo_ce' ); ?></a></p>
-					<table>
+					<table class="ui-sortable">
 
 		<?php foreach( $customer_fields as $customer_field ) { ?>
 						<tr>
@@ -526,7 +479,7 @@
 	<?php if( $users ) { ?>
 					<p class="description"><?php _e( 'Select the User fields you would like to export.', 'woo_ce' ); ?></p>
 					<p><a href="javascript:void(0)" id="users-checkall" class="checkall"><?php _e( 'Check All', 'woo_ce' ); ?></a> | <a href="javascript:void(0)" id="users-uncheckall" class="uncheckall"><?php _e( 'Uncheck All', 'woo_ce' ); ?></a></p>
-					<table>
+					<table class="ui-sortable">
 
 		<?php foreach( $user_fields as $user_field ) { ?>
 						<tr>
@@ -582,7 +535,7 @@
 	<?php if( $coupons ) { ?>
 					<p class="description"><?php _e( 'Select the Coupon fields you would like to export.', 'woo_ce' ); ?></p>
 					<p><a href="javascript:void(0)" id="coupons-checkall" class="checkall"><?php _e( 'Check All', 'woo_ce' ); ?></a> | <a href="javascript:void(0)" id="coupons-uncheckall" class="uncheckall"><?php _e( 'Uncheck All', 'woo_ce' ); ?></a></p>
-					<table>
+					<table class="ui-sortable">
 
 		<?php foreach( $coupon_fields as $coupon_field ) { ?>
 						<tr>
@@ -628,6 +581,43 @@
 		</div>
 		<!-- #export-coupons -->
 
+<?php } ?>
+<?php if( $subscription_fields ) { ?>
+		<div id="export-subscriptions" class="export-types">
+
+			<div class="postbox">
+				<h3 class="hndle"><?php _e( 'Subscription Fields', 'woo_ce' ); ?></h3>
+				<div class="inside">
+	<?php if( $subscriptions ) { ?>
+					<p class="description"><?php _e( 'Select the Subscription fields you would like to export.', 'woo_ce' ); ?></p>
+					<p><a href="javascript:void(0)" id="subscriptions-checkall" class="checkall"><?php _e( 'Check All', 'woo_ce' ); ?></a> | <a href="javascript:void(0)" id="subscriptions-uncheckall" class="uncheckall"><?php _e( 'Uncheck All', 'woo_ce' ); ?></a></p>
+					<table class="ui-sortable">
+
+		<?php foreach( $subscription_fields as $subscription_field ) { ?>
+						<tr>
+							<td>
+								<label>
+									<input type="checkbox" name="subscription_fields[<?php echo $subscription_field['name']; ?>]" class="subscription_field"<?php ( isset( $subscription_field['default'] ) ? checked( $subscription_field['default'], 1 ) : '' ); ?> disabled="disabled" />
+									<?php echo $subscription_field['label']; ?>
+								</label>
+							</td>
+						</tr>
+
+		<?php } ?>
+					</table>
+					<p class="submit">
+						<input type="button" class="button button-disabled" value="<?php _e( 'Export Subscriptions', 'woo_ce' ); ?>" />
+					</p>
+					<p class="description"><?php _e( 'Can\'t find a particular Subscription field in the above export list?', 'woo_ce' ); ?> <a href="<?php echo $troubleshooting_url; ?>" target="_blank"><?php _e( 'Get in touch', 'woo_ce' ); ?></a>.</p>
+	<?php } else { ?>
+					<p><?php _e( 'No Subscriptions have been found.', 'woo_ce' ); ?></p>
+	<?php } ?>
+				</div>
+				<!-- .inside -->
+			</div>
+			<!-- .postbox -->
+		</div>
+		<!-- #export-subscriptions -->
 <?php } ?>
 		<div class="postbox" id="export-options">
 			<h3 class="hndle"><?php _e( 'Export Options', 'woo_ce' ); ?></h3>

@@ -6,13 +6,16 @@ if( is_admin() ) {
 	// HTML template for disabled Filter Orders by Date widget on Store Exporter screen
 	function woo_ce_orders_filter_by_date() {
 
+		$woo_cd_url = 'http://www.visser.com.au/woocommerce/plugins/exporter-deluxe/';
+		$woo_cd_link = sprintf( '<a href="%s" target="_blank">' . __( 'Store Exporter Deluxe', 'woo_ce' ) . '</a>', $woo_cd_url );
+
 		$current_month = date( 'F' );
 		$last_month = date( 'F', mktime( 0, 0, 0, date( 'n' )-1, 1, date( 'Y' ) ) );
 		$order_dates_from = '-';
 		$order_dates_to = '-';
 
 		ob_start(); ?>
-<p><label><input type="checkbox" id="orders-filters-date" /> <?php _e( 'Filter Orders by Order Date', 'woo_ce' ); ?></label></p>
+<p><label><input type="checkbox" id="orders-filters-date" /> <?php _e( 'Filter Orders by Order Date', 'woo_ce' ); ?><span class="description"> - <?php printf( __( 'available in %s', 'woo_ce' ), $woo_cd_link ); ?></span></label></p>
 <div id="export-orders-filters-date" class="separator">
 	<ul>
 		<li>
@@ -42,8 +45,11 @@ if( is_admin() ) {
 	// HTML template for disabled Filter Orders by Customer widget on Store Exporter screen
 	function woo_ce_orders_filter_by_customer() {
 
+		$woo_cd_url = 'http://www.visser.com.au/woocommerce/plugins/exporter-deluxe/';
+		$woo_cd_link = sprintf( '<a href="%s" target="_blank">' . __( 'Store Exporter Deluxe', 'woo_ce' ) . '</a>', $woo_cd_url );
+
 		ob_start(); ?>
-<p><label for="order_customer"><?php _e( 'Filter Orders by Customer', 'woo_ce' ); ?></label></p>
+<p><label><input type="checkbox" id="orders-filters-customer" /> <?php _e( 'Filter Orders by Customer', 'woo_ce' ); ?><span class="description"> - <?php printf( __( 'available in %s', 'woo_ce' ), $woo_cd_link ); ?></span></label></p>
 <div id="export-orders-filters-customer" class="separator">
 	<select id="order_customer" name="order_customer" disabled="disabled">
 		<option value=""><?php _e( 'Show all customers', 'woo_ce' ); ?></option>
@@ -59,9 +65,13 @@ if( is_admin() ) {
 	// HTML template for disabled Filter Orders by User Role widget on Store Exporter screen
 	function woo_ce_orders_filter_by_user_role() {
 
+		$woo_cd_url = 'http://www.visser.com.au/woocommerce/plugins/exporter-deluxe/';
+		$woo_cd_link = sprintf( '<a href="%s" target="_blank">' . __( 'Store Exporter Deluxe', 'woo_ce' ) . '</a>', $woo_cd_url );
+
 		$user_roles = woo_ce_get_user_roles();
+
 		ob_start(); ?>
-<p><label><input type="checkbox" id="orders-filters-user_role" /> <?php _e( 'Filter Orders by User Role', 'woo_ce' ); ?></label></p>
+<p><label><input type="checkbox" id="orders-filters-user_role" /> <?php _e( 'Filter Orders by User Role', 'woo_ce' ); ?><span class="description"> - <?php printf( __( 'available in %s', 'woo_ce' ), $woo_cd_link ); ?></span></label></p>
 <div id="export-orders-filters-user_role" class="separator">
 	<ul>
 <?php foreach( $user_roles as $key => $user_role ) { ?>
@@ -79,13 +89,17 @@ if( is_admin() ) {
 	// HTML template for disabled Filter Orders by Coupon Code widget on Store Exporter screen
 	function woo_ce_orders_filter_by_coupon() {
 
+		$woo_cd_url = 'http://www.visser.com.au/woocommerce/plugins/exporter-deluxe/';
+		$woo_cd_link = sprintf( '<a href="%s" target="_blank">' . __( 'Store Exporter Deluxe', 'woo_ce' ) . '</a>', $woo_cd_url );
+
 		$args = array(
 			'coupon_orderby' => 'ID',
 			'coupon_order' => 'DESC'
 		);
 		$coupons = woo_ce_get_coupons( $args );
+
 		ob_start(); ?>
-<p><label><input type="checkbox" id="orders-filters-coupon" /> <?php _e( 'Filter Orders by Coupon Code', 'woo_ce' ); ?></label></p>
+<p><label><input type="checkbox" id="orders-filters-coupon" /> <?php _e( 'Filter Orders by Coupon Code', 'woo_ce' ); ?><span class="description"> - <?php printf( __( 'available in %s', 'woo_ce' ), $woo_cd_link ); ?></span></label></p>
 <div id="export-orders-filters-coupon" class="separator">
 	<ul>
 <?php foreach( $coupons as $key => $coupon ) { ?>
@@ -103,21 +117,24 @@ if( is_admin() ) {
 	// HTML template for disabled Order Items Formatting on Store Exporter screen
 	function woo_ce_orders_items_formatting() {
 
+		$woo_cd_url = 'http://www.visser.com.au/woocommerce/plugins/exporter-deluxe/';
+		$woo_cd_link = sprintf( '<a href="%s" target="_blank">' . __( 'Store Exporter Deluxe', 'woo_ce' ) . '</a>', $woo_cd_url );
+
 		ob_start(); ?>
 <tr class="export-options order-options">
 	<th><label for="order_items"><?php _e( 'Order items formatting', 'woo_ce' ); ?></label></th>
 	<td>
 		<ul>
 			<li>
-				<label><input type="radio" name="order_items" value="combined" disabled="disabled" />&nbsp;<?php _e( 'Place Order Items within a grouped single Order row', 'woo_ce' ); ?></label>
-				<p class="description"><?php _e( 'For example: <code>Cart Items: SKU</code> cell might contain <code>SPECK-IPHONE|INCASE-NANO|-</code> for 3 Order items within an Order', 'woo_ce' ); ?></p>
+				<label><input type="radio" name="order_items" value="combined" disabled="disabled" />&nbsp;<?php _e( 'Place Order Items within a grouped single Order row', 'woo_ce' ); ?><span class="description"> - <?php printf( __( 'available in %s', 'woo_ce' ), $woo_cd_link ); ?></span></label>
+				<p class="description"><?php _e( 'For example: <code>Order Items: SKU</code> cell might contain <code>SPECK-IPHONE|INCASE-NANO|-</code> for 3 Order items within an Order', 'woo_ce' ); ?></p>
 			</li>
 			<li>
-				<label><input type="radio" name="order_items" value="unique" disabled="disabled" />&nbsp;<?php _e( 'Place Order Items on individual cells within a single Order row', 'woo_ce' ); ?></label>
-				<p class="description"><?php _e( 'For example: <code>Cart Items: SKU</code> would become <code>Cart Item #1: SKU</code> with <codeSPECK-IPHONE</code> for the first Order item within an Order', 'woo_ce' ); ?></p>
+				<label><input type="radio" name="order_items" value="unique" disabled="disabled" />&nbsp;<?php _e( 'Place Order Items on individual cells within a single Order row', 'woo_ce' ); ?><span class="description"> - <?php printf( __( 'available in %s', 'woo_ce' ), $woo_cd_link ); ?></span></label>
+				<p class="description"><?php _e( 'For example: <code>Order Items: SKU</code> would become <code>Order Item #1: SKU</code> with <codeSPECK-IPHONE</code> for the first Order item within an Order', 'woo_ce' ); ?></p>
 			</li>
 			<li>
-				<label><input type="radio" name="order_items" value="individual" disabled="disabled" />&nbsp;<?php _e( 'Place each Order Item within their own Order row', 'woo_ce' ); ?></label>
+				<label><input type="radio" name="order_items" value="individual" disabled="disabled" />&nbsp;<?php _e( 'Place each Order Item within their own Order row', 'woo_ce' ); ?><span class="description"> - <?php printf( __( 'available in %s', 'woo_ce' ), $woo_cd_link ); ?></span></label>
 				<p class="description"><?php _e( 'For example: An Order with 3 Order items will display a single Order item on each row', 'woo_ce' ); ?></p>
 			</li>
 		</ul>
@@ -129,8 +146,34 @@ if( is_admin() ) {
 
 	}
 
+	// HTML template for disabled Max Order Items widget on Store Exporter screen
+	function woo_ce_orders_max_order_items() {
+
+		$woo_cd_url = 'http://www.visser.com.au/woocommerce/plugins/exporter-deluxe/';
+		$woo_cd_link = sprintf( '<a href="%s" target="_blank">' . __( 'Store Exporter Deluxe', 'woo_ce' ) . '</a>', $woo_cd_url );
+
+		$max_size = 10;
+
+		ob_start(); ?>
+<tr id="max_order_items_option" class="export-options order-options">
+	<th>
+		<label for="max_order_items"><?php _e( 'Max unique Order items', 'woo_ce' ); ?>: </label>
+	</th>
+	<td>
+		<input type="text" id="max_order_items" name="max_order_items" size="3" class="text" value="<?php echo $max_size; ?>" disabled="disabled" /><span class="description"> - <?php printf( __( 'available in %s', 'woo_ce' ), $woo_cd_link ); ?></span>
+		<p class="description"><?php _e( 'Manage the number of Order Item colums displayed when the \'Place Order Items on individual cells within a single Order row\' Order items formatting option is selected.', 'woo_ce' ); ?></p>
+	</td>
+</tr>
+<?php
+		ob_end_flush();
+
+	}
+
 	// HTML template for disabled Order Items Types on Store Exporter screen
 	function woo_ce_orders_items_types() {
+
+		$woo_cd_url = 'http://www.visser.com.au/woocommerce/plugins/exporter-deluxe/';
+		$woo_cd_link = sprintf( '<a href="%s" target="_blank">' . __( 'Store Exporter Deluxe', 'woo_ce' ) . '</a>', $woo_cd_url );
 
 		$types = woo_ce_get_order_items_types();
 		$order_items_types = woo_ce_get_option( 'order_items_types', array() );
@@ -141,7 +184,7 @@ if( is_admin() ) {
 	<td>
 		<ul>
 <?php foreach( $types as $key => $type ) { ?>
-			<li><label><input type="checkbox" name="order_filter_order_item_types[<?php echo $key; ?>]" value="<?php echo $key; ?>" disabled="disabled" /> <?php echo ucfirst( $type ); ?></label></li>
+			<li><label><input type="checkbox" name="order_filter_order_item_types[<?php echo $key; ?>]" value="<?php echo $key; ?>" disabled="disabled" /> <?php echo ucfirst( $type ); ?><span class="description"> - <?php printf( __( 'available in %s', 'woo_ce' ), $woo_cd_link ); ?></span></label></li>
 <?php } ?>
 		</ul>
 		<p class="description"><?php _e( 'Choose what Order Item types are included within the Orders export. Default is to include all Order Item types.', 'woo_ce' ); ?></p>
@@ -152,34 +195,23 @@ if( is_admin() ) {
 
 	}
 
-	// HTML template for disabled Max Order Items widget on Store Exporter screen
-	function woo_ce_orders_max_order_items() {
-
-		ob_start(); ?>
-<tr class="export-options order-options">
-	<th>
-		<label for="max_order_items"><?php _e( 'Max unique Order items', 'woo_ce' ); ?>: </label>
-	</th>
-	<td>
-		<input type="text" id="max_order_items" name="max_order_items" size="3" class="text" value="10" disabled="disabled" />
-		<p class="description"><?php _e( 'Manage the number of Order cart item colums displayed when the \'Place Order Items on individual cells within a single Order row\' Order items formatting option is selected.', 'woo_ce' ); ?></p>
-	</td>
-</tr>
-<?php
-		ob_end_flush();
-
-	}
-
 	// HTML template for disabled Filter Orders by Order Status widget on Store Exporter screen
 	function woo_ce_orders_filter_by_status() {
 
+		$woo_cd_url = 'http://www.visser.com.au/woocommerce/plugins/exporter-deluxe/';
+		$woo_cd_link = sprintf( '<a href="%s" target="_blank">' . __( 'Store Exporter Deluxe', 'woo_ce' ) . '</a>', $woo_cd_url );
+
 		$order_statuses = woo_ce_get_order_statuses();
+
 		ob_start(); ?>
-<p><label><input type="checkbox" id="orders-filters-status" /> <?php _e( 'Filter Orders by Order Status', 'woo_ce' ); ?></label></p>
+<p><label><input type="checkbox" id="orders-filters-status" /> <?php _e( 'Filter Orders by Order Status', 'woo_ce' ); ?><span class="description"> - <?php printf( __( 'available in %s', 'woo_ce' ), $woo_cd_link ); ?></span></label></p>
 <div id="export-orders-filters-status" class="separator">
 	<ul>
 <?php foreach( $order_statuses as $order_status ) { ?>
-		<li><label><input type="checkbox" name="order_filter_status[<?php echo $order_status->name; ?>]" value="<?php echo $order_status->name; ?>" disabled="disabled" /> <?php echo ucfirst( $order_status->name ); ?></label></li>
+		<li>
+			<label><input type="checkbox" name="order_filter_status[<?php echo $order_status->name; ?>]" value="<?php echo $order_status->name; ?>" disabled="disabled" /> <?php echo ucfirst( $order_status->name ); ?></label>
+			<span class="description">(<?php echo $order_status->count; ?>)</span>
+		</li>
 <?php } ?>
 	</ul>
 	<p class="description"><?php _e( 'Select the Order Status you want to filter exported Orders by. Default is to include all Order Status options.', 'woo_ce' ); ?></p>
@@ -218,6 +250,7 @@ if( is_admin() ) {
 	function woo_ce_orders_custom_fields() {
 
 		$troubleshooting_url = 'http://www.visser.com.au/documentation/store-exporter-deluxe/usage/';
+
 		ob_start(); ?>
 <form method="post" id="export-orders-custom-fields" class="export-options order-options">
 	<div id="poststuff">
@@ -343,6 +376,10 @@ function woo_ce_get_order_fields( $format = 'full' ) {
 		'label' => __( 'Order Status', 'woo_ce' )
 	);
 	$fields[] = array(
+		'name' => 'post_status',
+		'label' => __( 'Post Status', 'woo_ce' )
+	);
+	$fields[] = array(
 		'name' => 'order_key',
 		'label' => __( 'Order Key', 'woo_ce' )
 	);
@@ -353,6 +390,10 @@ function woo_ce_get_order_fields( $format = 'full' ) {
 	$fields[] = array(
 		'name' => 'purchase_time',
 		'label' => __( 'Purchase Time', 'woo_ce' )
+	);
+	$fields[] = array(
+		'name' => 'customer_message',
+		'label' => __( 'Customer Message', 'woo_ce' )
 	);
 	$fields[] = array(
 		'name' => 'customer_note',
@@ -571,6 +612,255 @@ function woo_ce_get_order_fields( $format = 'full' ) {
 
 }
 
+// Adds custom Order and Order Item columns to the Order fields list
+function woo_ce_extend_order_fields( $fields = array() ) {
+
+	// Product Addons - http://www.woothemes.com/
+	if( class_exists( 'Product_Addon_Admin' ) || class_exists( 'Product_Addon_Display' ) ) {
+		$product_addons = woo_ce_get_product_addons();
+		if( !empty( $product_addons ) ) {
+			foreach( $product_addons as $product_addon ) {
+				if( !empty( $product_addon ) ) {
+					$fields[] = array(
+						'name' => sprintf( 'order_items_product_addon_%s', $product_addon->post_name ),
+						'label' => sprintf( __( 'Order Items: %s', 'woo_ce' ), ucfirst( $product_addon->post_title ) )
+					);
+				}
+			}
+		}
+		unset( $product_addons, $product_addon );
+	}
+
+	// WooCommerce Sequential Order Numbers - http://www.skyverge.com/blog/woocommerce-sequential-order-numbers/
+	// Sequential Order Numbers Pro - http://www.woothemes.com/products/sequential-order-numbers-pro/
+	if( class_exists( 'WC_Seq_Order_Number' ) || class_exists( 'WC_Seq_Order_Number_Pro' ) ) {
+		$fields[] = array(
+			'name' => 'order_number',
+			'label' => __( 'Order Number', 'woo_ce' )
+		);
+	}
+
+	// WooCommerce Print Invoice & Delivery Note - https://github.com/piffpaffpuff/woocommerce-delivery-notes
+	if( class_exists( 'WooCommerce_Delivery_Notes' ) ) {
+		$fields[] = array(
+			'name' => 'invoice_number',
+			'label' => __( 'Invoice Number', 'woo_ce' )
+		);
+	}
+
+	// WooCommerce Checkout Manager - http://wordpress.org/plugins/woocommerce-checkout-manager/
+	// WooCommerce Checkout Manager Pro - http://www.trottyzone.com/product/woocommerce-checkout-manager-pro
+	if( function_exists( 'wccs_install' ) ) {
+		$options = get_option( 'wccs_settings' );
+		if( isset( $options['buttons'] ) ) {
+			$buttons = $options['buttons'];
+			if( !empty( $buttons ) ) {
+				foreach( $buttons as $button ) {
+					$fields[] = array(
+						'name' => $button['label'],
+						'label' => ucfirst( $button['label'] )
+					);
+				}
+				unset( $buttons, $button );
+			}
+		}
+		unset( $options );
+	}
+
+	// Checkout Field Editor - http://woothemes.com/woocommerce/
+	if( function_exists( 'woocommerce_init_checkout_field_editor' ) ) {
+		$billing_fields = get_option( 'wc_fields_billing', array() );
+		$shipping_fields = get_option( 'wc_fields_shipping', array() );
+		$custom_fields = get_option( 'wc_fields_additional', array() );
+
+		// Custom billing fields
+		if( !empty( $billing_fields ) ) {
+			foreach( $billing_fields as $key => $billing_field ) {
+				// Only add non-default Checkout fields to export columns list
+				if( $billing_field['custom'] == 1 ) {
+					$fields[] = array(
+						'name' => sprintf( 'wc_billing_%s', $key ),
+						'label' => sprintf( __( 'Billing: %s', 'woo_ce' ), ucfirst( $billing_field['label'] ) )
+					);
+				}
+			}
+		}
+		unset( $billing_fields, $billing_field );
+
+		// Custom shipping fields
+		if( !empty( $shipping_fields ) ) {
+			foreach( $shipping_fields as $key => $shipping_field ) {
+				// Only add non-default Checkout fields to export columns list
+				if( $shipping_field['custom'] == 1 ) {
+					$fields[] = array(
+						'name' => sprintf( 'wc_shipping_%s', $key ),
+						'label' => sprintf( __( 'Shipping: %s', 'woo_ce' ), ucfirst( $shipping_field['label'] ) )
+					);
+				}
+			}
+		}
+		unset( $shipping_fields, $shipping_field );
+
+		// Custom fields
+		if( !empty( $custom_fields ) ) {
+			foreach( $custom_fields as $key => $custom_field ) {
+				// Only add non-default Checkout fields to export columns list
+				if( $billing_field['custom'] == 1 ) {
+					$fields[] = array(
+						'name' => sprintf( 'wc_additional_%s', $key ),
+						'label' => sprintf( __( 'Additional: %s', 'woo_ce' ), ucfirst( $custom_field['label'] ) )
+					);
+				}
+			}
+		}
+		unset( $custom_fields, $custom_field );
+	}
+
+	// Checkout Field Manager - http://61extensions.com
+	if( function_exists( 'sod_woocommerce_checkout_manager_settings' ) ) {
+		$billing_fields = get_option( 'woocommerce_checkout_billing_fields', array() );
+		$shipping_fields = get_option( 'woocommerce_checkout_shipping_fields', array() );
+		$custom_fields = get_option( 'woocommerce_checkout_additional_fields', array() );
+
+		// Custom billing fields
+		if( !empty( $billing_fields ) ) {
+			foreach( $billing_fields as $key => $billing_field ) {
+				// Only add non-default Checkout fields to export columns list
+				if( strtolower( $billing_field['default_field'] ) != 'on' ) {
+					$fields[] = array(
+						'name' => sprintf( 'sod_billing_%s', $billing_field['name'] ),
+						'label' => sprintf( __( 'Billing: %s', 'woo_ce' ), ucfirst( $billing_field['label'] ) )
+					);
+				}
+			}
+		}
+		unset( $billing_fields, $billing_field );
+
+		// Custom shipping fields
+		if( !empty( $shipping_fields ) ) {
+			foreach( $shipping_fields as $key => $shipping_field ) {
+				// Only add non-default Checkout fields to export columns list
+				if( strtolower( $shipping_field['default_field'] ) != 'on' ) {
+					$fields[] = array(
+						'name' => sprintf( 'sod_shipping_%s', $shipping_field['name'] ),
+						'label' => sprintf( __( 'Shipping: %s', 'woo_ce' ), ucfirst( $shipping_field['label'] ) )
+					);
+				}
+			}
+		}
+		unset( $shipping_fields, $shipping_field );
+
+		// Custom fields
+		if( !empty( $custom_fields ) ) {
+			foreach( $custom_fields as $key => $custom_field ) {
+				// Only add non-default Checkout fields to export columns list
+				if( strtolower( $custom_field['default_field'] ) != 'on' ) {
+					$fields[] = array(
+						'name' => sprintf( 'sod_additional_%s', $custom_field['name'] ),
+						'label' => sprintf( __( 'Additional: %s', 'woo_ce' ), ucfirst( $custom_field['label'] ) )
+					);
+				}
+			}
+		}
+		unset( $custom_fields, $custom_field );
+	}
+
+	// WooCommerce Brands Addon - http://woothemes.com/woocommerce/
+	if( class_exists( 'WC_Brands' ) ) {
+		$fields[] = array(
+			'name' => 'order_items_brand',
+			'label' => __( 'Order Items: Brand', 'woo_ce' )
+		);
+	}
+
+	// Cost of Goods - http://www.skyverge.com/product/woocommerce-cost-of-goods-tracking/
+	if( class_exists( 'WC_COG' ) ) {
+		$fields[] = array(
+			'name' => 'total_cost_of_goods',
+			'label' => __( 'Total Cost of Goods', 'woo_ce' )
+		);
+		$fields[] = array(
+			'name' => 'order_items_cost_of_goods',
+			'label' => __( 'Order Items: Cost of Goods', 'woo_ce' )
+		);
+	}
+
+	// Local Pickup Plus - http://www.woothemes.com/products/local-pickup-plus/
+	if( class_exists( 'WC_Local_Pickup_Plus' ) ) {
+		$fields[] = array(
+			'name' => 'order_items_pickup_location',
+			'label' => __( 'Order Items: Pickup Location', 'woo_ce' )
+		);
+	}
+
+	// Gravity Forms - http://woothemes.com/woocommerce
+	if( class_exists( 'RGForms' ) && class_exists( 'woocommerce_gravityforms' ) ) {
+		// Check if there are any Products linked to Gravity Forms
+		if( $gf_fields = woo_ce_get_gravity_form_fields() ) {
+			foreach( $gf_fields as $key => $gf_field ) {
+				$fields[] = array(
+					'name' => sprintf( 'order_items_gf_%d_%s', $gf_field['formId'], $gf_field['id'] ),
+					'label' => sprintf( __( 'Order Items: %s' ), $gf_field['label'] )
+				);
+			}
+		}
+	}
+
+	$custom_orders = woo_ce_get_option( 'custom_orders', '' );
+	if( !empty( $custom_orders ) ) {
+		foreach( $custom_orders as $custom_order ) {
+			if( !empty( $custom_order ) ) {
+				$fields[] = array(
+					'name' => $custom_order,
+					'label' => ucfirst( $custom_order )
+				);
+			}
+		}
+		unset( $custom_orders, $custom_order );
+	}
+	return $fields;
+
+}
+add_filter( 'woo_ce_order_fields', 'woo_ce_extend_order_fields' );
+
+function woo_ce_get_gravity_forms_products() {
+
+	global $wpdb;
+
+	$meta_key = '_gravity_form_data';
+	$post_ids_sql = $wpdb->prepare( "SELECT `post_id`, `meta_value` FROM `$wpdb->postmeta` WHERE `meta_key` = %s GROUP BY `meta_value`", $meta_key );
+	return $wpdb->get_results( $post_ids_sql );
+
+}
+
+function woo_ce_get_gravity_form_fields() {
+
+	if( $gf_products = woo_ce_get_gravity_forms_products() ) {
+		$fields = array();
+		foreach( $gf_products as $gf_product ) {
+			if( $gf_product_data = maybe_unserialize( get_post_meta( $gf_product->post_id, '_gravity_form_data', true ) ) ) {
+				// Check the class and method for Gravity Forms exists
+				if( class_exists( 'RGFormsModel' ) && method_exists( 'RGFormsModel', 'get_form_meta' ) ) {
+					// Check the form exists
+					$gf_form_meta = RGFormsModel::get_form_meta( $gf_product_data['id'] );
+					if( !empty( $gf_form_meta ) ) {
+						// Check that the form has fields assigned to it
+						if( !empty( $gf_form_meta['fields'] ) ) {
+							foreach( $gf_form_meta['fields'] as $gf_form_field ) {
+								// Check for duplicate Gravity Form fields
+								$gf_form_field['formTitle'] = $gf_form_meta['title'];
+								$fields[] = $gf_form_field;
+							}
+						}
+					}
+				}
+			}
+		}
+		return $fields;
+	}
+
+}
+
 function woo_ce_format_order_date( $date ) {
 
 	$output = $date;
@@ -603,6 +893,48 @@ function woo_ce_get_order_items_types() {
 	);
 	$types = apply_filters( 'woo_ce_order_item_types', $types );
 	return $types;
+
+}
+
+// Returns list of Product Addon columns
+function woo_ce_get_product_addons() {
+
+	$output = array();
+
+	// Product Addons - http://www.woothemes.com/
+	if( class_exists( 'Product_Addon_Admin' ) || class_exists( 'Product_Addon_Display' ) ) {
+		$post_type = 'global_product_addon';
+		$args = array(
+			'post_type' => $post_type,
+			'numberposts' => -1,
+			'cache_results' => false,
+			'no_found_rows' => false
+		);
+		if( $product_addons = get_posts( $args ) ) {
+			foreach( $product_addons as $product_addon ) {
+				if( $meta = maybe_unserialize( get_post_meta( $product_addon->ID, '_product_addons', true ) ) ) {
+					$size = count( $meta );
+					for( $i = 0; $i < $size; $i++ ) {
+						$output[] = (object)array(
+							'post_name' => $meta[$i]['name'],
+							'post_title' => $meta[$i]['name']
+						);
+					}
+				}
+			}
+		}
+	}
+
+	// Custom Order Items
+	if( $custom_order_items = woo_ce_get_option( 'custom_order_items', '' ) ) {
+		foreach( $custom_order_items as $custom_order_item ) {
+			$output[] = (object)array(
+				'post_name' => $custom_order_item,
+				'post_title' => $custom_order_item
+			);
+		}
+	}
+	return $output;
 
 }
 ?>

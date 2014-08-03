@@ -32,6 +32,10 @@
 			<a href="<?php echo add_query_arg( 'tab', 'export' ); ?>#export-coupons"><?php _e( 'Export Coupons', 'woo_ce' ); ?></a>
 			<span class="description">(<?php printf( __( 'available in %s', 'woo_ce' ), $woo_cd_link ); ?>)</span>
 		</li>
+		<li>
+			<a href="<?php echo add_query_arg( 'tab', 'export' ); ?>#export-subscriptions"><?php _e( 'Export Subscriptions', 'woo_ce' ); ?></a>
+			<span class="description">(<?php printf( __( 'available in %s', 'woo_ce' ), $woo_cd_link ); ?>)</span>
+		</li>
 <!--
 		<li>
 			<a href="<?php echo add_query_arg( 'tab', 'export' ); ?>#export-attributes"><?php _e( 'Export Attributes', 'woo_ce' ); ?></a>
@@ -68,12 +72,16 @@
 		<li><?php _e( 'Export Orders', 'woo_ce' ); ?></li>
 		<li><?php _e( 'Select Order fields to export', 'woo_ce' ); ?></li>
 		<li><?php _e( 'Export custom Order and Order Item meta', 'woo_ce' ); ?></li>
+		<li><?php _e( 'Filter Orders export by multiple filter options', 'woo_ce' ); ?></li>
 		<li><?php _e( 'Export Customers', 'woo_ce' ); ?></li>
 		<li><?php _e( 'Select Customer fields to export', 'woo_ce' ); ?></li>
 		<li><?php _e( 'Export Coupons', 'woo_ce' ); ?></li>
 		<li><?php _e( 'Select Coupon fields to export', 'woo_ce' ); ?></li>
-		<li><?php _e( 'CRON / Scheduled Exports', 'woo_ce' ); ?></li>
-		<li><?php _e( 'Export to XML', 'woo_ce' ); ?></li>
+		<li><?php _e( 'Export Subscriptions', 'woo_ce' ); ?></li>
+		<li><?php _e( 'Export Subscriptions fields to export', 'woo_ce' ); ?></li>
+		<li><?php _e( 'CRON export engine', 'woo_ce' ); ?></li>
+		<li><?php _e( 'Schedule automatic exports with filtering options', 'woo_ce' ); ?></li>
+		<li><?php _e( 'Export to XML file', 'woo_ce' ); ?></li>
 		<li><?php _e( 'Premium Support', 'woo_ce' ); ?></li>
 	</ul>
 	<p>

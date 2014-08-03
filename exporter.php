@@ -3,7 +3,7 @@
 Plugin Name: WooCommerce - Store Exporter
 Plugin URI: http://www.visser.com.au/woocommerce/plugins/exporter/
 Description: Export store details out of WooCommerce into simple formatted files (e.g. CSV, XML, TXT, etc.).
-Version: 1.7.2
+Version: 1.7.4
 Author: Visser Labs
 Author URI: http://www.visser.com.au/about/
 License: GPL2
@@ -56,6 +56,13 @@ if( is_admin() ) {
 		woo_ce_detect_non_woo_install();
 
 		// Add Store Exporter widgets to Export screen
+		add_action( 'woo_ce_export_product_options_before_table', 'woo_ce_products_filter_by_product_category' );
+		add_action( 'woo_ce_export_product_options_before_table', 'woo_ce_products_filter_by_product_tag' );
+		add_action( 'woo_ce_export_product_options_before_table', 'woo_ce_products_filter_by_product_status' );
+		add_action( 'woo_ce_export_product_options_before_table', 'woo_ce_products_filter_by_product_type' );
+		add_action( 'woo_ce_export_product_options_after_table', 'woo_ce_products_product_sorting' );
+
+		// Add Store Exporter Deluxe widgets to Export screen
 		add_action( 'woo_ce_export_order_options_before_table', 'woo_ce_orders_filter_by_date' );
 		add_action( 'woo_ce_export_order_options_before_table', 'woo_ce_orders_filter_by_status' );
 		add_action( 'woo_ce_export_order_options_before_table', 'woo_ce_orders_filter_by_customer' );
@@ -66,12 +73,16 @@ if( is_admin() ) {
 		add_action( 'woo_ce_export_user_options_after_table', 'woo_ce_users_user_sorting' );
 		add_action( 'woo_ce_export_coupon_options_before_table', 'woo_ce_coupons_coupon_sorting' );
 		add_action( 'woo_ce_export_options', 'woo_ce_orders_items_formatting' );
-		add_action( 'woo_ce_export_options', 'woo_ce_orders_items_types' );
 		add_action( 'woo_ce_export_options', 'woo_ce_orders_max_order_items' );
+		add_action( 'woo_ce_export_options', 'woo_ce_orders_items_types' );
 		add_action( 'woo_ce_export_after_form', 'woo_ce_products_custom_fields' );
 		add_action( 'woo_ce_export_after_form', 'woo_ce_orders_custom_fields' );
 		add_action( 'woo_ce_export_options', 'woo_ce_export_options_export_format' );
 		add_action( 'woo_ce_export_options', 'woo_ce_export_options_gallery_format' );
+
+		// Add Store Exporter Deluxe options to Settings screen
+		add_action( 'woo_ce_export_settings_top', 'woo_ce_export_settings_quicklinks' );
+		add_action( 'woo_ce_export_settings_after', 'woo_ce_export_settings_cron' );
 
 		$action = woo_get_action();
 		switch( $action ) {
@@ -103,11 +114,13 @@ if( is_admin() ) {
 
 				// Set up the basic export options
 				$export = new stdClass();
+				$export->cron = 0;
 				$export->start_time = time();
 				$export->idle_memory_start = woo_ce_current_memory_usage();
 				$export->delete_temporary_csv = woo_ce_get_option( 'delete_csv', 0 );
 				$export->encoding = woo_ce_get_option( 'encoding', get_option( 'blog_charset', 'UTF-8' ) );
-				if( $export->encoding == 'System default' )
+				// Check for bad encoding
+				if( $export->encoding == '' || $export->encoding == false || $export->encoding == 'System default' )
 					$export->encoding = 'UTF-8';
 				$export->delimiter = woo_ce_get_option( 'delimiter', ',' );
 				$export->category_separator = woo_ce_get_option( 'category_separator', '|' );
@@ -148,6 +161,8 @@ if( is_admin() ) {
 				$export->tag_order = false;
 
 				$export->type = ( isset( $_POST['dataset'] ) ? $_POST['dataset'] : false );
+				if( $export->type )
+					woo_ce_update_option( 'last_export', $export->type );
 				switch( $export->type ) {
 
 					case 'products':
@@ -310,7 +325,7 @@ if( is_admin() ) {
 				break;
 
 			// Save changes on Settings screen
-			case 'save':
+			case 'save-settings':
 				woo_ce_update_option( 'export_filename', (string)$_POST['export_filename'] );
 				woo_ce_update_option( 'delete_csv', (int)$_POST['delete_temporary_csv'] );
 				woo_ce_update_option( 'delimiter', (string)$_POST['delimiter'] );
@@ -319,7 +334,6 @@ if( is_admin() ) {
 				woo_ce_update_option( 'encoding', (string)$_POST['encoding'] );
 				woo_ce_update_option( 'escape_formatting', (string)$_POST['escape_formatting'] );
 				woo_ce_update_option( 'date_format', (string)$_POST['date_format'] );
-
 				$message = __( 'Changes have been saved.', 'woo_ce' );
 				woo_ce_admin_notice( $message );
 				break;
@@ -334,7 +348,7 @@ if( is_admin() ) {
 
 		global $wpdb, $export;
 
-		$title = apply_filters( 'woo_ce_template_header', '' );
+		$title = apply_filters( 'woo_ce_template_header', __( 'Store Exporter', 'woo_ce' ) );
 		woo_ce_template_header( $title );
 		woo_ce_support_donate();
 		$action = woo_get_action();
@@ -343,8 +357,9 @@ if( is_admin() ) {
 			case 'export':
 				$message = __( 'Chosen WooCommerce details have been exported from your store.', 'woo_ce' );
 				woo_ce_admin_notice( $message );
-				$output = '';
 				if( WOO_CE_DEBUG ) {
+					$output = '';
+					$troubleshooting_url = 'http://www.visser.com.au/documentation/store-exporter-deluxe/usage/';
 					if( false === ( $export_log = get_transient( WOO_CE_PREFIX . '_debug_log' ) ) ) {
 						$export_log = __( 'No export entries were found, please try again with different export filters.', 'woo_ce' );
 					} else {
@@ -352,13 +367,27 @@ if( is_admin() ) {
 						$export_log = base64_decode( $export_log );
 					}
 					$output = '
-<h3>' . __( 'Export Details', 'woo_ce' ) . '</h3>
-<textarea id="export_log">' . print_r( $export, true ) . '</textarea><hr />
-<h3>' . sprintf( __( 'Export Log: %s', 'woo_ce' ), $export->filename ) . '</h3>
-<textarea id="export_log">' . $export_log . '</textarea>
+<script>
+	$j(function() {
+		$j(\'#export_sheet\').CSVToTable(\'\', { startLine: 0 });
+	});
+</script>
+<h3>' . sprintf( __( 'Export Details: %s', 'woo_ce' ), $export->filename ) . '</h3>
+<p>' . __( 'This prints the $export global that contains the different export options and filters to help reproduce this on another instance of WordPress. Very useful for debugging blank or unexpected exports.', 'woo_ce' ) . '</p>
+<textarea id="export_log">' . print_r( $export, true ) . '</textarea>
+<hr />
+<h3>' . __( 'Export', 'woo_ce' ) . '</h3>
+<p>' . __( 'We use the <a href="http://code.google.com/p/jquerycsvtotable/" target="_blank"><em>CSV to Table plugin</em></a> to see first hand formatting errors or unexpected values within the export file.', 'woo_ce' ) . '</p>
+<div id="export_sheet" style="margin-bottom:1em;">' . $export_log . '</div>
+<p class="description">' . __( 'This jQuery plugin can fail with <code>\'Item count (#) does not match header count\'</code> notices which simply mean the number of headers detected does not match the number of cell contents.', 'woo_ce' ) . '</p>
+<hr />
+<h3>' . __( 'Export Log', 'woo_ce' ) . '</h3>
+<p>' . __( 'This prints the raw export contents and is helpful when the jQuery plugin above fails due to major formatting errors.', 'woo_ce' ) . '</p>
+<textarea id="export_log" wrap="off">' . $export_log . '</textarea>
+<hr />
 ';
+					echo $output;
 				}
-				echo $output;
 
 				woo_ce_manage_form();
 				break;

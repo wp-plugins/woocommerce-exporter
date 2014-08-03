@@ -25,6 +25,10 @@
 	width:100%;
 	height:200px;
 }
+.woocommerce_page_woo_ce #export_sheet table {
+	width:100%;
+}
+
 .woocommerce_page_woo_ce .separator {
 	border-bottom:1px solid #dfdfdf;
 }

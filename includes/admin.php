@@ -8,9 +8,9 @@ function woo_ce_admin_notice( $message = '', $priority = 'updated', $screen = ''
 		ob_start();
 		woo_ce_admin_notice_html( $message, $priority, $screen );
 		$output = ob_get_contents();
+		set_transient( WOO_CE_PREFIX . '_notice', base64_encode( $output ), MINUTE_IN_SECONDS );
 		ob_end_clean();
-		if( $output !== false )
-			add_action( 'admin_notices', $output );
+		add_action( 'admin_notices', 'woo_ce_admin_notice_print' );
 	}
 
 }
@@ -36,6 +36,17 @@ function woo_ce_admin_notice_html( $message = '', $priority = 'updated', $screen
 	<p><?php echo $message; ?></p>
 </div>
 <?php
+
+}
+
+// Grabs the WordPress transient that holds the admin notice and prints it
+function woo_ce_admin_notice_print() {
+
+	if( $output = get_transient( WOO_CE_PREFIX . '_notice' ) ) {
+		delete_transient( WOO_CE_PREFIX . '_notice' );
+		$output = base64_decode( $output );
+		echo $output;
+	}
 
 }
 
@@ -147,6 +158,7 @@ function woo_ce_tab_template( $tab = '' ) {
 	// Store Exporter Deluxe
 	$woo_cd_url = 'http://www.visser.com.au/woocommerce/plugins/exporter-deluxe/';
 	$woo_cd_link = sprintf( '<a href="%s" target="_blank">' . __( 'Store Exporter Deluxe', 'woo_ce' ) . '</a>', $woo_cd_url );
+
 	$troubleshooting_url = 'http://www.visser.com.au/documentation/store-exporter-deluxe/';
 
 	switch( $tab ) {
@@ -156,7 +168,7 @@ function woo_ce_tab_template( $tab = '' ) {
 			break;
 
 		case 'export':
-			$export_type = ( isset( $_POST['dataset'] ) ? $_POST['dataset'] : 'products' );
+			$export_type = ( isset( $_POST['dataset'] ) ? $_POST['dataset'] : woo_ce_get_option( 'last_export', 'products' ) );
 
 			$products = woo_ce_return_count( 'products' );
 			$categories = woo_ce_return_count( 'categories' );
@@ -167,39 +179,34 @@ function woo_ce_tab_template( $tab = '' ) {
 			$users = woo_ce_return_count( 'users' );
 			$coupons = woo_ce_return_count( 'coupons' );
 			$attributes = woo_ce_return_count( 'attributes' );
+			$subscriptions = woo_ce_return_count( 'subscriptions' );
 
 			if( $product_fields = woo_ce_get_product_fields() ) {
-				foreach( $product_fields as $key => $product_field ) {
-					if( !isset( $product_fields[$key]['disabled'] ) )
-						$product_fields[$key]['disabled'] = 0;
-				}
-				$args = array(
-					'hide_empty' => 1
-				);
-				$product_categories = woo_ce_get_product_categories( $args );
-				$args = array(
-					'hide_empty' => 1
-				);
-				$product_tags = woo_ce_get_product_tags( $args );
-				$product_statuses = get_post_statuses();
-				$product_statuses['trash'] = __( 'Trash', 'woo_ce' );
-				$product_types = woo_ce_get_product_types();
-				$product_orderby = woo_ce_get_option( 'product_orderby', 'ID' );
-				$product_order = woo_ce_get_option( 'product_order', 'DESC' );
+				foreach( $product_fields as $key => $product_field )
+					$product_fields[$key]['disabled'] = ( isset( $product_field['disabled'] ) ? $product_field['disabled'] : 0 );
 			}
 			if( $category_fields = woo_ce_get_category_fields() ) {
+				foreach( $category_fields as $key => $category_field )
+					$category_fields[$key]['disabled'] = ( isset( $category_field['disabled'] ) ? $category_field['disabled'] : 0 );
 				$category_orderby = woo_ce_get_option( 'category_orderby', 'ID' );
 				$category_order = woo_ce_get_option( 'category_order', 'DESC' );
 			}
 			if( $tag_fields = woo_ce_get_tag_fields() ) {
+				foreach( $tag_fields as $key => $tag_field )
+					$tag_fields[$key]['disabled'] = ( isset( $tag_field['disabled'] ) ? $tag_field['disabled'] : 0 );
 				$tag_orderby = woo_ce_get_option( 'tag_orderby', 'ID' );
 				$tag_order = woo_ce_get_option( 'tag_order', 'DESC' );
 			}
-			$brand_fields = woo_ce_get_brand_fields();
+			if( $brand_fields = woo_ce_get_brand_fields() ) {
+				foreach( $brand_fields as $key => $brand_field )
+					$brand_fields[$key]['disabled'] = ( isset( $brand_field['disabled'] ) ? $brand_field['disabled'] : 0 );
+			}
 			$order_fields = woo_ce_get_order_fields();
 			$customer_fields = woo_ce_get_customer_fields();
 			$user_fields = woo_ce_get_user_fields();
 			$coupon_fields = woo_ce_get_coupon_fields();
+			$subscription_fields = woo_ce_get_subscription_fields();
+			$attribute_fields = false;
 
 			// Export options
 			$upsell_formatting = woo_ce_get_option( 'upsell_formatting', 1 );
@@ -244,9 +251,24 @@ function woo_ce_tab_template( $tab = '' ) {
 			break;
 
 	}
-	if( $tab )
-		include_once( WOO_CE_PATH . 'templates/admin/tabs-' . $tab . '.php' );
-
+	if( $tab ) {
+		if( file_exists( WOO_CE_PATH . 'templates/admin/tabs-' . $tab . '.php' ) ) {
+			include_once( WOO_CE_PATH . 'templates/admin/tabs-' . $tab . '.php' );
+		} else {
+			$message = sprintf( __( 'We couldn\'t load the export template file <code>%s</code> within <code>%s</code>, this file should be present.', 'woo_ce' ), 'tabs-' . $tab . '.php', WOO_CE_PATH . 'templates/admin/...' );
+			woo_ce_admin_notice_html( $message, 'error' );
+			ob_start(); ?>
+<p><?php _e( 'You can see this error for one of a few common reasons', 'woo_ce' ); ?>:</p>
+<ul class="ul-disc">
+	<li><?php _e( 'WordPress was unable to create this file when the Plugin was installed or updated', 'woo_ce' ); ?></li>
+	<li><?php _e( 'The Plugin files have been recently changed and there has been a file conflict', 'woo_ce' ); ?></li>
+	<li><?php _e( 'The Plugin file has been locked and cannot be opened by WordPress', 'woo_ce' ); ?></li>
+</ul>
+<p><?php _e( 'Jump onto our website and download a fresh copy of this Plugin as it might be enough to fix this issue. If this persists get in touch with us.', 'woo_ce' ); ?></p>
+<?php
+			ob_end_flush();
+		}
+	}
 }
 
 // HTML template for header prompt on Store Exporter screen

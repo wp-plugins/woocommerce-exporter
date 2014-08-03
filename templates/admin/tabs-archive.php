@@ -3,9 +3,12 @@
 	<li><a href="<?php echo add_query_arg( 'filter', 'products' ); ?>"<?php woo_ce_archives_quicklink_current( 'products' ); ?>><?php _e( 'Products', 'woo_ce' ); ?> <span class="count">(<?php woo_ce_archives_quicklink_count( 'products' ); ?>)</span></a> |</li>
 	<li><a href="<?php echo add_query_arg( 'filter', 'categories' ); ?>"<?php woo_ce_archives_quicklink_current( 'categories' ); ?>><?php _e( 'Categories', 'woo_ce' ); ?> <span class="count">(<?php woo_ce_archives_quicklink_count( 'categories' ); ?>)</span></a> |</li>
 	<li><a href="<?php echo add_query_arg( 'filter', 'tags' ); ?>"<?php woo_ce_archives_quicklink_current( 'tags' ); ?>><?php _e( 'Tags', 'woo_ce' ); ?> <span class="count">(<?php woo_ce_archives_quicklink_count( 'tags' ); ?>)</span></a> |</li>
-	<li><a href="<?php echo add_query_arg( 'filter', 'orders' ); ?>"<?php woo_ce_archives_quicklink_current( 'orders' ); ?>><?php _e( 'Orders', 'woo_ce' ); ?> <span class="count">(<?php woo_ce_archives_quicklink_count( 'orders' ); ?>)</span></a> |</li>
-	<li><a href="<?php echo add_query_arg( 'filter', 'customers' ); ?>"<?php woo_ce_archives_quicklink_current( 'customers' ); ?>><?php _e( 'Customers', 'woo_ce' ); ?> <span class="count">(<?php woo_ce_archives_quicklink_count( 'customers' ); ?>)</span></a> |</li>
-	<li><a href="<?php echo add_query_arg( 'filter', 'coupons' ); ?>"<?php woo_ce_archives_quicklink_current( 'coupons' ); ?>><?php _e( 'Coupons', 'woo_ce' ); ?> <span class="count">(<?php woo_ce_archives_quicklink_count( 'coupons' ); ?>)</span></a></li>
+	<li><?php _e( 'Brands', 'woo_ce' ); ?> <span class="count">(<?php woo_ce_archives_quicklink_count( 'brands' ); ?>)</span> |</li>
+	<li><?php _e( 'Orders', 'woo_ce' ); ?> <span class="count">(<?php woo_ce_archives_quicklink_count( 'orders' ); ?>)</span> |</li>
+	<li><?php _e( 'Customers', 'woo_ce' ); ?> <span class="count">(<?php woo_ce_archives_quicklink_count( 'customers' ); ?>)</span> |</li>
+	<li><?php _e( 'Coupons', 'woo_ce' ); ?> <span class="count">(<?php woo_ce_archives_quicklink_count( 'coupons' ); ?>)</span> |</li>
+	<li><?php _e( 'Subscriptions', 'woo_ce' ); ?> <span class="count">(<?php woo_ce_archives_quicklink_count( 'subscriptions' ); ?>)</span></li>
+	<!-- <li><?php _e( 'Attributes', 'woo_ce' ); ?> <span class="count">(<?php woo_ce_archives_quicklink_count( 'attributes' ); ?>)</span></li> -->
 </ul>
 <!-- .subsubsub -->
 <br class="clear" />
@@ -63,4 +66,12 @@
 
 		</tbody>
 	</table>
+	<div class="tablenav bottom">
+		<div class="tablenav-pages one-page">
+			<span class="displaying-num"><?php printf( __( '%d items', 'woo_ce' ), woo_ce_archives_quicklink_count() ); ?></span>
+		</div>
+		<!-- .tablenav-pages -->
+		<br class="clear">
+	</div>
+	<!-- .tablenav -->
 </form>

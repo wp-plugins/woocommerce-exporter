@@ -23,7 +23,7 @@ $j(function() {
 	// Sortable export columns
 /*
 	if( $j.isFunction($j.fn.sortable) ) {
-		$j('#export-products table').sortable({
+		$j('table.ui-sortable').sortable({
 			items:'tr',
 			cursor:'move',
 			axis:'y',
@@ -41,13 +41,13 @@ $j(function() {
 			},
 			stop:function(event,ui){
 				ui.item.removeAttr('style');
-				field_row_indexes();
+				field_row_indexes(this);
 			}
 		});
 	
-		function field_row_indexes() {
-			jQuery('#export-products table tr').each(function(index, el){
-				jQuery('input.field_order', el).val( parseInt( jQuery(el).index('#export-products table tr') ) );
+		function field_row_indexes(obj) {
+			$j(obj).each(function(index, el){
+				$j('input.field_order', el).val( parseInt( $j(el).index(obj) ) );
 			});
 		};
 	}
@@ -62,10 +62,8 @@ $j(function() {
 		$j(this).closest('.postbox').find(':checkbox').attr('checked', false);
 	});
 
-	// Show Products as default export type
+	$j('.export-types').hide();
 	$j('.export-options').hide();
-	$j('#products').trigger('click');
-	$j('.product-options').show();
 
 	// Categories
 	$j('#export-products-filters-categories').hide();
@@ -91,9 +89,13 @@ $j(function() {
 	if( $j('#products-filters-type').attr('checked') ) {
 		$j('#export-products-filters-type').show();
 	}
+
 	$j('#export-categories').hide();
+
 	$j('#export-tags').hide();
+
 	$j('#export-brands').hide();
+
 	$j('#export-orders').hide();
 	$j('#export-orders-filters-status').hide();
 	if( $j('#orders-filters-status').attr('checked') ) {
@@ -103,6 +105,10 @@ $j(function() {
 	if( $j('#orders-filters-date').attr('checked') ) {
 		$j('#export-orders-filters-date').show();
 	}
+	$j('#export-orders-filters-customer').hide();
+	if( $j('#orders-filters-customer').attr('checked') ) {
+		$j('#export-orders-filters-customer').show();
+	}
 	$j('#export-orders-filters-user_role').hide();
 	if( $j('#orders-filters-user_role').attr('checked') ) {
 		$j('#export-orders-filters-user_role').show();
@@ -111,6 +117,7 @@ $j(function() {
 	if( $j('#orders-filters-coupon').attr('checked') ) {
 		$j('#export-orders-filters-coupon').show();
 	}
+
 	$j('#export-customers-filters-status').hide();
 	if( $j('#customers-filters-status').attr('checked') ) {
 		$j('#export-customers-filters-status').show();
@@ -118,6 +125,8 @@ $j(function() {
 	$j('#export-customers').hide();
 	$j('#export-users').hide();
 	$j('#export-coupons').hide();
+	$j('#export-subscriptions').hide();
+	$j('#export-attributes').hide();
 
 	$j('#products-filters-categories').click(function(){
 		$j('#export-products-filters-categories').toggle();
@@ -131,11 +140,15 @@ $j(function() {
 	$j('#products-filters-type').click(function(){
 		$j('#export-products-filters-type').toggle();
 	});
+
+	$j('#orders-filters-date').click(function(){
+		$j('#export-orders-filters-date').toggle();
+	});
 	$j('#orders-filters-status').click(function(){
 		$j('#export-orders-filters-status').toggle();
 	});
-	$j('#orders-filters-date').click(function(){
-		$j('#export-orders-filters-date').toggle();
+	$j('#orders-filters-customer').click(function(){
+		$j('#export-orders-filters-customer').toggle();
 	});
 	$j('#orders-filters-user_role').click(function(){
 		$j('#export-orders-filters-user_role').toggle();
@@ -143,6 +156,7 @@ $j(function() {
 	$j('#orders-filters-coupon').click(function(){
 		$j('#export-orders-filters-coupon').toggle();
 	});
+
 	$j('#customers-filters-status').click(function(){
 		$j('#export-customers-filters-status').toggle();
 	});
@@ -204,6 +218,20 @@ $j(function() {
 		$j('.export-options').hide();
 		$j('.coupon-options').show();
 	});
+	$j('#subscriptions').click(function(){
+		$j('.export-types').hide();
+		$j('#export-subscriptions').show();
+
+		$j('.export-options').hide();
+		$j('.subscription-options').show();
+	});
+	$j('#attributes').click(function(){
+		$j('.export-types').hide();
+		$j('#export-attributes').show();
+
+		$j('.export-options').hide();
+		$j('.attribute-options').show();
+	});
 
 	// Export button
 	$j('#export_products').click(function(){
@@ -230,16 +258,47 @@ $j(function() {
 	$j('#export_coupons').click(function(){
 		$j('input:radio[name=dataset]:nth(7)').attr('checked',true);
 	});
+	$j('#export_subscriptions').click(function(){
+		$j('input:radio[name=dataset]:nth(8)').attr('checked',true);
+	});
+	$j('#export_attributes').click(function(){
+		$j('input:radio[name=dataset]:nth(9)').attr('checked',true);
+	});
 
-	// This auto-selects the export type based on the link from the Overview screen
+	$j("#auto_type").change(function () {
+		var type = $j('select[name=auto_type]').val();
+		switch( type ) {
+
+			case 'orders':
+				var type = 'order';
+				break;
+
+		}
+		$j('.export-options').hide();
+		$j('.'+type+'-options').show();
+	});
+
 	$j(document).ready(function() {
+		// This auto-selects the export type based on the link from the Overview screen
 		var href = jQuery(location).attr('href');
+		// If this is the Export tab
 		if (href.toLowerCase().indexOf('tab=export') >= 0) {
+			// If the URL includes an in-line link
 			if (href.toLowerCase().indexOf('#') >= 0 ) {
-				var type = href.substr(href.indexOf("#") + 1)
+				var type = href.substr(href.indexOf("#") + 1);
 				var type = type.replace('export-','');
 				$j('#'+type).trigger('click');
+			} else {
+				// This auto-selects the last known export type based on stored WordPress option, defaults to Products
+				var type = $j('input:radio[name=dataset]:checked').val();
+				$j('#'+type).trigger('click');
 			}
+		} else if (href.toLowerCase().indexOf('tab=settings') >= 0) {
+			$j("#auto_type").trigger("change");
+		} else {
+			// This auto-selects the last known export type based on stored WordPress option, defaults to Products
+			var type = $j('input:radio[name=dataset]:checked').val();
+			$j('#'+type).trigger('click');
 		}
 	});
 

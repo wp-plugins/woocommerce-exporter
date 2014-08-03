@@ -3,8 +3,135 @@ if( is_admin() ) {
 
 	/* Start of: WordPress Administration */
 
+	// HTML template for Filter Products by Product Category widget on Store Exporter screen
+	function woo_ce_products_filter_by_product_category() {
+
+		$args = array(
+			'hide_empty' => 1
+		);
+		$product_categories = woo_ce_get_product_categories( $args );
+		ob_start(); ?>
+<p><label><input type="checkbox" id="products-filters-categories" /> <?php _e( 'Filter Products by Product Categories', 'woo_ce' ); ?></label></p>
+<div id="export-products-filters-categories" class="separator">
+<?php if( $product_categories ) { ?>
+	<ul>
+	<?php foreach( $product_categories as $product_category ) { ?>
+		<li><label><input type="checkbox" name="product_filter_categories[<?php echo $product_category->term_id; ?>]" value="<?php echo $product_category->term_id; ?>" title="<?php printf( __( 'Term ID: %d', 'woo_ce' ), $product_category->term_id ); ?>"<?php disabled( $product_category->count, 0 ); ?> /> <?php echo woo_ce_format_product_category_label( $product_category->name, $product_category->parent_name ); ?> (<?php echo $product_category->count; ?>)</label></li>
+	<?php } ?>
+	</ul>
+	<p class="description"><?php _e( 'Select the Product Categories you want to filter exported Products by. Default is to include all Product Categories.', 'woo_ce' ); ?></p>
+<?php } else { ?>
+	<p><?php _e( 'No Product Categories have been found.', 'woo_ce' ); ?></p>
+<?php } ?>
+</div>
+<!-- #export-products-filters-categories -->
+<?php
+		ob_end_flush();
+
+	}
+
+	// HTML template for Filter Products by Product Tag widget on Store Exporter screen
+	function woo_ce_products_filter_by_product_tag() {
+
+		$args = array(
+			'hide_empty' => 1
+		);
+		$product_tags = woo_ce_get_product_tags( $args );
+		ob_start(); ?>
+<p><label><input type="checkbox" id="products-filters-tags" /> <?php _e( 'Filter Products by Product Tags', 'woo_ce' ); ?></label></p>
+<div id="export-products-filters-tags" class="separator">
+<?php if( $product_tags ) { ?>
+	<ul>
+	<?php foreach( $product_tags as $product_tag ) { ?>
+		<li><label><input type="checkbox" name="product_filter_tags[<?php echo $product_tag->term_id; ?>]" value="<?php echo $product_tag->term_id; ?>" title="<?php printf( __( 'Term ID: %d', 'woo_ce' ), $product_tag->term_id ); ?>"<?php disabled( $product_tag->count, 0 ); ?> /> <?php echo $product_tag->name; ?> (<?php echo $product_tag->count; ?>)</label></li>
+	<?php } ?>
+	</ul>
+	<p class="description"><?php _e( 'Select the Product Tags you want to filter exported Products by. Default is to include all Product Tags.', 'woo_ce' ); ?></p>
+<?php } else { ?>
+	<p><?php _e( 'No Product Tags have been found.', 'woo_ce' ); ?></p>
+<?php } ?>
+</div>
+<!-- #export-products-filters-tags -->
+<?php
+		ob_end_flush();
+
+	}
+
+	// HTML template for Filter Products by Product Status widget on Store Exporter screen
+	function woo_ce_products_filter_by_product_status() {
+
+		$product_statuses = get_post_statuses();
+		if( !isset( $product_statuses['trash'] ) )
+			$product_statuses['trash'] = __( 'Trash', 'woo_ce' );
+		ob_start(); ?>
+<p><label><input type="checkbox" id="products-filters-status" /> <?php _e( 'Filter Products by Product Status', 'woo_ce' ); ?></label></p>
+<div id="export-products-filters-status" class="separator">
+	<ul>
+<?php foreach( $product_statuses as $key => $product_status ) { ?>
+		<li><label><input type="checkbox" name="product_filter_status[<?php echo $key; ?>]" value="<?php echo $key; ?>" /> <?php echo $product_status; ?></label></li>
+<?php } ?>
+	</ul>
+	<p class="description"><?php _e( 'Select the Product Status options you want to filter exported Products by. Default is to include all Product Status options.', 'woo_ce' ); ?></p>
+</div>
+<!-- #export-products-filters-status -->
+<?php
+		ob_end_flush();
+
+	}
+
+	// HTML template for Filter Products by Product Type widget on Store Exporter screen
+	function woo_ce_products_filter_by_product_type() {
+
+		$product_types = woo_ce_get_product_types();
+		ob_start(); ?>
+<p><label><input type="checkbox" id="products-filters-type" /> <?php _e( 'Filter Products by Product Type', 'woo_ce' ); ?></label></p>
+<div id="export-products-filters-type" class="separator">
+	<ul>
+<?php foreach( $product_types as $key => $product_type ) { ?>
+		<li><label><input type="checkbox" name="product_filter_type[<?php echo $key; ?>]" value="<?php echo $key; ?>" /> <?php echo woo_ce_format_product_type( $product_type['name'] ); ?> (<?php echo $product_type['count']; ?>)</label></li>
+<?php } ?>
+	</ul>
+	<p class="description"><?php _e( 'Select the Product Type\'s you want to filter exported Products by. Default is to include all Product Types and Variations.', 'woo_ce' ); ?></p>
+</div>
+<!-- #export-products-filters-type -->
+<?php
+		ob_end_flush();
+
+	}
+
+	// HTML template for Product Sorting widget on Store Exporter screen
+	function woo_ce_products_product_sorting() {
+
+		$product_orderby = woo_ce_get_option( 'product_orderby', 'ID' );
+		$product_order = woo_ce_get_option( 'product_order', 'DESC' );
+		ob_start(); ?>
+<p><label><?php _e( 'Product Sorting', 'woo_ce' ); ?></label></p>
+<div>
+	<select name="product_orderby">
+		<option value="ID"<?php selected( 'ID', $product_orderby ); ?>><?php _e( 'Product ID', 'woo_ce' ); ?></option>
+		<option value="title"<?php selected( 'title', $product_orderby ); ?>><?php _e( 'Product Name', 'woo_ce' ); ?></option>
+		<option value="date"<?php selected( 'date', $product_orderby ); ?>><?php _e( 'Date Created', 'woo_ce' ); ?></option>
+		<option value="modified"<?php selected( 'modified', $product_orderby ); ?>><?php _e( 'Date Modified', 'woo_ce' ); ?></option>
+		<option value="rand"<?php selected( 'rand', $product_orderby ); ?>><?php _e( 'Random', 'woo_ce' ); ?></option>
+		<option value="menu_order"<?php selected( 'menu_order', $product_orderby ); ?>><?php _e( 'Sort Order', 'woo_ce' ); ?></option>
+	</select>
+	<select name="product_order">
+		<option value="ASC"<?php selected( 'ASC', $product_order ); ?>><?php _e( 'Ascending', 'woo_ce' ); ?></option>
+		<option value="DESC"<?php selected( 'DESC', $product_order ); ?>><?php _e( 'Descending', 'woo_ce' ); ?></option>
+	</select>
+	<p class="description"><?php _e( 'Select the sorting of Products within the exported file. By default this is set to export Products by Product ID in Desending order.', 'woo_ce' ); ?></p>
+</div>
+<?php
+		ob_end_flush();
+
+	}
+
 	// HTML template for Custom Products widget on Store Exporter screen
-	function woo_ce_products_custom_fields() { ?>
+	function woo_ce_products_custom_fields() {
+
+		$troubleshooting_url = 'http://www.visser.com.au/documentation/store-exporter-deluxe/usage/';
+
+		ob_start(); ?>
 <form method="post" id="export-products-custom-fields" class="export-options product-options">
 	<div id="poststuff">
 
@@ -928,6 +1055,52 @@ function woo_ce_extend_product_fields( $fields ) {
 		);
 	}
 
+	// Cost of Goods - http://www.skyverge.com/product/woocommerce-cost-of-goods-tracking/
+	if( class_exists( 'WC_COG' ) ) {
+		$fields[] = array(
+			'name' => 'cost_of_goods',
+			'label' => __( 'Cost of Goods', 'woo_ce' ),
+			'disabled' => 1
+		);
+	}
+
+	// Per-Product Shipping - http://www.woothemes.com/products/per-product-shipping/
+	if( function_exists( 'woocommerce_per_product_shipping_init' ) ) {
+		$fields[] = array(
+			'name' => 'per_product_shipping',
+			'label' => __( 'Per-Product Shipping', 'woo_ce' ),
+			'disabled' => 1
+		);
+	}
+
+	// Advanced Custom Fields - http://www.advancedcustomfields.com
+	if( class_exists( 'acf' ) ) {
+		if( $custom_fields = woo_ce_get_acf_product_fields() ) {
+			foreach( $custom_fields as $custom_field ) {
+				$fields[] = array(
+					'name' => $custom_field['name'],
+					'label' => $custom_field['label'],
+					'disabled' => 1
+				);
+			}
+			unset( $custom_fields, $custom_field );
+		}
+	}
+
+	$custom_products = woo_ce_get_option( 'custom_products', '' );
+	if( !empty( $custom_products ) ) {
+		foreach( $custom_products as $custom_product ) {
+			if( !empty( $custom_product ) ) {
+				$fields[] = array(
+					'name' => $custom_product,
+					'label' => $custom_product,
+					'disabled' => 1
+				);
+			}
+		}
+		unset( $custom_products, $custom_product );
+	}
+
 	return $fields;
 
 }
@@ -1015,4 +1188,49 @@ function woo_ce_get_product_attributes() {
 	return $output;
 
 }
+
+function woo_ce_get_acf_product_fields() {
+
+	global $wpdb;
+
+	$post_type = 'acf';
+	$args = array(
+		'post_type' => $post_type,
+		'numberposts' => -1,
+		'no_found_rows' => false
+	);
+	if( $field_groups = get_posts( $args ) ) {
+		$fields = array();
+		$post_types = array( 'product', 'product_variation' );
+		foreach( $field_groups as $field_group ) {
+			$has_fields = false;
+			if( $rules = get_post_meta( $field_group->ID, 'rule' ) ) {
+				$size = count( $rules );
+				for( $i = 0; $i < $size; $i++ ) {
+					if( ( $rules[$i]['param'] == 'post_type' ) && ( $rules[$i]['operator'] == '==' ) && ( in_array( $rules[$i]['value'], $post_types ) ) ) {
+						$has_fields = true;
+						$i = $size;
+					}
+				}
+			}
+			unset( $rules );
+			if( $has_fields ) {
+				$custom_fields_sql = "SELECT `meta_value` FROM `" . $wpdb->postmeta . "` WHERE `post_id` = " . (int)$field_group->ID . " AND `meta_key` LIKE 'field_%'";
+				if( $custom_fields = $wpdb->get_col( $custom_fields_sql ) ) {
+					foreach( $custom_fields as $custom_field ) {
+						$custom_field = maybe_unserialize( $custom_field );
+						$fields[] = array(
+							'name' => $custom_field['name'],
+							'label' => $custom_field['label']
+						);
+					}
+				}
+				unset( $custom_fields, $custom_field );
+			}
+		}
+		return $fields;
+	}
+
+}
+
 ?>

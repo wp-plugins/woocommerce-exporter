@@ -6,9 +6,13 @@ if( is_admin() ) {
 	// HTML template for disabled Filter Customers by Order Status widget on Store Exporter screen
 	function woo_ce_customers_filter_by_status() {
 
+		$woo_cd_url = 'http://www.visser.com.au/woocommerce/plugins/exporter-deluxe/';
+		$woo_cd_link = sprintf( '<a href="%s" target="_blank">' . __( 'Store Exporter Deluxe', 'woo_ce' ) . '</a>', $woo_cd_url );
+
 		$order_statuses = woo_ce_get_order_statuses();
+
 		ob_start(); ?>
-<p><label><input type="checkbox" id="customers-filters-status" /> <?php _e( 'Filter Customers by Order Status', 'woo_ce' ); ?></label></p>
+<p><label><input type="checkbox" id="customers-filters-status" /> <?php _e( 'Filter Customers by Order Status', 'woo_ce' ); ?><span class="description"> - <?php printf( __( 'available in %s', 'woo_ce' ), $woo_cd_link ); ?></span></label></p>
 <div id="export-customers-filters-status" class="separator">
 	<ul>
 <?php foreach( $order_statuses as $order_status ) { ?>

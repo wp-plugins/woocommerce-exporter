@@ -7,6 +7,7 @@ include_once( WOO_CE_PATH . 'includes/orders.php' );
 include_once( WOO_CE_PATH . 'includes/customers.php' );
 include_once( WOO_CE_PATH . 'includes/users.php' );
 include_once( WOO_CE_PATH . 'includes/coupons.php' );
+include_once( WOO_CE_PATH . 'includes/subscriptions.php' );
 
 include_once( WOO_CE_PATH . 'includes/formatting.php' );
 
@@ -17,6 +18,7 @@ if( is_admin() ) {
 	/* Start of: WordPress Administration */
 
 	include_once( WOO_CE_PATH . 'includes/admin.php' );
+	include_once( WOO_CE_PATH . 'includes/settings.php' );
 
 	function woo_ce_detect_non_woo_install() {
 
@@ -130,7 +132,7 @@ if( is_admin() ) {
 	}
 
 	// Returns number of an Export type prior to export, used on Store Exporter screen
-	function woo_ce_return_count( $export_type ) {
+	function woo_ce_return_count( $export_type = '', $args = array() ) {
 
 		global $wpdb;
 
@@ -243,6 +245,25 @@ if( is_admin() ) {
 			case 'coupons':
 				$post_type = 'shop_coupon';
 				$count = wp_count_posts( $post_type );
+				break;
+
+			case 'subscriptions':
+				$count = 0;
+				// Check that WooCommerce Subscriptions exists
+				if( class_exists( 'WC_Subscriptions_Manager' ) ) {
+					// Check that the get_all_users_subscriptions() function exists
+					if( method_exists( 'WC_Subscriptions_Manager', 'get_all_users_subscriptions' ) ) {
+						if( $subscriptions = WC_Subscriptions_Manager::get_all_users_subscriptions() ) {
+							foreach( $subscriptions as $key => $user_subscription ) {
+								if( !empty( $user_subscription ) ) {
+									foreach( $user_subscription as $subscription )
+										$count++;
+								}
+							}
+							unset( $subscriptions, $subscription, $user_subscription );
+						}
+					}
+				}
 				break;
 
 		}
@@ -658,7 +679,7 @@ function woo_ce_export_dataset( $export_type = null, &$output = null ) {
 			}
 			$output = woo_ce_file_encoding( $output );
 		}
-		if( WOO_CE_DEBUG )
+		if( WOO_CE_DEBUG && !$export->cron )
 			set_transient( WOO_CE_PREFIX . '_debug_log', base64_encode( $output ), woo_ce_get_option( 'timeout', MINUTE_IN_SECONDS ) );
 		else
 			return $output;
