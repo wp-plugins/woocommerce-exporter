@@ -203,7 +203,10 @@ function woo_ce_tab_template( $tab = '' ) {
 			}
 			$order_fields = woo_ce_get_order_fields();
 			$customer_fields = woo_ce_get_customer_fields();
-			$user_fields = woo_ce_get_user_fields();
+			if( $user_fields = woo_ce_get_user_fields() ) {
+				foreach( $user_fields as $key => $user_field )
+					$user_fields[$key]['disabled'] = ( isset( $user_field['disabled'] ) ? $user_field['disabled'] : 0 );
+			}
 			$coupon_fields = woo_ce_get_coupon_fields();
 			$subscription_fields = woo_ce_get_subscription_fields();
 			$attribute_fields = false;
@@ -228,7 +231,7 @@ function woo_ce_tab_template( $tab = '' ) {
 
 		case 'settings':
 			$export_filename = woo_ce_get_option( 'export_filename', 'woo-export_%dataset%-%date%.csv' );
-			$delete_csv = woo_ce_get_option( 'delete_csv', 0 );
+			$delete_file = woo_ce_get_option( 'delete_file', 0 );
 			$timeout = woo_ce_get_option( 'timeout', 0 );
 			$encoding = woo_ce_get_option( 'encoding', 'UTF-8' );
 			$bom = woo_ce_get_option( 'bom', 1 );

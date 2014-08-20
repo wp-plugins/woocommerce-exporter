@@ -47,7 +47,6 @@ function woo_ce_display_time_elapsed( $from, $to ) {
 
 }
 
-// @mod - Compare to WP e-Commerce for field escaping, remove if not required
 // This function escapes all cells in 'Excel' CSV escape formatting of a CSV file, also converts HTML entities to plain-text
 function woo_ce_escape_csv_value( $string = '', $delimiter = ',', $format = 'all' ) {
 

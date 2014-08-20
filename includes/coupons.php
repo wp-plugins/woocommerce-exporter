@@ -154,9 +154,8 @@ function woo_ce_get_coupons( $args = array() ) {
 	$coupons = array();
 	$coupon_ids = new WP_Query( $args );
 	if( $coupon_ids->posts ) {
-		foreach( $coupon_ids->posts as $coupon_id ) {
+		foreach( $coupon_ids->posts as $coupon_id )
 			$coupons[] = $coupon_id;
-		}
 		unset( $coupon_ids, $coupon_id );
 	}
 	return $coupons;

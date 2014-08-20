@@ -53,7 +53,7 @@ function woo_ce_get_tag_fields( $format = 'full' ) {
 		$remember = maybe_unserialize( $remember );
 		$size = count( $fields );
 		for( $i = 0; $i < $size; $i++ ) {
-			$fields[$i]['disabled'] = 0;
+			$fields[$i]['disabled'] = ( isset( $fields[$i]['disabled'] ) ? $fields[$i]['disabled'] : 0 );
 			$fields[$i]['default'] = 1;
 			if( !array_key_exists( $fields[$i]['name'], $remember ) )
 				$fields[$i]['default'] = 0;

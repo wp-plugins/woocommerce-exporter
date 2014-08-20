@@ -26,7 +26,6 @@
 		</li>
 		<li>
 			<a href="<?php echo add_query_arg( 'tab', 'export' ); ?>#export-users"><?php _e( 'Export Users', 'woo_ce' ); ?></a>
-			<span class="description">(<?php printf( __( 'available in %s', 'woo_ce' ), $woo_cd_link ); ?>)</span>
 		</li>
 		<li>
 			<a href="<?php echo add_query_arg( 'tab', 'export' ); ?>#export-coupons"><?php _e( 'Export Coupons', 'woo_ce' ); ?></a>
@@ -48,7 +47,7 @@
 	<p><?php _e( 'Download copies of prior store exports.', 'woo_ce' ); ?></p>
 
 	<h3><a href="<?php echo add_query_arg( 'tab', 'settings' ); ?>"><?php _e( 'Settings', 'woo_ce' ); ?></a></h3>
-	<p><?php _e( 'Manage CSV export options from a single detailed screen.', 'woo_ce' ); ?></p>
+	<p><?php _e( 'Manage export options from a single detailed screen.', 'woo_ce' ); ?></p>
 
 	<h3><a href="<?php echo add_query_arg( 'tab', 'tools' ); ?>"><?php _e( 'Tools', 'woo_ce' ); ?></a></h3>
 	<p><?php _e( 'Export tools for WooCommerce.', 'woo_ce' ); ?></p>
@@ -82,6 +81,7 @@
 		<li><?php _e( 'CRON export engine', 'woo_ce' ); ?></li>
 		<li><?php _e( 'Schedule automatic exports with filtering options', 'woo_ce' ); ?></li>
 		<li><?php _e( 'Export to XML file', 'woo_ce' ); ?></li>
+		<li><?php _e( 'Export to Excel 2007 (XLS) file', 'woo_ce' ); ?></li>
 		<li><?php _e( 'Premium Support', 'woo_ce' ); ?></li>
 	</ul>
 	<p>

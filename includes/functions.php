@@ -287,7 +287,7 @@ if( is_admin() ) {
 
 	}
 
-	// In-line display of CSV file and export details when viewed via WordPress Media screen
+	// In-line display of export file and export details when viewed via WordPress Media screen
 	function woo_ce_read_csv_file( $post = null ) {
 
 		if( !$post ) {
@@ -298,7 +298,7 @@ if( is_admin() ) {
 		if( $post->post_type != 'attachment' )
 			return false;
 
-		if( $post->post_mime_type != 'text/csv' )
+		if( !in_array( $post->post_mime_type, array( 'text/csv', 'xml/application', 'application/vnd.ms-excel' ) ) )
 			return false;
 
 		$filename = $post->post_name;
@@ -331,6 +331,7 @@ if( is_admin() ) {
 		$data_memory_start = get_post_meta( $post->ID, '_woo_data_memory_start', true );
 		$data_memory_end = get_post_meta( $post->ID, '_woo_data_memory_end', true );
 		$idle_memory_end = get_post_meta( $post->ID, '_woo_idle_memory_end', true );
+
 		include_once( WOO_CE_PATH . 'templates/admin/media-export_details.php' );
 
 	}
@@ -343,6 +344,7 @@ if( is_admin() ) {
 		$export_types['products'] = __( 'Products', 'woo_ce' );
 		$export_types['categories'] = __( 'Categories', 'woo_ce' );
 		$export_types['tags'] = __( 'Tags', 'woo_ce' );
+		$export_types['users'] = __( 'Users', 'woo_ce' );
 		$export_types = apply_filters( 'woo_ce_export_types', $export_types );
 		return $export_types;
 
@@ -376,7 +378,8 @@ if( is_admin() ) {
 	</th>
 	<td>
 		<label><input type="radio" name="export_format" value="csv"<?php checked( 'csv', 'csv' ); ?> /> <?php _e( 'CSV', 'woo_ce' ); ?> <span class="description"><?php _e( '(Comma separated values)', 'woo_ce' ); ?></span></label><br />
-		<label><input type="radio" name="export_format" value="xml" disabled="disabled" /> <?php _e( 'XML', 'woo_ce' ); ?> <span class="description"><?php _e( '(EXtensible Markup Language)', 'woo_ce' ); ?> <span class="description"> - <?php printf( __( 'available in %s', 'woo_ce' ), $woo_cd_link ); ?></span></label>
+		<label><input type="radio" name="export_format" value="xml" disabled="disabled" /> <?php _e( 'XML', 'woo_ce' ); ?> <span class="description"><?php _e( '(EXtensible Markup Language)', 'woo_ce' ); ?> <span class="description"> - <?php printf( __( 'available in %s', 'woo_ce' ), $woo_cd_link ); ?></span></label><br />
+		<label><input type="radio" name="export_format" value="xls" disabled="disabled" /> <?php _e( 'Excel (XLS)', 'woo_ce' ); ?> <span class="description"><?php _e( '(Microsoft Excel 2007)', 'woo_ce' ); ?> <span class="description"> - <?php printf( __( 'available in %s', 'woo_ce' ), $woo_cd_link ); ?></span></label>
 		<p class="description"><?php _e( 'Adjust the export format to generate different export file formats.', 'woo_ce' ); ?></p>
 	</td>
 </tr>
@@ -411,7 +414,7 @@ if( is_admin() ) {
 		$meta_key = '_woo_export_type';
 		$args = array(
 			'post_type' => $post_type,
-			'post_mime_type' => 'text/csv',
+			'post_mime_type' => array( 'text/csv', 'xml/application', 'application/vnd.ms-excel' ),
 			'meta_key' => $meta_key,
 			'meta_value' => null,
 			'posts_per_page' => -1,
@@ -667,17 +670,63 @@ function woo_ce_export_dataset( $export_type = null, &$output = null ) {
 			$export->data_memory_end = woo_ce_current_memory_usage();
 			break;
 
+		// Users
+		case 'users':
+			$fields = woo_ce_get_user_fields( 'summary' );
+			if( $export->fields = array_intersect_assoc( $fields, (array)$export->fields ) ) {
+				foreach( $export->fields as $key => $field )
+					$export->columns[] = woo_ce_get_user_field( $key );
+			}
+			$export->data_memory_start = woo_ce_current_memory_usage();
+			if( $users = woo_ce_get_users() ) {
+				$export->total_columns = $size = count( $export->columns );
+				if( $export->export_format == 'csv' ) {
+					$i = 0;
+					foreach( $export->columns as $column ) {
+						if( $i == ( $size - 1 ) )
+							$output .= woo_ce_escape_csv_value( $column, $export->delimiter, $export->escape_formatting ) . "\n";
+						else
+							$output .= woo_ce_escape_csv_value( $column, $export->delimiter, $export->escape_formatting ) . $separator;
+						$i++;
+					}
+				}
+				if( !empty( $export->fields ) ) {
+					foreach( $users as $user ) {
+
+						if( $export->export_format == 'xml' )
+							$child = $output->addChild( substr( $export->type, 0, -1 ) );
+
+						$user = woo_ce_get_user_data( $user, $export->args );
+
+						foreach( $export->fields as $key => $field ) {
+							if( isset( $user->$key ) ) {
+								if( $export->export_format == 'csv' )
+									$output .= woo_ce_escape_csv_value( $user->$key, $export->delimiter, $export->escape_formatting );
+								else if( $export->export_format == 'xml' )
+									$child->addChild( $key, htmlspecialchars( $user->$key ) );
+							}
+							if( $export->export_format == 'csv' )
+								$output .= $separator;
+						}
+						if( $export->export_format == 'csv' )
+							$output = substr( $output, 0, -1 ) . "\n";
+
+					}
+				}
+				unset( $users, $user );
+			}
+			$export->data_memory_end = woo_ce_current_memory_usage();
+			break;
+
 	}
 	// Export completed successfully
 	delete_transient( WOO_CE_PREFIX . '_running' );
 	// Check that the export file is populated, export columns have been assigned and rows counted
 	if( $output && $export->total_rows && $export->total_columns ) {
 		if( $export->export_format == 'csv' ) {
-			if( $export->bom && WOO_CE_DEBUG == false ) {
-				// $output .= chr(239) . chr(187) . chr(191) . '';
-				$output = "\xEF\xBB\xBF" . $output;
-			}
 			$output = woo_ce_file_encoding( $output );
+			if( $export->bom && WOO_CE_DEBUG == false )
+				$output = "\xEF\xBB\xBF" . $output;
 		}
 		if( WOO_CE_DEBUG && !$export->cron )
 			set_transient( WOO_CE_PREFIX . '_debug_log', base64_encode( $output ), woo_ce_get_option( 'timeout', MINUTE_IN_SECONDS ) );
@@ -690,7 +739,6 @@ function woo_ce_export_dataset( $export_type = null, &$output = null ) {
 // Returns the Post object of the export file saved as an attachment to the WordPress Media library
 function woo_ce_save_file_attachment( $filename = '', $post_mime_type = 'text/csv' ) {
 
-	$output = 0;
 	if( !empty( $filename ) ) {
 		$post_type = 'woo-export';
 		$args = array(
@@ -698,10 +746,12 @@ function woo_ce_save_file_attachment( $filename = '', $post_mime_type = 'text/cs
 			'post_type' => $post_type,
 			'post_mime_type' => $post_mime_type
 		);
-		if( $post_ID = wp_insert_attachment( $args, $filename ) )
-			$output = $post_ID;
+		$post_ID = wp_insert_attachment( $args, $filename );
+		if( is_wp_error( $post_ID ) )
+			error_log( sprintf( '[store-exporter-deluxe] save_file_attachment() - $s: %s', $filename, $result->get_error_message() ) );
+		else
+			return $post_ID;
 	}
-	return $output;
 
 }
 

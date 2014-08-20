@@ -6,6 +6,7 @@
 	<li><?php _e( 'Brands', 'woo_ce' ); ?> <span class="count">(<?php woo_ce_archives_quicklink_count( 'brands' ); ?>)</span> |</li>
 	<li><?php _e( 'Orders', 'woo_ce' ); ?> <span class="count">(<?php woo_ce_archives_quicklink_count( 'orders' ); ?>)</span> |</li>
 	<li><?php _e( 'Customers', 'woo_ce' ); ?> <span class="count">(<?php woo_ce_archives_quicklink_count( 'customers' ); ?>)</span> |</li>
+	<li><a href="<?php echo add_query_arg( 'filter', 'users' ); ?>"<?php woo_ce_archives_quicklink_current( 'users' ); ?>><?php _e( 'Users', 'woo_ce' ); ?> <span class="count">(<?php woo_ce_archives_quicklink_count( 'users' ); ?>)</span></a> |</li>
 	<li><?php _e( 'Coupons', 'woo_ce' ); ?> <span class="count">(<?php woo_ce_archives_quicklink_count( 'coupons' ); ?>)</span> |</li>
 	<li><?php _e( 'Subscriptions', 'woo_ce' ); ?> <span class="count">(<?php woo_ce_archives_quicklink_count( 'subscriptions' ); ?>)</span></li>
 	<!-- <li><?php _e( 'Attributes', 'woo_ce' ); ?> <span class="count">(<?php woo_ce_archives_quicklink_count( 'attributes' ); ?>)</span></li> -->

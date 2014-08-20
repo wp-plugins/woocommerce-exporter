@@ -129,6 +129,9 @@ if( is_admin() ) {
 	// HTML template for Custom Products widget on Store Exporter screen
 	function woo_ce_products_custom_fields() {
 
+		if( $custom_products = woo_ce_get_option( 'custom_products', '' ) )
+			$custom_products = implode( "\n", $custom_products );
+
 		$troubleshooting_url = 'http://www.visser.com.au/documentation/store-exporter-deluxe/usage/';
 
 		ob_start(); ?>
@@ -146,14 +149,14 @@ if( is_admin() ) {
 							<label><?php _e( 'Product meta', 'woo_ce' ); ?></label>
 						</th>
 						<td>
-							<textarea name="custom_products" rows="5" cols="70" disabled="disabled">-</textarea>
-							<p class="description"><?php _e( 'Include additional custom Product meta in your exported CSV by adding each custom Product meta name to a new line above.<br />For example: <code>Customer UA, Customer IP Address</code>', 'woo_ce' ); ?></p>
+							<textarea name="custom_products" rows="5" cols="70"><?php echo $custom_products; ?></textarea>
+							<p class="description"><?php _e( 'Include additional custom Product meta in your export file by adding each custom Product meta name to a new line above.<br />For example: <code>Customer UA, Customer IP Address</code>', 'woo_ce' ); ?></p>
 						</td>
 					</tr>
 
 				</table>
 				<p class="submit">
-					<input type="submit" value="<?php _e( 'Save Custom Fields', 'woo_ce' ); ?>" class="button button-disabled" />
+					<input type="submit" value="<?php _e( 'Save Custom Fields', 'woo_ce' ); ?>" class="button-primary" />
 				</p>
 				<p class="description"><?php printf( __( 'For more information on custom Product meta consult our <a href="%s" target="_blank">online documentation</a>.', 'woo_ce' ), $troubleshooting_url ); ?></p>
 			</div>
@@ -339,7 +342,6 @@ function woo_ce_get_product_data( $product_id = 0, $args = array() ) {
 	$product->quantity = get_post_meta( $product->ID, '_stock', true );
 	$product->stock_status = woo_ce_format_stock_status( get_post_meta( $product->ID, '_stock_status', true ), $product->quantity );
 	$product->image = woo_ce_get_product_assoc_featured_image( $product->ID );
-	$product->product_gallery = woo_ce_get_product_assoc_product_gallery( $product->ID );
 	$product->tax_status = woo_ce_format_tax_status( get_post_meta( $product->ID, '_tax_status', true ) );
 	$product->tax_class = woo_ce_format_tax_class( get_post_meta( $product->ID, '_tax_class', true ) );
 	$product->product_url = get_post_meta( $product->ID, '_product_url', true );
@@ -356,15 +358,20 @@ function woo_ce_get_product_data( $product_id = 0, $args = array() ) {
 	// Attributes
 	if( $attributes = woo_ce_get_product_attributes() ) {
 		if( $product->post_type == 'product_variation' ) {
-			foreach( $attributes as $attribute ) {
+			foreach( $attributes as $attribute )
 				$product->{'attribute_' . $attribute->attribute_name} = get_post_meta( $product->ID, sprintf( 'attribute_pa_%s', $attribute->attribute_name ), true );
-			}
 		} else {
 			$product->attributes = maybe_unserialize( get_post_meta( $product->ID, '_product_attributes', true ) );
 			if( !empty( $product->attributes ) ) {
+				// Check for taxonomy-based attributes
 				foreach( $attributes as $attribute ) {
 					if( isset( $product->attributes['pa_' . $attribute->attribute_name] ) )
 						$product->{'attribute_' . $attribute->attribute_name} = woo_ce_get_product_assoc_attributes( $product->ID, $product->attributes['pa_' . $attribute->attribute_name] );
+				}
+				// Check for per-Product attributes (custom)
+				foreach( $product->attributes as $key => $attribute ) {
+					if( $attribute['is_taxonomy'] == 0 )
+						$product->{'attribute_' . $key} = $attribute['value'];
 				}
 			}
 		}
@@ -502,20 +509,6 @@ function woo_ce_get_product_assoc_featured_image( $product_id = 0 ) {
 			$output = wp_get_attachment_url( $thumbnail_id );
 	}
 	return $output;
-
-}
-
-// Returns the Product Galleries associated to a specific Product
-function woo_ce_get_product_assoc_product_gallery( $product_id = 0 ) {
-
-	global $export;
-
-	if( $product_id ) {
-		if( $images = get_post_meta( $product_id, '_product_image_gallery', true ) ) {
-			$output = str_replace( ',', $export->category_separator, $images );
-			return $output;
-		}
-	}
 
 }
 
@@ -773,7 +766,8 @@ function woo_ce_get_product_fields( $format = 'full' ) {
 	);
 	$fields[] = array(
 		'name' => 'product_gallery',
-		'label' => __( 'Product Gallery', 'woo_ce' )
+		'label' => __( 'Product Gallery', 'woo_ce' ),
+		'disabled' => 1
 	);
 	$fields[] = array(
 		'name' => 'tax_status',
@@ -866,7 +860,7 @@ function woo_ce_get_product_fields( $format = 'full' ) {
 		$remember = maybe_unserialize( $remember );
 		$size = count( $fields );
 		for( $i = 0; $i < $size; $i++ ) {
-			$fields[$i]['disabled'] = 0;
+			$fields[$i]['disabled'] = ( isset( $fields[$i]['disabled'] ) ? $fields[$i]['disabled'] : 0 );
 			$fields[$i]['default'] = 1;
 			if( !array_key_exists( $fields[$i]['name'], $remember ) )
 				$fields[$i]['default'] = 0;
@@ -1093,8 +1087,7 @@ function woo_ce_extend_product_fields( $fields ) {
 			if( !empty( $custom_product ) ) {
 				$fields[] = array(
 					'name' => $custom_product,
-					'label' => $custom_product,
-					'disabled' => 1
+					'label' => $custom_product
 				);
 			}
 		}
@@ -1173,7 +1166,7 @@ function woo_ce_get_product_type_variation_count() {
 
 }
 
-// Returns a list of WooCommerce Product Categories to export process
+// Returns a list of WooCommerce Product Attributes to export process
 function woo_ce_get_product_attributes() {
 
 	global $wpdb;
@@ -1233,4 +1226,19 @@ function woo_ce_get_acf_product_fields() {
 
 }
 
+function woo_ce_extend_product_item( $product, $product_id ) {
+
+	$custom_products = woo_ce_get_option( 'custom_products', '' );
+	if( !empty( $custom_products ) ) {
+		foreach( $custom_products as $custom_product ) {
+			// Check that the custom Product name is filled and it hasn't previously been set
+			if( !empty( $custom_product ) && !isset( $product->{$custom_product} ) )
+				$product->{$custom_product} = get_post_meta( $product->ID, $custom_product, true );
+		}
+	}
+
+	return $product;
+
+}
+add_filter( 'woo_ce_product_item', 'woo_ce_extend_product_item', 10, 2 );
 ?>

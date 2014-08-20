@@ -4,7 +4,7 @@
 	<?php do_action( 'woo_ce_export_quicklinks' ); ?>
 </ul>
 <br class="clear" />
-<p><?php _e( 'Select an export type from the list below to export entries. Once you have selected an export type you may select the fields you would like to export and optional filters available for each export type. When you click the export button below, Store Exporter will create a CSV file for you to save to your computer.', 'woo_ce' ); ?></p>
+<p><?php _e( 'Select an export type from the list below to export entries. Once you have selected an export type you may select the fields you would like to export and optional filters available for each export type. When you click the export button below, Store Exporter will create an export file for you to save to your computer.', 'woo_ce' ); ?></p>
 <form method="post" action="<?php echo add_query_arg( array( 'failed' => null, 'empty' => null, 'message' => null ) ); ?>" id="postform">
 	<div id="poststuff">
 
@@ -84,7 +84,6 @@
 						</th>
 						<td>
 							<span class="description">(<?php echo $users; ?>)</span>
-							<span class="description"> - <?php printf( __( 'available in %s', 'woo_ce' ), $woo_cd_link ); ?></span>
 						</td>
 					</tr>
 
@@ -144,6 +143,7 @@
 								<label>
 									<input type="checkbox" name="product_fields[<?php echo $product_field['name']; ?>]" class="product_field"<?php ( isset( $product_field['default'] ) ? checked( $product_field['default'], 1 ) : '' ); ?><?php disabled( $product_field['disabled'], 1 ); ?> />
 									<?php echo $product_field['label']; ?>
+									<?php if( $product_field['disabled'] ) { ?><span class="description"> - <?php printf( __( 'available in %s', 'woo_ce' ), $woo_cd_link ); ?></span><?php } ?>
 									<input type="hidden" name="product_fields_order[<?php echo $product_field['name']; ?>]" class="field_order" value="" />
 								</label>
 							</td>
@@ -485,8 +485,9 @@
 						<tr>
 							<td>
 								<label>
-									<input type="checkbox" name="user_fields[<?php echo $user_field['name']; ?>]" class="user_field"<?php ( isset( $user_field['default'] ) ? checked( $user_field['default'], 1 ) : '' ); ?> disabled="disabled" />
+									<input type="checkbox" name="user_fields[<?php echo $user_field['name']; ?>]" class="user_field"<?php ( isset( $user_field['default'] ) ? checked( $user_field['default'], 1 ) : '' ); ?><?php disabled( $user_field['disabled'], 1 ); ?> />
 									<?php echo $user_field['label']; ?>
+									<?php if( $user_field['disabled'] ) { ?><span class="description"> - <?php printf( __( 'available in %s', 'woo_ce' ), $woo_cd_link ); ?></span><?php } ?>
 								</label>
 							</td>
 						</tr>
@@ -494,7 +495,7 @@
 		<?php } ?>
 					</table>
 					<p class="submit">
-						<input type="button" class="button button-disabled" value="<?php _e( 'Export Users', 'woo_ce' ); ?>" />
+						<input type="submit" id="export_users" class="button-primary" value="<?php _e( 'Export Users', 'woo_ce' ); ?>" />
 					</p>
 					<p class="description"><?php _e( 'Can\'t find a particular User field in the above export list?', 'woo_ce' ); ?> <a href="<?php echo $troubleshooting_url; ?>" target="_blank"><?php _e( 'Get in touch', 'woo_ce' ); ?></a>.</p>
 	<?php } else { ?>

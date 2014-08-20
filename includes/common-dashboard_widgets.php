@@ -3,7 +3,7 @@
 
 Filename: common-dashboard_widgets.php
 Description: common-dashboard_widgets.php loads commonly access Dashboard widgets across the Visser Labs suite.
-Version: 1.1
+Version: 1.3
 
 */
 

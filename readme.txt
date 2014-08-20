@@ -2,14 +2,14 @@
 
 Contributors: visser
 Donate link: http://www.visser.com.au/#donations
-Tags: e-commerce, woocommerce, shop, cart, ecommerce, export, csv, xml, customers, products, sales, orders, coupons, users, attributes, subscriptions
+Tags: e-commerce, woocommerce, shop, cart, ecommerce, export, csv, xml, xls, excel, customers, products, sales, orders, coupons, users, attributes, subscriptions
 Requires at least: 2.9.2
-Tested up to: 3.9.1
-Stable tag: 1.7.4
+Tested up to: 3.9.2
+Stable tag: 1.7.5
 
 == Description ==
 
-Export store details out of WooCommerce into simple formatted files (e.g. CSV, XML, TXT, etc.).
+Export store details out of WooCommerce into simple formatted files (e.g. CSV, XML, XLS, etc.).
 
 Features include:
 
@@ -27,7 +27,7 @@ Features include:
 * Export Orders by Coupon Code (**)
 * Export Customers (**)
 * Export Customers by Order Status (**)
-* Export Users (**)
+* Export Users
 * Export Coupons (**)
 * Export Subscriptions (**)
 * Export Attributes (**)
@@ -36,6 +36,7 @@ Features include:
 * Works with WordPress Multisite
 * Export to CSV file
 * Export to XML file (**)
+* Export to Excel 2007 file (**)
 * Supports external CRON commands (**)
 * Supports scheduled exports (**)
 
@@ -79,6 +80,14 @@ http://www.visser.com.au/woocommerce/forums/
 7. Download achived copies of previous exports
 
 == Changelog ==
+
+= 1.7.5 =
+* Fixed: Custom Product meta not working
+* Changed: Moved Product Gallery support to Pro
+* Changed: Moved Default e-mail recipient to General Settings
+* Changed: Moved Default remote URL POST to General Settings
+* Added: Export Users type in basic Store Exporter
+* Fixed: Add missing WordPress options for Plugin if not present on activation
 
 = 1.7.4 =
 * Added: Subscriptions export type

@@ -267,7 +267,7 @@ if( is_admin() ) {
 						</th>
 						<td>
 							<textarea name="custom_orders" rows="5" cols="70" disabled="disabled">-</textarea>
-							<p class="description"><?php _e( 'Include additional custom Order meta in your exported CSV by adding each custom Order meta name to a new line above.<br />For example: <code>Customer UA, Customer IP Address</code>', 'woo_ce' ); ?></p>
+							<p class="description"><?php _e( 'Include additional custom Order meta in your export file by adding each custom Order meta name to a new line above.<br />For example: <code>Customer UA, Customer IP Address</code>', 'woo_ce' ); ?></p>
 						</td>
 					</tr>
 
@@ -277,7 +277,7 @@ if( is_admin() ) {
 						</th>
 						<td>
 							<textarea name="custom_order_items" rows="5" cols="70" disabled="disabled">-</textarea>
-							<p class="description"><?php _e( 'Include additional custom Order Item meta in your exported CSV by adding each custom Order Item meta name to a new line above.<br />For example: <code>Personalized Message</code>.', 'woo_ce' ); ?></p>
+							<p class="description"><?php _e( 'Include additional custom Order Item meta in your export file by adding each custom Order Item meta name to a new line above.<br />For example: <code>Personalized Message</code>.', 'woo_ce' ); ?></p>
 						</td>
 					</tr>
 
@@ -583,6 +583,11 @@ function woo_ce_get_order_fields( $format = 'full' ) {
 		'name' => 'order_items_total_weight',
 		'label' => __( 'Order Items: Total Weight', 'woo_ce' )
 	);
+	$fields[] = array(
+		'name' => 'order_items_stock',
+		'label' => __( 'Order Items: Stock', 'woo_ce' )
+	);
+
 /*
 	$fields[] = array(
 		'name' => '',
@@ -640,11 +645,27 @@ function woo_ce_extend_order_fields( $fields = array() ) {
 		);
 	}
 
-	// WooCommerce Print Invoice & Delivery Note - https://github.com/piffpaffpuff/woocommerce-delivery-notes
+	// WooCommerce Print Invoice & Delivery Note - https://wordpress.org/plugins/woocommerce-delivery-notes/
 	if( class_exists( 'WooCommerce_Delivery_Notes' ) ) {
 		$fields[] = array(
 			'name' => 'invoice_number',
 			'label' => __( 'Invoice Number', 'woo_ce' )
+		);
+		$fields[] = array(
+			'name' => 'invoice_date',
+			'label' => __( 'Invoice Date', 'woo_ce' )
+		);
+	}
+
+	// WooCommerce PDF Invoices & Packing Slips - http://www.wpovernight.com
+	if( class_exists( 'WooCommerce_PDF_Invoices' ) ) {
+		$fields[] = array(
+			'name' => 'pdf_invoice_number',
+			'label' => __( 'PDF Invoice Number', 'woo_ce' )
+		);
+		$fields[] = array(
+			'name' => 'pdf_invoice_date',
+			'label' => __( 'PDF Invoice Date', 'woo_ce' )
 		);
 	}
 
@@ -664,6 +685,37 @@ function woo_ce_extend_order_fields( $fields = array() ) {
 				unset( $buttons, $button );
 			}
 		}
+		unset( $options );
+	}
+
+	// Poor Guys Swiss Knife - http://wordpress.org/plugins/woocommerce-poor-guys-swiss-knife/
+	if( function_exists( 'wcpgsk_init' ) ) {
+		$options = get_option( 'wcpgsk_settings' );
+		$billing_fields = ( isset( $options['woofields']['billing'] ) ? $options['woofields']['billing'] : array() );
+		$shipping_fields = ( isset( $options['woofields']['shipping'] ) ? $options['woofields']['shipping'] : array() );
+
+		// Custom billing fields
+		if( !empty( $billing_fields ) ) {
+			foreach( $billing_fields as $key => $billing_field ) {
+				$fields[] = array(
+					'name' => $key,
+					'label' => $options['woofields']['label_' . $key]
+				);
+			}
+			unset( $billing_fields, $billing_field );
+		}
+
+		// Custom shipping fields
+		if( !empty( $shipping_fields ) ) {
+			foreach( $shipping_fields as $key => $shipping_field ) {
+				$fields[] = array(
+					'name' => $key,
+					'label' => $options['woofields']['label_' . $key]
+				);
+			}
+			unset( $shipping_fields, $shipping_field );
+		}
+
 		unset( $options );
 	}
 

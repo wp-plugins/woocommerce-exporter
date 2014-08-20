@@ -2,8 +2,8 @@
 /*
 Plugin Name: WooCommerce - Store Exporter
 Plugin URI: http://www.visser.com.au/woocommerce/plugins/exporter/
-Description: Export store details out of WooCommerce into simple formatted files (e.g. CSV, XML, TXT, etc.).
-Version: 1.7.4
+Description: Export store details out of WooCommerce into simple formatted files (e.g. CSV, XML, Excel 2007 XLS, etc.).
+Version: 1.7.5
 Author: Visser Labs
 Author URI: http://www.visser.com.au/about/
 License: GPL2
@@ -17,7 +17,7 @@ define( 'WOO_CE_PATH', plugin_dir_path( __FILE__ ) );
 define( 'WOO_CE_PREFIX', 'woo_ce' );
 
 // Turn this on to enable additional debugging options at export time
-define( 'WOO_CE_DEBUG', false );
+define( 'WOO_CE_DEBUG', true );
 
 // Avoid conflicts if Store Exporter Deluxe is activated
 if( defined( 'WOO_CD_PREFIX' ) == false ) {
@@ -35,6 +35,9 @@ add_action( 'init', 'woo_ce_i18n' );
 if( is_admin() ) {
 
 	/* Start of: WordPress Administration */
+
+	include_once( WOO_CE_PATH . 'includes/install.php' );
+	register_activation_hook( __FILE__, 'woo_ce_install' );
 
 	// Initial scripts and export process
 	function woo_ce_admin_init() {
@@ -82,6 +85,7 @@ if( is_admin() ) {
 
 		// Add Store Exporter Deluxe options to Settings screen
 		add_action( 'woo_ce_export_settings_top', 'woo_ce_export_settings_quicklinks' );
+		add_action( 'woo_ce_export_settings_general', 'woo_ce_export_settings_additional' );
 		add_action( 'woo_ce_export_settings_after', 'woo_ce_export_settings_cron' );
 
 		$action = woo_get_action();
@@ -117,7 +121,7 @@ if( is_admin() ) {
 				$export->cron = 0;
 				$export->start_time = time();
 				$export->idle_memory_start = woo_ce_current_memory_usage();
-				$export->delete_temporary_csv = woo_ce_get_option( 'delete_csv', 0 );
+				$export->delete_file = woo_ce_get_option( 'delete_file', 0 );
 				$export->encoding = woo_ce_get_option( 'encoding', get_option( 'blog_charset', 'UTF-8' ) );
 				// Check for bad encoding
 				if( $export->encoding == '' || $export->encoding == false || $export->encoding == 'System default' )
@@ -140,7 +144,7 @@ if( is_admin() ) {
 
 				// Set default values for all export options to be later passed onto the export process
 				$export->fields = false;
-				$export->export_format = woo_ce_get_option( 'export_format', 'csv' );
+				$export->export_format = 'csv';
 
 				// Product sorting
 				$export->product_categories = false;
@@ -159,6 +163,10 @@ if( is_admin() ) {
 				// Tag sorting
 				$export->tag_orderby = false;
 				$export->tag_order = false;
+				// User sorting
+				$export->user_orderby = false;
+				$export->user_order = false;
+
 
 				$export->type = ( isset( $_POST['dataset'] ) ? $_POST['dataset'] : false );
 				if( $export->type )
@@ -214,6 +222,17 @@ if( is_admin() ) {
 							woo_ce_update_option( 'tag_orderby', $export->tag_orderby );
 						if( $export->tag_order <> woo_ce_get_option( 'tag_order' ) )
 							woo_ce_update_option( 'tag_order', $export->tag_order );
+					case 'users':
+						// Set up dataset specific options
+						$export->fields = $_POST['user_fields'];
+
+						// Save dataset export specific options
+						if( $export->user_orderby <> woo_ce_get_option( 'user_orderby' ) )
+							woo_ce_update_option( 'user_orderby', $export->user_orderby );
+						if( $export->user_order <> woo_ce_get_option( 'user_order' ) )
+							woo_ce_update_option( 'user_order', $export->user_order );
+						break;
+
 						break;
 
 				}
@@ -245,7 +264,9 @@ if( is_admin() ) {
 						'category_orderby' => $export->category_orderby,
 						'category_order' => $export->category_order,
 						'tag_orderby' => $export->tag_orderby,
-						'tag_order' => $export->tag_order
+						'tag_order' => $export->tag_order,
+						'user_orderby' => $export->user_orderby,
+						'user_order' => $export->user_order
 					);
 					woo_ce_save_fields( $export->type, $export->fields );
 
@@ -270,7 +291,7 @@ if( is_admin() ) {
 								wp_redirect( add_query_arg( 'empty', true ) );
 								exit();
 							}
-							if( $export->delete_temporary_csv ) {
+							if( $export->delete_file ) {
 
 								// Print to browser
 								woo_ce_generate_csv_header( $export->type );
@@ -283,9 +304,12 @@ if( is_admin() ) {
 								if( $export->filename && $bits ) {
 									$post_ID = woo_ce_save_file_attachment( $export->filename, 'text/csv' );
 									$upload = wp_upload_bits( $export->filename, null, $bits );
-									if( $upload['error'] ) {
+									if( ( $post_ID == false ) || $upload['error'] ) {
 										wp_delete_attachment( $post_ID, true );
-										wp_redirect( add_query_arg( array( 'failed' => true, 'message' => urlencode( $upload['error'] ) ) ) );
+										if( isset( $upload['error'] ) )
+											wp_redirect( add_query_arg( array( 'failed' => true, 'message' => urlencode( $upload['error'] ) ) ) );
+										else
+											wp_redirect( add_query_arg( array( 'failed' => true ) ) );
 										return;
 									}
 									$attach_data = wp_generate_attachment_metadata( $post_ID, $upload['file'] );
@@ -315,7 +339,6 @@ if( is_admin() ) {
 								} else {
 									wp_redirect( add_query_arg( 'failed', true ) );
 								}
-								exit();
 
 							}
 
@@ -327,13 +350,14 @@ if( is_admin() ) {
 			// Save changes on Settings screen
 			case 'save-settings':
 				woo_ce_update_option( 'export_filename', (string)$_POST['export_filename'] );
-				woo_ce_update_option( 'delete_csv', (int)$_POST['delete_temporary_csv'] );
+				woo_ce_update_option( 'delete_file', (int)$_POST['delete_file'] );
 				woo_ce_update_option( 'delimiter', (string)$_POST['delimiter'] );
 				woo_ce_update_option( 'category_separator', (string)$_POST['category_separator'] );
 				woo_ce_update_option( 'bom', (string)$_POST['bom'] );
 				woo_ce_update_option( 'encoding', (string)$_POST['encoding'] );
 				woo_ce_update_option( 'escape_formatting', (string)$_POST['escape_formatting'] );
 				woo_ce_update_option( 'date_format', (string)$_POST['date_format'] );
+
 				$message = __( 'Changes have been saved.', 'woo_ce' );
 				woo_ce_admin_notice( $message );
 				break;
@@ -367,20 +391,24 @@ if( is_admin() ) {
 						$export_log = base64_decode( $export_log );
 					}
 					$output = '
+<h3>' . sprintf( __( 'Export Details: %s', 'woo_ce' ), $export->filename ) . '</h3>
+<p>' . __( 'This prints the $export global that contains the different export options and filters to help reproduce this on another instance of WordPress. Very useful for debugging blank or unexpected exports.', 'woo_ce' ) . '</p>
+<textarea id="export_log">' . print_r( $export, true ) . '</textarea>
+<hr />';
+					if( $export->export_format == 'csv' ) {
+						$output .= '
 <script>
 	$j(function() {
 		$j(\'#export_sheet\').CSVToTable(\'\', { startLine: 0 });
 	});
 </script>
-<h3>' . sprintf( __( 'Export Details: %s', 'woo_ce' ), $export->filename ) . '</h3>
-<p>' . __( 'This prints the $export global that contains the different export options and filters to help reproduce this on another instance of WordPress. Very useful for debugging blank or unexpected exports.', 'woo_ce' ) . '</p>
-<textarea id="export_log">' . print_r( $export, true ) . '</textarea>
-<hr />
 <h3>' . __( 'Export', 'woo_ce' ) . '</h3>
 <p>' . __( 'We use the <a href="http://code.google.com/p/jquerycsvtotable/" target="_blank"><em>CSV to Table plugin</em></a> to see first hand formatting errors or unexpected values within the export file.', 'woo_ce' ) . '</p>
 <div id="export_sheet" style="margin-bottom:1em;">' . $export_log . '</div>
 <p class="description">' . __( 'This jQuery plugin can fail with <code>\'Item count (#) does not match header count\'</code> notices which simply mean the number of headers detected does not match the number of cell contents.', 'woo_ce' ) . '</p>
-<hr />
+<hr />';
+					}
+					$output .= '
 <h3>' . __( 'Export Log', 'woo_ce' ) . '</h3>
 <p>' . __( 'This prints the raw export contents and is helpful when the jQuery plugin above fails due to major formatting errors.', 'woo_ce' ) . '</p>
 <textarea id="export_log" wrap="off">' . $export_log . '</textarea>

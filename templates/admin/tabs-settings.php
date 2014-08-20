@@ -26,14 +26,14 @@
 
 			<tr>
 				<th>
-					<label for="delete_temporary_csv"><?php _e( 'Enable archives', 'woo_ce' ); ?></label>
+					<label for="delete_file"><?php _e( 'Enable archives', 'woo_ce' ); ?></label>
 				</th>
 				<td>
-					<select id="delete_temporary_csv" name="delete_temporary_csv">
-						<option value="0"<?php selected( $delete_csv, 0 ); ?>><?php _e( 'Yes', 'woo_ce' ); ?></option>
-						<option value="1"<?php selected( $delete_csv, 1 ); ?>><?php _e( 'No', 'woo_ce' ); ?></option>
+					<select id="delete_file" name="delete_file">
+						<option value="0"<?php selected( $delete_file, 0 ); ?>><?php _e( 'Yes', 'woo_ce' ); ?></option>
+						<option value="1"<?php selected( $delete_file, 1 ); ?>><?php _e( 'No', 'woo_ce' ); ?></option>
 					</select>
-					<p class="description"><?php _e( 'Save copies of CSV exports to the WordPress Media for downloading later. By default this option is turned on.', 'woo_ce' ); ?></p>
+					<p class="description"><?php _e( 'Save copies of exports to the WordPress Media for later downloading. By default this option is turned on.', 'woo_ce' ); ?></p>
 				</td>
 			</tr>
 
@@ -68,7 +68,7 @@
 						<p><a href="http://codex.wordpress.org/Formatting_Date_and_Time"><?php _e( 'Documentation on date and time formatting', 'woo_ce' ); ?></a>.</p>
 -->
 					</fieldset>
-					<p class="description"><?php _e( 'The date format option affects how date\'s are presented within your CSV file. Default is set to DD/MM/YYYY.', 'woo_ce' ); ?></p>
+					<p class="description"><?php _e( 'The date format option affects how date\'s are presented within your export file. Default is set to DD/MM/YYYY.', 'woo_ce' ); ?></p>
 				</td>
 			</tr>
 
@@ -84,10 +84,12 @@
 						<option value="3600"<?php selected( $timeout, 3600 ); ?>><?php printf( __( '%s hour', 'woo_ce' ), 1 ); ?></option>
 						<option value="0"<?php selected( $timeout, 0 ); ?>><?php _e( 'Unlimited', 'woo_ce' ); ?></option>
 					</select>
-					<p class="description"><?php _e( 'Script timeout defines how long Store Exporter is \'allowed\' to process your CSV file, once the time limit is reached the export process halts.', 'woo_ce' ); ?></p>
+					<p class="description"><?php _e( 'Script timeout defines how long Store Exporter is \'allowed\' to process your export file, once the time limit is reached the export process halts.', 'woo_ce' ); ?></p>
 				</td>
 			</tr>
 <?php } ?>
+
+			<?php do_action( 'woo_ce_export_settings_general' ); ?>
 
 			<tr id="csv-settings">
 				<td colspan="2" style="padding:0;">
