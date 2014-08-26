@@ -3,7 +3,7 @@
 Plugin Name: WooCommerce - Store Exporter
 Plugin URI: http://www.visser.com.au/woocommerce/plugins/exporter/
 Description: Export store details out of WooCommerce into simple formatted files (e.g. CSV, XML, Excel 2007 XLS, etc.).
-Version: 1.7.5
+Version: 1.7.6
 Author: Visser Labs
 Author URI: http://www.visser.com.au/about/
 License: GPL2
@@ -17,10 +17,11 @@ define( 'WOO_CE_PATH', plugin_dir_path( __FILE__ ) );
 define( 'WOO_CE_PREFIX', 'woo_ce' );
 
 // Turn this on to enable additional debugging options at export time
-define( 'WOO_CE_DEBUG', true );
+define( 'WOO_CE_DEBUG', false );
 
 // Avoid conflicts if Store Exporter Deluxe is activated
 if( defined( 'WOO_CD_PREFIX' ) == false ) {
+	include_once( WOO_CE_PATH . 'common/common.php' );
 	include_once( WOO_CE_PATH . 'includes/common.php' );
 	include_once( WOO_CE_PATH . 'includes/functions.php' );
 }
@@ -51,7 +52,7 @@ if( is_admin() ) {
 		}
 
 		// Check that we are on the Store Exporter screen
-		$page = ( isset($_GET['page'] ) ? $_GET['page'] : false );
+		$page = ( isset($_GET['page'] ) ? sanitize_text_field( $_GET['page'] ) : false );
 		if( $page != strtolower( WOO_CE_PREFIX ) )
 			return;
 
@@ -71,6 +72,8 @@ if( is_admin() ) {
 		add_action( 'woo_ce_export_order_options_before_table', 'woo_ce_orders_filter_by_customer' );
 		add_action( 'woo_ce_export_order_options_before_table', 'woo_ce_orders_filter_by_user_role' );
 		add_action( 'woo_ce_export_order_options_before_table', 'woo_ce_orders_filter_by_coupon' );
+		add_action( 'woo_ce_export_order_options_before_table', 'woo_ce_orders_filter_by_product_category' );
+		add_action( 'woo_ce_export_order_options_before_table', 'woo_ce_orders_filter_by_product_tag' );
 		add_action( 'woo_ce_export_order_options_after_table', 'woo_ce_orders_order_sorting' );
 		add_action( 'woo_ce_export_customer_options_before_table', 'woo_ce_customers_filter_by_status' );
 		add_action( 'woo_ce_export_user_options_after_table', 'woo_ce_users_user_sorting' );
@@ -133,11 +136,11 @@ if( is_admin() ) {
 				$export->date_format = woo_ce_get_option( 'date_format', 'd/m/Y' );
 
 				// Save export option changes made on the Export screen
-				$export->limit_volume = ( isset( $_POST['limit_volume'] ) ? $_POST['limit_volume'] : '' );
+				$export->limit_volume = ( isset( $_POST['limit_volume'] ) ? sanitize_text_field( $_POST['limit_volume'] ) : '' );
 				woo_ce_update_option( 'limit_volume', $export->limit_volume );
 				if( $export->limit_volume == '' )
 					$export->limit_volume = -1;
-				$export->offset = ( isset( $_POST['offset'] ) ? $_POST['offset'] : '' );
+				$export->offset = ( isset( $_POST['offset'] ) ? sanitize_text_field( $_POST['offset'] ) : '' );
 				woo_ce_update_option( 'offset', $export->offset );
 				if( $export->offset == '' )
 					$export->offset = 0;
@@ -163,28 +166,29 @@ if( is_admin() ) {
 				// Tag sorting
 				$export->tag_orderby = false;
 				$export->tag_order = false;
+
 				// User sorting
 				$export->user_orderby = false;
 				$export->user_order = false;
 
 
-				$export->type = ( isset( $_POST['dataset'] ) ? $_POST['dataset'] : false );
+				$export->type = ( isset( $_POST['dataset'] ) ? sanitize_text_field( $_POST['dataset'] ) : false );
 				if( $export->type )
 					woo_ce_update_option( 'last_export', $export->type );
 				switch( $export->type ) {
 
 					case 'products':
 						// Set up dataset specific options
-						$export->fields = ( isset( $_POST['product_fields'] ) ? $_POST['product_fields'] : false );
-						$export->fields_order = ( isset( $_POST['product_fields_order'] ) ? $_POST['product_fields_order'] : false );
-						$export->product_categories = ( isset( $_POST['product_filter_categories'] ) ? woo_ce_format_product_filters( $_POST['product_filter_categories'] ) : false );
-						$export->product_tags = ( isset( $_POST['product_filter_tags'] ) ? woo_ce_format_product_filters( $_POST['product_filter_tags'] ) : false );
-						$export->product_status = ( isset( $_POST['product_filter_status'] ) ? woo_ce_format_product_filters( $_POST['product_filter_status'] ) : false );
-						$export->product_type = ( isset( $_POST['product_filter_type'] ) ? woo_ce_format_product_filters( $_POST['product_filter_type'] ) : false );
-						$export->product_orderby = ( isset( $_POST['product_orderby'] ) ? $_POST['product_orderby'] : false );
-						$export->product_order = ( isset( $_POST['product_order'] ) ? $_POST['product_order'] : false );
-						$export->upsell_formatting = ( isset( $_POST['product_upsell_formatting'] ) ? $_POST['product_upsell_formatting'] : false );
-						$export->crosssell_formatting = ( isset( $_POST['product_crosssell_formatting'] ) ? $_POST['product_crosssell_formatting'] : false );
+						$export->fields = ( isset( $_POST['product_fields'] ) ? array_map( 'sanitize_text_field', $_POST['product_fields'] ) : false );
+						$export->fields_order = ( isset( $_POST['product_fields_order'] ) ? array_map( 'absint', $_POST['product_fields_order'] ) : false );
+						$export->product_categories = ( isset( $_POST['product_filter_category'] ) ? woo_ce_format_product_filters( array_map( 'absint', $_POST['product_filter_category'] ) ) : false );
+						$export->product_tags = ( isset( $_POST['product_filter_tags'] ) ? woo_ce_format_product_filters( array_map( 'absint', $_POST['product_filter_tag'] ) ) : false );
+						$export->product_status = ( isset( $_POST['product_filter_status'] ) ? woo_ce_format_product_filters( array_map( 'sanitize_text_field', $_POST['product_filter_status'] ) ) : false );
+						$export->product_type = ( isset( $_POST['product_filter_type'] ) ? woo_ce_format_product_filters( array_map( 'sanitize_text_field', $_POST['product_filter_type'] ) ) : false );
+						$export->product_orderby = ( isset( $_POST['product_orderby'] ) ? sanitize_text_field( $_POST['product_orderby'] ) : false );
+						$export->product_order = ( isset( $_POST['product_order'] ) ? sanitize_text_field( $_POST['product_order'] ) : false );
+						$export->upsell_formatting = ( isset( $_POST['product_upsell_formatting'] ) ? absint( $_POST['product_upsell_formatting'] ) : false );
+						$export->crosssell_formatting = ( isset( $_POST['product_crosssell_formatting'] ) ? absint( $_POST['product_crosssell_formatting'] ) : false );
 
 						// Save dataset export specific options
 						// @mod - Add support for saving Product Categories, Prduct Tags, Product Status, Product Type
@@ -200,9 +204,9 @@ if( is_admin() ) {
 
 					case 'categories':
 						// Set up dataset specific options
-						$export->fields = ( isset( $_POST['category_fields'] ) ? $_POST['category_fields'] : false );
-						$export->category_orderby = ( isset( $_POST['category_orderby'] ) ? $_POST['category_orderby'] : false );
-						$export->category_order = ( isset( $_POST['category_order'] ) ? $_POST['category_order'] : false );
+						$export->fields = ( isset( $_POST['category_fields'] ) ? array_map( 'sanitize_text_field', $_POST['category_fields'] ) : false );
+						$export->category_orderby = ( isset( $_POST['category_orderby'] ) ? sanitize_text_field( $_POST['category_orderby'] ) : false );
+						$export->category_order = ( isset( $_POST['category_order'] ) ? sanitize_text_field( $_POST['category_order'] ) : false );
 
 						// Save dataset export specific options
 						if( $export->category_orderby <> woo_ce_get_option( 'category_orderby' ) )
@@ -213,18 +217,22 @@ if( is_admin() ) {
 
 					case 'tags':
 						// Set up dataset specific options
-						$export->fields = ( isset( $_POST['tag_fields'] ) ? $_POST['tag_fields'] : false );
-						$export->tag_orderby = ( isset( $_POST['tag_orderby'] ) ? $_POST['tag_orderby'] : false );
-						$export->tag_order = ( isset( $_POST['tag_order'] ) ? $_POST['tag_order'] : false );
+						$export->fields = ( isset( $_POST['tag_fields'] ) ? array_map( 'sanitize_text_field', $_POST['tag_fields'] ) : false );
+						$export->tag_orderby = ( isset( $_POST['tag_orderby'] ) ? sanitize_text_field( $_POST['tag_orderby'] ) : false );
+						$export->tag_order = ( isset( $_POST['tag_order'] ) ? sanitize_text_field( $_POST['tag_order'] ) : false );
 
 						// Save dataset export specific options
 						if( $export->tag_orderby <> woo_ce_get_option( 'tag_orderby' ) )
 							woo_ce_update_option( 'tag_orderby', $export->tag_orderby );
 						if( $export->tag_order <> woo_ce_get_option( 'tag_order' ) )
 							woo_ce_update_option( 'tag_order', $export->tag_order );
+						break;
+
 					case 'users':
 						// Set up dataset specific options
-						$export->fields = $_POST['user_fields'];
+						$export->fields = array_map( 'sanitize_text_field', $_POST['user_fields'] );
+						$export->user_orderby = ( isset( $_POST['user_orderby'] ) ? sanitize_text_field( $_POST['user_orderby'] ) : false );
+						$export->user_order = ( isset( $_POST['user_order'] ) ? sanitize_text_field( $_POST['user_order'] ) : false );
 
 						// Save dataset export specific options
 						if( $export->user_orderby <> woo_ce_get_option( 'user_orderby' ) )
@@ -240,12 +248,12 @@ if( is_admin() ) {
 
 					$timeout = 600;
 					if( isset( $_POST['timeout'] ) ) {
-						$timeout = (int)$_POST['timeout'];
+						$timeout = absint( (int)$_POST['timeout'] );
 						if( $timeout <> woo_ce_get_option( 'timeout' ) )
 							woo_ce_update_option( 'timeout', $timeout );
 					}
 					if( !ini_get( 'safe_mode' ) )
-						@set_time_limit( $timeout );
+						@set_time_limit( (int)$timeout );
 
 					@ini_set( 'memory_limit', WP_MAX_MEMORY_LIMIT );
 					@ini_set( 'max_execution_time', (int)$timeout );
@@ -343,20 +351,22 @@ if( is_admin() ) {
 							}
 
 						}
+						exit();
 					}
 				}
 				break;
 
 			// Save changes on Settings screen
 			case 'save-settings':
-				woo_ce_update_option( 'export_filename', (string)$_POST['export_filename'] );
-				woo_ce_update_option( 'delete_file', (int)$_POST['delete_file'] );
-				woo_ce_update_option( 'delimiter', (string)$_POST['delimiter'] );
-				woo_ce_update_option( 'category_separator', (string)$_POST['category_separator'] );
-				woo_ce_update_option( 'bom', (string)$_POST['bom'] );
-				woo_ce_update_option( 'encoding', (string)$_POST['encoding'] );
-				woo_ce_update_option( 'escape_formatting', (string)$_POST['escape_formatting'] );
-				woo_ce_update_option( 'date_format', (string)$_POST['date_format'] );
+				// Sanitize each setting field as needed
+				woo_ce_update_option( 'export_filename', sanitize_file_name( (string)$_POST['export_filename'] ) );
+				woo_ce_update_option( 'delete_file', sanitize_text_field( (int)$_POST['delete_file'] ) );
+				woo_ce_update_option( 'delimiter', sanitize_text_field( (string)$_POST['delimiter'] ) );
+				woo_ce_update_option( 'category_separator', sanitize_text_field( (string)$_POST['category_separator'] ) );
+				woo_ce_update_option( 'bom', absint( (string)$_POST['bom'] ) );
+				woo_ce_update_option( 'encoding', sanitize_text_field( (string)$_POST['encoding'] ) );
+				woo_ce_update_option( 'escape_formatting', sanitize_text_field( (string)$_POST['escape_formatting'] ) );
+				woo_ce_update_option( 'date_format', sanitize_text_field( (string)$_POST['date_format'] ) );
 
 				$message = __( 'Changes have been saved.', 'woo_ce' );
 				woo_ce_admin_notice( $message );
@@ -393,7 +403,7 @@ if( is_admin() ) {
 					$output = '
 <h3>' . sprintf( __( 'Export Details: %s', 'woo_ce' ), $export->filename ) . '</h3>
 <p>' . __( 'This prints the $export global that contains the different export options and filters to help reproduce this on another instance of WordPress. Very useful for debugging blank or unexpected exports.', 'woo_ce' ) . '</p>
-<textarea id="export_log">' . print_r( $export, true ) . '</textarea>
+<textarea id="export_log">' . esc_textarea( print_r( $export, true ) ) . '</textarea>
 <hr />';
 					if( $export->export_format == 'csv' ) {
 						$output .= '
@@ -411,7 +421,7 @@ if( is_admin() ) {
 					$output .= '
 <h3>' . __( 'Export Log', 'woo_ce' ) . '</h3>
 <p>' . __( 'This prints the raw export contents and is helpful when the jQuery plugin above fails due to major formatting errors.', 'woo_ce' ) . '</p>
-<textarea id="export_log" wrap="off">' . $export_log . '</textarea>
+<textarea id="export_log" wrap="off">' . esc_textarea( $export_log ) . '</textarea>
 <hr />
 ';
 					echo $output;
@@ -428,7 +438,7 @@ if( is_admin() ) {
 					$size = count( $custom_products );
 					if( $size ) {
 						for( $i = 0; $i < $size; $i++ )
-							$custom_products[$i] = trim( $custom_products[$i] );
+							$custom_products[$i] = sanitize_text_field( trim( $custom_products[$i] ) );
 						woo_ce_update_option( 'custom_products', $custom_products );
 					}
 				}
@@ -440,7 +450,7 @@ if( is_admin() ) {
 					$size = count( $custom_orders );
 					if( $size ) {
 						for( $i = 0; $i < $size; $i++ )
-							$custom_orders[$i] = trim( $custom_orders[$i] );
+							$custom_orders[$i] = sanitize_text_field( trim( $custom_orders[$i] ) );
 						woo_ce_update_option( 'custom_orders', $custom_orders );
 					}
 				}
@@ -453,7 +463,7 @@ if( is_admin() ) {
 						$size = count( $custom_order_items );
 						if( $size ) {
 							for( $i = 0; $i < $size; $i++ )
-								$custom_order_items[$i] = trim( $custom_order_items[$i] );
+								$custom_order_items[$i] = sanitize_text_field( trim( $custom_order_items[$i] ) );
 							woo_ce_update_option( 'custom_order_items', $custom_order_items );
 						}
 					} else {
@@ -480,7 +490,7 @@ if( is_admin() ) {
 
 		$tab = false;
 		if( isset( $_GET['tab'] ) )
-			$tab = $_GET['tab'];
+			$tab = sanitize_text_field( $_GET['tab'] );
 		// If Skip Overview is set then jump to Export screen
 		else if( woo_ce_get_option( 'skip_overview', false ) )
 			$tab = 'export';

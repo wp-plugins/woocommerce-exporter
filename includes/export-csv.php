@@ -5,6 +5,10 @@ function woo_ce_generate_csv_filename( $export_type = '' ) {
 	// Get the filename from WordPress options
 	$filename = sanitize_file_name( woo_ce_get_option( 'export_filename', 'woo-export_%dataset%-%date%.csv' ) );
 
+	// Strip other file extensions if present
+	if( ( strpos( $filename, '.xml' ) !== false ) || ( strpos( $filename, '.xls' ) !== false ) )
+		$filename = str_replace( array( '.xml', '.xls' ), '.csv', $filename );
+
 	// Add file extension if it has been removed
 	if( strpos( $filename, '.csv' ) === false )
 		$filename .= '.csv';
@@ -31,8 +35,9 @@ function woo_ce_generate_csv_header( $export_type = '' ) {
 	global $export;
 
 	if( $filename = woo_ce_generate_csv_filename( $export_type ) ) {
-		header( sprintf( 'Content-Encoding: %s', $export->encoding ) );
-		header( sprintf( 'Content-Type: text/csv; charset=%s', $export->encoding ) );
+		$mime_type = 'text/csv';
+		header( sprintf( 'Content-Encoding: %s', esc_attr( $export->encoding ) ) );
+		header( sprintf( 'Content-Type: %s; charset=%s', $mime_type, esc_attr( $export->encoding ) ) );
 		header( 'Content-Transfer-Encoding: binary' );
 		header( sprintf( 'Content-Disposition: attachment; filename=%s', $filename ) );
 		header( 'Pragma: no-cache' );

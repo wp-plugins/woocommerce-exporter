@@ -184,6 +184,10 @@ function woo_ce_get_users( $args = array() ) {
 	$limit_volume = 0;
 	$offset = 0;
 
+	if( $args ) {
+		$limit_volume = ( isset( $args['limit_volume'] ) ? $args['limit_volume'] : 0 );
+		$offset = $args['offset'];
+	}
 	$args = array(
 		'offset' => $offset,
 		'number' => $limit_volume,

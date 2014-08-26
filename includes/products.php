@@ -10,13 +10,17 @@ if( is_admin() ) {
 			'hide_empty' => 1
 		);
 		$product_categories = woo_ce_get_product_categories( $args );
+
 		ob_start(); ?>
 <p><label><input type="checkbox" id="products-filters-categories" /> <?php _e( 'Filter Products by Product Categories', 'woo_ce' ); ?></label></p>
 <div id="export-products-filters-categories" class="separator">
 <?php if( $product_categories ) { ?>
 	<ul>
 	<?php foreach( $product_categories as $product_category ) { ?>
-		<li><label><input type="checkbox" name="product_filter_categories[<?php echo $product_category->term_id; ?>]" value="<?php echo $product_category->term_id; ?>" title="<?php printf( __( 'Term ID: %d', 'woo_ce' ), $product_category->term_id ); ?>"<?php disabled( $product_category->count, 0 ); ?> /> <?php echo woo_ce_format_product_category_label( $product_category->name, $product_category->parent_name ); ?> (<?php echo $product_category->count; ?>)</label></li>
+		<li>
+			<label><input type="checkbox" name="product_filter_category[<?php echo $product_category->term_id; ?>]" value="<?php echo $product_category->term_id; ?>" title="<?php printf( __( 'Term ID: %d', 'woo_ce' ), $product_category->term_id ); ?>"<?php disabled( $product_category->count, 0 ); ?> /> <?php echo woo_ce_format_product_category_label( $product_category->name, $product_category->parent_name ); ?></label>
+			<span class="description">(<?php echo $product_category->count; ?>)</span>
+		</li>
 	<?php } ?>
 	</ul>
 	<p class="description"><?php _e( 'Select the Product Categories you want to filter exported Products by. Default is to include all Product Categories.', 'woo_ce' ); ?></p>
@@ -37,13 +41,17 @@ if( is_admin() ) {
 			'hide_empty' => 1
 		);
 		$product_tags = woo_ce_get_product_tags( $args );
+
 		ob_start(); ?>
 <p><label><input type="checkbox" id="products-filters-tags" /> <?php _e( 'Filter Products by Product Tags', 'woo_ce' ); ?></label></p>
 <div id="export-products-filters-tags" class="separator">
 <?php if( $product_tags ) { ?>
 	<ul>
 	<?php foreach( $product_tags as $product_tag ) { ?>
-		<li><label><input type="checkbox" name="product_filter_tags[<?php echo $product_tag->term_id; ?>]" value="<?php echo $product_tag->term_id; ?>" title="<?php printf( __( 'Term ID: %d', 'woo_ce' ), $product_tag->term_id ); ?>"<?php disabled( $product_tag->count, 0 ); ?> /> <?php echo $product_tag->name; ?> (<?php echo $product_tag->count; ?>)</label></li>
+		<li>
+			<label><input type="checkbox" name="product_filter_tag[<?php echo $product_tag->term_id; ?>]" value="<?php echo $product_tag->term_id; ?>" title="<?php printf( __( 'Term ID: %d', 'woo_ce' ), $product_tag->term_id ); ?>"<?php disabled( $product_tag->count, 0 ); ?> /> <?php echo $product_tag->name; ?></label>
+			<span class="description">(<?php echo $product_tag->count; ?>)</span>
+		</li>
 	<?php } ?>
 	</ul>
 	<p class="description"><?php _e( 'Select the Product Tags you want to filter exported Products by. Default is to include all Product Tags.', 'woo_ce' ); ?></p>
@@ -63,6 +71,7 @@ if( is_admin() ) {
 		$product_statuses = get_post_statuses();
 		if( !isset( $product_statuses['trash'] ) )
 			$product_statuses['trash'] = __( 'Trash', 'woo_ce' );
+
 		ob_start(); ?>
 <p><label><input type="checkbox" id="products-filters-status" /> <?php _e( 'Filter Products by Product Status', 'woo_ce' ); ?></label></p>
 <div id="export-products-filters-status" class="separator">
@@ -83,6 +92,7 @@ if( is_admin() ) {
 	function woo_ce_products_filter_by_product_type() {
 
 		$product_types = woo_ce_get_product_types();
+
 		ob_start(); ?>
 <p><label><input type="checkbox" id="products-filters-type" /> <?php _e( 'Filter Products by Product Type', 'woo_ce' ); ?></label></p>
 <div id="export-products-filters-type" class="separator">
@@ -104,6 +114,7 @@ if( is_admin() ) {
 
 		$product_orderby = woo_ce_get_option( 'product_orderby', 'ID' );
 		$product_order = woo_ce_get_option( 'product_order', 'DESC' );
+
 		ob_start(); ?>
 <p><label><?php _e( 'Product Sorting', 'woo_ce' ); ?></label></p>
 <div>
@@ -149,7 +160,7 @@ if( is_admin() ) {
 							<label><?php _e( 'Product meta', 'woo_ce' ); ?></label>
 						</th>
 						<td>
-							<textarea name="custom_products" rows="5" cols="70"><?php echo $custom_products; ?></textarea>
+							<textarea name="custom_products" rows="5" cols="70"><?php echo esc_textarea( $custom_products ); ?></textarea>
 							<p class="description"><?php _e( 'Include additional custom Product meta in your export file by adding each custom Product meta name to a new line above.<br />For example: <code>Customer UA, Customer IP Address</code>', 'woo_ce' ); ?></p>
 						</td>
 					</tr>
@@ -1189,8 +1200,7 @@ function woo_ce_get_acf_product_fields() {
 	$post_type = 'acf';
 	$args = array(
 		'post_type' => $post_type,
-		'numberposts' => -1,
-		'no_found_rows' => false
+		'numberposts' => -1
 	);
 	if( $field_groups = get_posts( $args ) ) {
 		$fields = array();

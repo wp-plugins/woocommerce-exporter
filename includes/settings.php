@@ -23,7 +23,7 @@ function woo_ce_export_settings_additional() {
 		<label for="email_to"><?php _e( 'Default e-mail recipient', 'woo_ce' ); ?></label>
 	</th>
 	<td>
-		<input name="email_to" type="text" id="email_to" value="<?php echo $email_to; ?>" class="regular-text code" disabled="disabled" /><span class="description"> - <?php printf( __( 'available in %s', 'woo_ce' ), $woo_cd_link ); ?></span>
+		<input name="email_to" type="text" id="email_to" value="<?php echo esc_attr( $email_to ); ?>" class="regular-text code" disabled="disabled" /><span class="description"> - <?php printf( __( 'available in %s', 'woo_ce' ), $woo_cd_link ); ?></span>
 		<p class="description"><?php _e( 'Set the default recipient of scheduled export e-mails, can be overriden via CRON using the <code>to</code> argument. Default is the WordPress Blog administrator e-mail address.', 'woo_ce' ); ?></p>
 	</td>
 </tr>
@@ -32,7 +32,7 @@ function woo_ce_export_settings_additional() {
 		<label for="post_to"><?php _e( 'Default remote POST URL', 'woo_ce' ); ?></label>
 	</th>
 	<td>
-		<input name="post_to" type="text" id="post_to" value="<?php echo $post_to; ?>" class="regular-text code" disabled="disabled" /><span class="description"> - <?php printf( __( 'available in %s', 'woo_ce' ), $woo_cd_link ); ?></span>
+		<input name="post_to" type="text" id="post_to" value="<?php echo esc_url( $post_to ); ?>" class="regular-text code" disabled="disabled" /><span class="description"> - <?php printf( __( 'available in %s', 'woo_ce' ), $woo_cd_link ); ?></span>
 		<p class="description"><?php _e( 'Set the default remote POST address for scheduled exports, can be overriden via CRON using the <code>to</code> argument. Default is empty.', 'woo_ce' ); ?></p>
 	</td>
 </tr>
@@ -49,6 +49,10 @@ function woo_ce_export_settings_cron() {
 
 	// Scheduled exports
 	$order_statuses = woo_ce_get_order_statuses();
+	$auto_interval = 1440;
+
+	// CRON exports
+	$secret_key = '-';
 
 	$troubleshooting_url = 'http://www.visser.com.au/documentation/store-exporter-deluxe/usage/';
 	ob_start(); ?>
@@ -142,7 +146,7 @@ function woo_ce_export_settings_cron() {
 		<label for="auto_interval"><?php _e( 'Once every (minutes)', 'woo_ce' ); ?></label>
 	</th>
 	<td>
-		<input name="auto_interval" type="text" id="auto_interval" value="1440" size="4" maxlength="4" class="text" disabled="disabled" /><span class="description"> - <?php printf( __( 'available in %s', 'woo_ce' ), $woo_cd_link ); ?></span>
+		<input name="auto_interval" type="text" id="auto_interval" value="<?php echo esc_attr( $auto_interval ); ?>" size="4" maxlength="4" class="text" disabled="disabled" /><span class="description"> - <?php printf( __( 'available in %s', 'woo_ce' ), $woo_cd_link ); ?></span>
 		<p class="description"><?php _e( 'Choose how often Store Exporter Deluxe generates new exports. Default is every 1440 minutes (once every 24 hours).', 'woo_ce' ); ?></p>
 	</td>
 </tr>
@@ -185,7 +189,7 @@ function woo_ce_export_settings_cron() {
 		<label for="secret_key"><?php _e( 'Export secret key', 'woo_ce' ); ?></label>
 	</th>
 	<td>
-		<input name="secret_key" type="text" id="secret_key" value="-" class="regular-text code" disabled="disabled" /><span class="description"> - <?php printf( __( 'available in %s', 'woo_ce' ), $woo_cd_link ); ?></span>
+		<input name="secret_key" type="text" id="secret_key" value="<?php echo esc_attr( $secret_key ); ?>" class="regular-text code" disabled="disabled" /><span class="description"> - <?php printf( __( 'available in %s', 'woo_ce' ), $woo_cd_link ); ?></span>
 		<p class="description"><?php _e( 'This secret key (can be left empty to allow unrestricted access) limits access to authorised developers who provide a matching key when working with Store Exporter Deluxe.', 'woo_ce' ); ?></p>
 	</td>
 </tr>

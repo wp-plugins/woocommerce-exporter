@@ -117,6 +117,14 @@ $j(function() {
 	if( $j('#orders-filters-coupon').attr('checked') ) {
 		$j('#export-orders-filters-coupon').show();
 	}
+	$j('#export-orders-filters-category').hide();
+	if( $j('#orders-filters-category').attr('checked') ) {
+		$j('#export-orders-filters-category').show();
+	}
+	$j('#export-orders-filters-tag').hide();
+	if( $j('#orders-filters-tag').attr('checked') ) {
+		$j('#export-orders-filters-tag').show();
+	}
 
 	$j('#export-customers-filters-status').hide();
 	if( $j('#customers-filters-status').attr('checked') ) {
@@ -155,6 +163,12 @@ $j(function() {
 	});
 	$j('#orders-filters-coupon').click(function(){
 		$j('#export-orders-filters-coupon').toggle();
+	});
+	$j('#orders-filters-category').click(function(){
+		$j('#export-orders-filters-category').toggle();
+	});
+	$j('#orders-filters-tag').click(function(){
+		$j('#export-orders-filters-tag').toggle();
 	});
 
 	$j('#customers-filters-status').click(function(){

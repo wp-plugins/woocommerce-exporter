@@ -5,7 +5,7 @@ Donate link: http://www.visser.com.au/#donations
 Tags: e-commerce, woocommerce, shop, cart, ecommerce, export, csv, xml, xls, excel, customers, products, sales, orders, coupons, users, attributes, subscriptions
 Requires at least: 2.9.2
 Tested up to: 3.9.2
-Stable tag: 1.7.5
+Stable tag: 1.7.6
 
 == Description ==
 
@@ -80,6 +80,15 @@ http://www.visser.com.au/woocommerce/forums/
 7. Download achived copies of previous exports
 
 == Changelog ==
+
+= 1.7.6 =
+* Fixed: Limit volume for Users export
+* Fixed: Offset for Users export
+* Fixed: Sanitize form fields
+* Fixed: Data validation on outputs
+* Fixed: Saving of Order in Users export
+* Fixed: Saving of Order By in Users export
+* Fixed: Count of Customers for large store catalogues
 
 = 1.7.5 =
 * Fixed: Custom Product meta not working

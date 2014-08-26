@@ -5,8 +5,7 @@ function woo_ce_file_encoding( $content = '' ) {
 
 	if( function_exists( 'mb_convert_encoding' ) ) {
 		$to_encoding = $export->encoding;
-		// $from_encoding = 'auto';
-		$from_encoding = 'ISO-8859-1';
+		$from_encoding = 'auto';
 		if( !empty( $to_encoding ) )
 			$content = mb_convert_encoding( trim( $content ), $to_encoding, $from_encoding );
 		if( $to_encoding == 'UTF-8' )
@@ -52,7 +51,6 @@ function woo_ce_escape_csv_value( $string = '', $delimiter = ',', $format = 'all
 
 	$string = str_replace( '"', '""', $string );
 	$string = wp_specialchars_decode( $string );
-	$string = preg_replace('/&([^#])(?![a-z1-4]{1,8};)/i', '&#038;$1', $string );
 	$string = str_replace( PHP_EOL, "\r\n", $string );
 	switch( $format ) {
 
@@ -343,9 +341,8 @@ function woo_ce_format_product_filters( $product_filters = array() ) {
 
 	$output = array();
 	if( !empty( $product_filters ) ) {
-		foreach( $product_filters as $product_filter ) {
+		foreach( $product_filters as $product_filter )
 			$output[] = $product_filter;
-		}
 	}
 	return $output;
 
@@ -355,9 +352,8 @@ function woo_ce_format_user_role_filters( $user_role_filters = array() ) {
 
 	$output = array();
 	if( !empty( $user_role_filters ) ) {
-		foreach( $user_role_filters as $user_role_filter ) {
+		foreach( $user_role_filters as $user_role_filter )
 			$output[] = $user_role_filter;
-		}
 	}
 	return $output;
 

@@ -30,7 +30,7 @@ if( is_admin() ) {
 		<li>
 			<label><input type="radio" name="order_dates_filter" value="manual" disabled="disabled" /> <?php _e( 'Manual', 'woo_ce' ); ?></label>
 			<div style="margin-top:0.2em;">
-				<input type="text" size="10" maxlength="10" id="order_dates_from" name="order_dates_from" value="<?php echo $order_dates_from; ?>" class="text" disabled="disabled" /> to <input type="text" size="10" maxlength="10" id="order_dates_to" name="order_dates_to" value="<?php echo $order_dates_to; ?>" class="text" disabled="disabled" />
+				<input type="text" size="10" maxlength="10" id="order_dates_from" name="order_dates_from" value="<?php echo esc_attr( $order_dates_from ); ?>" class="text" disabled="disabled" /> to <input type="text" size="10" maxlength="10" id="order_dates_to" name="order_dates_to" value="<?php echo esc_attr( $order_dates_to ); ?>" class="text" disabled="disabled" />
 				<p class="description"><?php _e( 'Filter the dates of Orders to be included in the export. Default is the date of the first order to today.', 'woo_ce' ); ?></p>
 			</div>
 		</li>
@@ -160,7 +160,7 @@ if( is_admin() ) {
 		<label for="max_order_items"><?php _e( 'Max unique Order items', 'woo_ce' ); ?>: </label>
 	</th>
 	<td>
-		<input type="text" id="max_order_items" name="max_order_items" size="3" class="text" value="<?php echo $max_size; ?>" disabled="disabled" /><span class="description"> - <?php printf( __( 'available in %s', 'woo_ce' ), $woo_cd_link ); ?></span>
+		<input type="text" id="max_order_items" name="max_order_items" size="3" class="text" value="<?php echo esc_attr( $max_size ); ?>" disabled="disabled" /><span class="description"> - <?php printf( __( 'available in %s', 'woo_ce' ), $woo_cd_link ); ?></span>
 		<p class="description"><?php _e( 'Manage the number of Order Item colums displayed when the \'Place Order Items on individual cells within a single Order row\' Order items formatting option is selected.', 'woo_ce' ); ?></p>
 	</td>
 </tr>
@@ -222,6 +222,65 @@ if( is_admin() ) {
 
 	}
 
+	// HTML template for disabled Filter Orders by Product Category widget on Store Exporter screen
+	function woo_ce_orders_filter_by_product_category() {
+
+		$woo_cd_url = 'http://www.visser.com.au/woocommerce/plugins/exporter-deluxe/';
+		$woo_cd_link = sprintf( '<a href="%s" target="_blank">' . __( 'Store Exporter Deluxe', 'woo_ce' ) . '</a>', $woo_cd_url );
+
+		$args = array(
+			'hide_empty' => 1
+		);
+		$product_categories = woo_ce_get_product_categories( $args );
+
+		ob_start(); ?>
+<p><label><input type="checkbox" id="orders-filters-category" /> <?php _e( 'Filter Orders by Product Category', 'woo_ce' ); ?><span class="description"> - <?php printf( __( 'available in %s', 'woo_ce' ), $woo_cd_link ); ?></span></label></p>
+<div id="export-orders-filters-category" class="separator">
+	<ul>
+<?php foreach( $product_categories as $product_category ) { ?>
+		<li>
+			<label><input type="checkbox" name="order_filter_category[<?php echo $product_category->name; ?>]" value="<?php echo $product_category->term_id; ?>" title="<?php printf( __( 'Term ID: %d', 'woo_ce' ), $product_category->term_id ); ?>" disabled="disabled" /> <?php echo woo_ce_format_product_category_label( $product_category->name, $product_category->parent_name ); ?></label>
+		</li>
+<?php } ?>
+	</ul>
+	<p class="description"><?php _e( 'Select the Product Categories you want to filter exported Orders by. Default is to include all Product Categories.', 'woo_ce' ); ?></p>
+</div>
+<!-- #export-orders-filters-category -->
+<?php
+		ob_end_flush();
+
+	}
+
+	// HTML template for disabled Filter Orders by Product Tag widget on Store Exporter screen
+	function woo_ce_orders_filter_by_product_tag() {
+
+		$woo_cd_url = 'http://www.visser.com.au/woocommerce/plugins/exporter-deluxe/';
+		$woo_cd_link = sprintf( '<a href="%s" target="_blank">' . __( 'Store Exporter Deluxe', 'woo_ce' ) . '</a>', $woo_cd_url );
+
+		$args = array(
+			'hide_empty' => 1
+		);
+		$product_tags = woo_ce_get_product_tags( $args );
+
+		ob_start(); ?>
+<p><label><input type="checkbox" id="orders-filters-tag" /> <?php _e( 'Filter Orders by Product Tag', 'woo_ce' ); ?><span class="description"> - <?php printf( __( 'available in %s', 'woo_ce' ), $woo_cd_link ); ?></span></label></p>
+<div id="export-orders-filters-tag" class="separator">
+	<ul>
+<?php foreach( $product_tags as $product_tag ) { ?>
+		<li>
+			<label><input type="checkbox" name="order_filter_tag[<?php echo $product_tag->name; ?>]" value="<?php echo $product_tag->name; ?>" title="<?php printf( __( 'Term ID: %d', 'woo_ce' ), $product_tag->term_id ); ?>" disabled="disabled" /> <?php echo $product_tag->name; ?></label>
+			<span class="description">(<?php echo $product_tag->count; ?>)</span>
+		</li>
+<?php } ?>
+	</ul>
+	<p class="description"><?php _e( 'Select the Product Tags you want to filter exported Orders by. Default is to include all Product Tags.', 'woo_ce' ); ?></p>
+</div>
+<!-- #export-orders-filters-tag -->
+<?php
+		ob_end_flush();
+
+	}
+
 	// HTML template for disabled Order Sorting widget on Store Exporter screen
 	function woo_ce_orders_order_sorting() {
 
@@ -249,6 +308,9 @@ if( is_admin() ) {
 	// HTML template for disabled Custom Orders widget on Store Exporter screen
 	function woo_ce_orders_custom_fields() {
 
+		$custom_orders = '-';
+		$custom_order_items = '-';
+
 		$troubleshooting_url = 'http://www.visser.com.au/documentation/store-exporter-deluxe/usage/';
 
 		ob_start(); ?>
@@ -266,7 +328,7 @@ if( is_admin() ) {
 							<label><?php _e( 'Order meta', 'woo_ce' ); ?></label>
 						</th>
 						<td>
-							<textarea name="custom_orders" rows="5" cols="70" disabled="disabled">-</textarea>
+							<textarea name="custom_orders" rows="5" cols="70" disabled="disabled"><?php echo esc_textarea( $custom_orders ); ?></textarea>
 							<p class="description"><?php _e( 'Include additional custom Order meta in your export file by adding each custom Order meta name to a new line above.<br />For example: <code>Customer UA, Customer IP Address</code>', 'woo_ce' ); ?></p>
 						</td>
 					</tr>
@@ -276,7 +338,7 @@ if( is_admin() ) {
 							<label><?php _e( 'Order Item meta', 'woo_ce' ); ?></label>
 						</th>
 						<td>
-							<textarea name="custom_order_items" rows="5" cols="70" disabled="disabled">-</textarea>
+							<textarea name="custom_order_items" rows="5" cols="70" disabled="disabled"><?php echo esc_textarea( $custom_order_items ); ?></textarea>
 							<p class="description"><?php _e( 'Include additional custom Order Item meta in your export file by adding each custom Order Item meta name to a new line above.<br />For example: <code>Personalized Message</code>.', 'woo_ce' ); ?></p>
 						</td>
 					</tr>
@@ -441,7 +503,15 @@ function woo_ce_get_order_fields( $format = 'full' ) {
 	);
 	$fields[] = array(
 		'name' => 'billing_address',
-		'label' => __( 'Billing: Street Address', 'woo_ce' )
+		'label' => __( 'Billing: Street Address (Full)', 'woo_ce' )
+	);
+	$fields[] = array(
+		'name' => 'billing_address_1',
+		'label' => __( 'Billing: Street Address 1', 'woo_ce' )
+	);
+	$fields[] = array(
+		'name' => 'billing_address_2',
+		'label' => __( 'Billing: Street Address 2', 'woo_ce' )
 	);
 	$fields[] = array(
 		'name' => 'billing_city',
@@ -493,7 +563,15 @@ function woo_ce_get_order_fields( $format = 'full' ) {
 	);
 	$fields[] = array(
 		'name' => 'shipping_address',
-		'label' => __( 'Shipping: Street Address', 'woo_ce' )
+		'label' => __( 'Shipping: Street Address (Full)', 'woo_ce' )
+	);
+	$fields[] = array(
+		'name' => 'shipping_address_1',
+		'label' => __( 'Shipping: Street Address 1', 'woo_ce' )
+	);
+	$fields[] = array(
+		'name' => 'shipping_address_2',
+		'label' => __( 'Shipping: Street Address 2', 'woo_ce' )
 	);
 	$fields[] = array(
 		'name' => 'shipping_city',
@@ -858,6 +936,14 @@ function woo_ce_extend_order_fields( $fields = array() ) {
 		}
 	}
 
+	// WooCommerce Currency Switcher - http://dev.pathtoenlightenment.net/shop
+	if( class_exists( 'WC_Aelia_CurrencySwitcher' ) ) {
+		$fields[] = array(
+			'name' => 'order_currency',
+			'label' => __( 'Order Currency', 'woo_ce' )
+		);
+	}
+
 	$custom_orders = woo_ce_get_option( 'custom_orders', '' );
 	if( !empty( $custom_orders ) ) {
 		foreach( $custom_orders as $custom_order ) {
@@ -870,6 +956,7 @@ function woo_ce_extend_order_fields( $fields = array() ) {
 		}
 		unset( $custom_orders, $custom_order );
 	}
+
 	return $fields;
 
 }
@@ -958,9 +1045,7 @@ function woo_ce_get_product_addons() {
 		$post_type = 'global_product_addon';
 		$args = array(
 			'post_type' => $post_type,
-			'numberposts' => -1,
-			'cache_results' => false,
-			'no_found_rows' => false
+			'numberposts' => -1
 		);
 		if( $product_addons = get_posts( $args ) ) {
 			foreach( $product_addons as $product_addon ) {
@@ -986,6 +1071,7 @@ function woo_ce_get_product_addons() {
 			);
 		}
 	}
+
 	return $output;
 
 }

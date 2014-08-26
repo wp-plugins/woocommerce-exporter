@@ -2,7 +2,7 @@
 	<div class="postbox">
 		<h3 class="hndle"><?php _e( 'Export File', 'woo_ce' ); ?></h3>
 		<div class="inside">
-			<textarea style="font:12px Consolas, Monaco, Courier, monospace; width:100%; height:200px;"><?php echo $contents; ?></textarea>
+			<textarea style="font:12px Consolas, Monaco, Courier, monospace; width:100%; height:200px;"><?php echo esc_textarea( $contents ); ?></textarea>
 		</div>
 		<!-- .inside -->
 	</div>

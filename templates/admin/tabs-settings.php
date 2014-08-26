@@ -19,7 +19,7 @@
 			<tr valign="top">
 				<th scope="row"><label for="export_filename"><?php _e( 'Export filename', 'woo_ce' ); ?></label></th>
 				<td>
-					<input name="export_filename" type="text" id="export_filename" value="<?php echo $export_filename; ?>" class="regular-text code" />
+					<input type="text" name="export_filename" id="export_filename" value="<?php echo esc_attr( $export_filename ); ?>" class="regular-text code" />
 					<p class="description"><?php _e( 'The filename of the exported export type. Tags can be used: ', 'woo_ce' ); ?> <code>%dataset%</code>, <code>%date%</code>, <code>%time%</code>, <code>%store_name%</code>.</p>
 				</td>
 			</tr>
@@ -103,7 +103,7 @@
 					<label for="delimiter"><?php _e( 'Field delimiter', 'woo_ce' ); ?></label>
 				</th>
 				<td>
-					<input type="text" size="3" id="delimiter" name="delimiter" value="<?php echo $delimiter; ?>" maxlength="1" class="text" />
+					<input type="text" size="3" id="delimiter" name="delimiter" value="<?php echo esc_attr( $delimiter ); ?>" maxlength="1" class="text" />
 					<p class="description"><?php _e( 'The field delimiter is the character separating each cell in your CSV. This is typically the \',\' (comma) character.', 'woo_pc' ); ?></p>
 				</td>
 			</tr>
@@ -113,7 +113,7 @@
 					<label for="category_separator"><?php _e( 'Category separator', 'woo_ce' ); ?></label>
 				</th>
 				<td>
-					<input type="text" size="3" id="category_separator" name="category_separator" value="<?php echo $category_separator; ?>" maxlength="1" class="text" />
+					<input type="text" size="3" id="category_separator" name="category_separator" value="<?php echo esc_attr( $category_separator ); ?>" maxlength="1" class="text" />
 					<p class="description"><?php _e( 'The Product Category separator allows you to assign individual Products to multiple Product Categories/Tags/Images at a time. It is suggested to use the \'|\' (vertical pipe) character between each item. For instance: <code>Clothing|Mens|Shirts</code>.', 'woo_ce' ); ?></p>
 				</td>
 			</tr>

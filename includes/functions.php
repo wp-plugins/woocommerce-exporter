@@ -127,7 +127,7 @@ if( is_admin() ) {
 		if( $fields == false )
 			$fields = array();
 		if( $type && isset( $fields ) )
-			woo_ce_update_option( $type . '_fields', $fields );
+			woo_ce_update_option( $type . '_fields', array_map( 'sanitize_text_field', $fields ) );
 
 	}
 
@@ -168,46 +168,49 @@ if( is_admin() ) {
 				$post_type = 'shop_order';
 				$args = array(
 					'post_type' => $post_type,
-					'posts_per_page' => 1
+					'posts_per_page' => 1,
+					'fields' => 'ids'
 				);
 				$query = new WP_Query( $args );
 				$count = $query->found_posts;
 				break;
 
 			case 'customers':
-				$post_type = 'shop_order';
-				$args = array(
-					'post_type' => $post_type,
-					'posts_per_page' => -1,
-					'post_status' => woo_ce_post_statuses(),
-					'cache_results' => false,
-					'no_found_rows' => false,
-					'tax_query' => array(
-						array(
-							'taxonomy' => 'shop_order_status',
-							'field' => 'slug',
-							'terms' => array( 'pending', 'on-hold', 'processing', 'completed' )
-						),
-					),
-				);
-				$orders = new WP_Query( $args );
-				$count = $orders->found_posts;
-				if( $count > 100 ) {
-					$count = sprintf( '~%s *', $count );
+				if( $users = woo_ce_return_count( 'users' ) > 1000 ) {
+					$count = sprintf( '~%s+', 1000 );
 				} else {
-					$customers = array();
-					if ( $orders->have_posts() ) {
-						while ( $orders->have_posts() ) {
-							$orders->the_post();
-							$email = get_post_meta( get_the_ID(), '_billing_email', true );
-							if( !in_array( $email, $customers ) ) {
-								$customers[get_the_ID()] = $email;
+					$post_type = 'shop_order';
+					$args = array(
+						'post_type' => $post_type,
+						'posts_per_page' => -1,
+						'post_status' => woo_ce_post_statuses(),
+						'tax_query' => array(
+							array(
+								'taxonomy' => 'shop_order_status',
+								'field' => 'slug',
+								'terms' => array( 'pending', 'on-hold', 'processing', 'completed' )
+							),
+						),
+					);
+					$orders = new WP_Query( $args );
+					$count = $orders->found_posts;
+					if( $count > 100 ) {
+						$count = sprintf( '~%s', $count );
+					} else {
+						$customers = array();
+						if ( $orders->have_posts() ) {
+							while ( $orders->have_posts() ) {
+								$orders->the_post();
+								$email = get_post_meta( get_the_ID(), '_billing_email', true );
+								if( !in_array( $email, $customers ) ) {
+									$customers[get_the_ID()] = $email;
+								}
+								unset( $email );
 							}
-							unset( $email );
+							$count = count( $customers );
 						}
-						$count = count( $customers );
+						wp_reset_postdata();
 					}
-					wp_reset_postdata();
 				}
 /*
 				if( false ) {
@@ -417,9 +420,7 @@ if( is_admin() ) {
 			'post_mime_type' => array( 'text/csv', 'xml/application', 'application/vnd.ms-excel' ),
 			'meta_key' => $meta_key,
 			'meta_value' => null,
-			'posts_per_page' => -1,
-			'cache_results' => false,
-			'no_found_rows' => false
+			'posts_per_page' => -1
 		);
 		if( isset( $_GET['filter'] ) ) {
 			$filter = $_GET['filter'];
@@ -483,9 +484,7 @@ if( is_admin() ) {
 			'post_type' => $post_type,
 			'meta_key' => $meta_key,
 			'meta_value' => null,
-			'numberposts' => -1,
-			'cache_results' => false,
-			'no_found_rows' => false
+			'numberposts' => -1
 		);
 		if( $type )
 			$args['meta_value'] = $type;
