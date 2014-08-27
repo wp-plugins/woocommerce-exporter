@@ -3,7 +3,7 @@
 Plugin Name: WooCommerce - Store Exporter
 Plugin URI: http://www.visser.com.au/woocommerce/plugins/exporter/
 Description: Export store details out of WooCommerce into simple formatted files (e.g. CSV, XML, Excel 2007 XLS, etc.).
-Version: 1.7.6
+Version: 1.7.7
 Author: Visser Labs
 Author URI: http://www.visser.com.au/about/
 License: GPL2
@@ -20,9 +20,9 @@ define( 'WOO_CE_PREFIX', 'woo_ce' );
 define( 'WOO_CE_DEBUG', false );
 
 // Avoid conflicts if Store Exporter Deluxe is activated
+include_once( WOO_CE_PATH . 'includes/common.php' );
 if( defined( 'WOO_CD_PREFIX' ) == false ) {
 	include_once( WOO_CE_PATH . 'common/common.php' );
-	include_once( WOO_CE_PATH . 'includes/common.php' );
 	include_once( WOO_CE_PATH . 'includes/functions.php' );
 }
 
@@ -170,7 +170,6 @@ if( is_admin() ) {
 				// User sorting
 				$export->user_orderby = false;
 				$export->user_order = false;
-
 
 				$export->type = ( isset( $_POST['dataset'] ) ? sanitize_text_field( $_POST['dataset'] ) : false );
 				if( $export->type )
@@ -359,7 +358,7 @@ if( is_admin() ) {
 			// Save changes on Settings screen
 			case 'save-settings':
 				// Sanitize each setting field as needed
-				woo_ce_update_option( 'export_filename', sanitize_file_name( (string)$_POST['export_filename'] ) );
+				woo_ce_update_option( 'export_filename', strip_tags( (string)$_POST['export_filename'] ) );
 				woo_ce_update_option( 'delete_file', sanitize_text_field( (int)$_POST['delete_file'] ) );
 				woo_ce_update_option( 'delimiter', sanitize_text_field( (string)$_POST['delimiter'] ) );
 				woo_ce_update_option( 'category_separator', sanitize_text_field( (string)$_POST['category_separator'] ) );
@@ -414,7 +413,7 @@ if( is_admin() ) {
 </script>
 <h3>' . __( 'Export', 'woo_ce' ) . '</h3>
 <p>' . __( 'We use the <a href="http://code.google.com/p/jquerycsvtotable/" target="_blank"><em>CSV to Table plugin</em></a> to see first hand formatting errors or unexpected values within the export file.', 'woo_ce' ) . '</p>
-<div id="export_sheet" style="margin-bottom:1em;">' . $export_log . '</div>
+<div id="export_sheet" style="margin-bottom:1em;">' . esc_attr( $export_log ) . '</div>
 <p class="description">' . __( 'This jQuery plugin can fail with <code>\'Item count (#) does not match header count\'</code> notices which simply mean the number of headers detected does not match the number of cell contents.', 'woo_ce' ) . '</p>
 <hr />';
 					}

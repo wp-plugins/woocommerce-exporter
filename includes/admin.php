@@ -97,7 +97,6 @@ function woo_ce_enqueue_scripts( $hook ) {
 
 	$page = 'woocommerce_page_woo_ce';
 	if( $page == $hook ) {
-
 		// Simple check that WooCommerce is activated
 		if( class_exists( 'WooCommerce' ) ) {
 
@@ -124,7 +123,6 @@ function woo_ce_enqueue_scripts( $hook ) {
 			wp_enqueue_style( 'jquery-csvToTable', plugins_url( '/templates/admin/jquery-csvtable.css', WOO_CE_RELPATH ) );
 			wp_enqueue_script( 'jquery-csvToTable', plugins_url( '/js/jquery.csvToTable.js', WOO_CE_RELPATH ), array( 'jquery' ) );
 		}
-
 	}
 
 }

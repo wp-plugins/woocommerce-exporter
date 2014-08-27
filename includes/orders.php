@@ -895,6 +895,22 @@ function woo_ce_extend_order_fields( $fields = array() ) {
 		unset( $custom_fields, $custom_field );
 	}
 
+	// WooCommerce Checkout Add-Ons - http://www.skyverge.com/product/woocommerce-checkout-add-ons/
+	if( function_exists( 'init_woocommerce_checkout_add_ons' ) ) {
+		$fields[] = array(
+			'name' => 'order_items_checkout_addon_id',
+			'label' => __( 'Order Items: Checkout Add-ons ID', 'woo_ce' )
+		);
+		$fields[] = array(
+			'name' => 'order_items_checkout_addon_label',
+			'label' => __( 'Order Items: Checkout Add-ons Label', 'woo_ce' )
+		);
+		$fields[] = array(
+			'name' => 'order_items_checkout_addon_value',
+			'label' => __( 'Order Items: Checkout Add-ons Value', 'woo_ce' )
+		);
+	}
+
 	// WooCommerce Brands Addon - http://woothemes.com/woocommerce/
 	if( class_exists( 'WC_Brands' ) ) {
 		$fields[] = array(

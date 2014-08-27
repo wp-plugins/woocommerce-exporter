@@ -3,9 +3,10 @@
 function woo_ce_generate_csv_filename( $export_type = '' ) {
 
 	// Get the filename from WordPress options
-	$filename = sanitize_file_name( woo_ce_get_option( 'export_filename', 'woo-export_%dataset%-%date%.csv' ) );
+	$filename = woo_ce_get_option( 'export_filename', 'woo-export_%dataset%-%date%.csv' );
 
 	// Strip other file extensions if present
+	$filename = str_replace( array( 'xml', 'xls' ), 'csv', $filename );
 	if( ( strpos( $filename, '.xml' ) !== false ) || ( strpos( $filename, '.xls' ) !== false ) )
 		$filename = str_replace( array( '.xml', '.xls' ), '.csv', $filename );
 

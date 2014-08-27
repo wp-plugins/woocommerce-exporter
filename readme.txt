@@ -5,7 +5,7 @@ Donate link: http://www.visser.com.au/#donations
 Tags: e-commerce, woocommerce, shop, cart, ecommerce, export, csv, xml, xls, excel, customers, products, sales, orders, coupons, users, attributes, subscriptions
 Requires at least: 2.9.2
 Tested up to: 3.9.2
-Stable tag: 1.7.6
+Stable tag: 1.7.7
 
 == Description ==
 
@@ -40,7 +40,7 @@ Features include:
 * Supports external CRON commands (**)
 * Supports scheduled exports (**)
 
-(*) Compatible with Product Importer Deluxe, All in One SEO Pack, Advanced Google Product Feed, Product Addons, Sequential Order Number Pro, WooCommerce Checkout Manager, Checkout Field Editor, Cost of Goods, Per-Product Shipping, Local Pickups Plus, WooCommerce Subscriptions and more.
+(*) Compatible with Product Importer Deluxe, All in One SEO Pack, Advanced Google Product Feed, Product Addons, Sequential Order Number Pro, WooCommerce Checkout Manager, Checkout Field Editor, Cost of Goods, Per-Product Shipping, Local Pickups Plus, WooCommerce Subscriptions, WooCommerce Checkout Add-ons and more.
 
 (**) Requries the Pro upgrade to enable additional store export functionality.
 
@@ -80,6 +80,10 @@ http://www.visser.com.au/woocommerce/forums/
 7. Download achived copies of previous exports
 
 == Changelog ==
+
+= 1.7.7 =
+* Added: Support for WooCommerce Checkout Add-ons in Orders export
+* Fixed: Saving Export filename option over-sanitized
 
 = 1.7.6 =
 * Fixed: Limit volume for Users export
