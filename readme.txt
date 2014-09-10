@@ -4,7 +4,7 @@ Contributors: visser
 Donate link: http://www.visser.com.au/#donations
 Tags: e-commerce, woocommerce, shop, cart, ecommerce, export, csv, xml, xls, excel, customers, products, sales, orders, coupons, users, attributes, subscriptions
 Requires at least: 2.9.2
-Tested up to: 3.9.2
+Tested up to: 4.0
 Stable tag: 1.7.7
 
 == Description ==
