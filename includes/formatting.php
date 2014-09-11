@@ -8,8 +8,8 @@ function woo_ce_file_encoding( $content = '' ) {
 		$from_encoding = 'auto';
 		if( !empty( $to_encoding ) )
 			$content = mb_convert_encoding( trim( $content ), $to_encoding, $from_encoding );
-		if( $to_encoding == 'UTF-8' )
-			$content = utf8_decode( $content );
+		if( $to_encoding <> 'UTF-8' )
+			$content = utf8_encode( $content );
 	}
 	return $content;
 
@@ -415,9 +415,10 @@ function woo_ce_format_sale_price_dates( $sale_date = '' ) {
 
 function woo_ce_format_date( $date = '' ) {
 
-	$output = '';
-	if( $date )
-		$output = mysql2date( woo_ce_get_option( 'date_format', 'd/m/Y' ), $date );
+	$output = $date;
+	$date_format = woo_ce_get_option( 'date_format', 'd/m/Y' );
+	if( !empty( $date ) && $date_format != '' )
+		$output = mysql2date( $date_format, $date );
 	return $output;
 
 }

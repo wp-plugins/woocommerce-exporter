@@ -4,40 +4,40 @@
 	<p><?php _e( 'Export store details out of WooCommerce into a CSV-formatted file.', 'woo_ce' ); ?></p>
 	<ul class="ul-disc">
 		<li>
-			<a href="<?php echo add_query_arg( 'tab', 'export' ); ?>#export-products"><?php _e( 'Export Products', 'woo_ce' ); ?></a>
+			<a href="<?php echo add_query_arg( 'tab', 'export' ); ?>#export-product"><?php _e( 'Export Products', 'woo_ce' ); ?></a>
 		</li>
 		<li>
-			<a href="<?php echo add_query_arg( 'tab', 'export' ); ?>#export-categories"><?php _e( 'Export Categories', 'woo_ce' ); ?></a>
+			<a href="<?php echo add_query_arg( 'tab', 'export' ); ?>#export-category"><?php _e( 'Export Categories', 'woo_ce' ); ?></a>
 		</li>
 		<li>
-			<a href="<?php echo add_query_arg( 'tab', 'export' ); ?>#export-tags"><?php _e( 'Export Tags', 'woo_ce' ); ?></a>
+			<a href="<?php echo add_query_arg( 'tab', 'export' ); ?>#export-tag"><?php _e( 'Export Tags', 'woo_ce' ); ?></a>
 		</li>
 		<li>
-			<a href="<?php echo add_query_arg( 'tab', 'export' ); ?>#export-brands"><?php _e( 'Export Brands', 'woo_ce' ); ?></a>
+			<a href="<?php echo add_query_arg( 'tab', 'export' ); ?>#export-brand"><?php _e( 'Export Brands', 'woo_ce' ); ?></a>
 			<span class="description">(<?php printf( __( 'available in %s', 'woo_ce' ), $woo_cd_link ); ?>)</span>
 		</li>
 		<li>
-			<a href="<?php echo add_query_arg( 'tab', 'export' ); ?>#export-orders"><?php _e( 'Export Orders', 'woo_ce' ); ?></a>
+			<a href="<?php echo add_query_arg( 'tab', 'export' ); ?>#export-order"><?php _e( 'Export Orders', 'woo_ce' ); ?></a>
 			<span class="description">(<?php printf( __( 'available in %s', 'woo_ce' ), $woo_cd_link ); ?>)</span>
 		</li>
 		<li>
-			<a href="<?php echo add_query_arg( 'tab', 'export' ); ?>#export-customers"><?php _e( 'Export Customers', 'woo_ce' ); ?></a>
+			<a href="<?php echo add_query_arg( 'tab', 'export' ); ?>#export-customer"><?php _e( 'Export Customers', 'woo_ce' ); ?></a>
 			<span class="description">(<?php printf( __( 'available in %s', 'woo_ce' ), $woo_cd_link ); ?>)</span>
 		</li>
 		<li>
-			<a href="<?php echo add_query_arg( 'tab', 'export' ); ?>#export-users"><?php _e( 'Export Users', 'woo_ce' ); ?></a>
+			<a href="<?php echo add_query_arg( 'tab', 'export' ); ?>#export-user"><?php _e( 'Export Users', 'woo_ce' ); ?></a>
 		</li>
 		<li>
-			<a href="<?php echo add_query_arg( 'tab', 'export' ); ?>#export-coupons"><?php _e( 'Export Coupons', 'woo_ce' ); ?></a>
+			<a href="<?php echo add_query_arg( 'tab', 'export' ); ?>#export-coupon"><?php _e( 'Export Coupons', 'woo_ce' ); ?></a>
 			<span class="description">(<?php printf( __( 'available in %s', 'woo_ce' ), $woo_cd_link ); ?>)</span>
 		</li>
 		<li>
-			<a href="<?php echo add_query_arg( 'tab', 'export' ); ?>#export-subscriptions"><?php _e( 'Export Subscriptions', 'woo_ce' ); ?></a>
+			<a href="<?php echo add_query_arg( 'tab', 'export' ); ?>#export-subscription"><?php _e( 'Export Subscriptions', 'woo_ce' ); ?></a>
 			<span class="description">(<?php printf( __( 'available in %s', 'woo_ce' ), $woo_cd_link ); ?>)</span>
 		</li>
 <!--
 		<li>
-			<a href="<?php echo add_query_arg( 'tab', 'export' ); ?>#export-attributes"><?php _e( 'Export Attributes', 'woo_ce' ); ?></a>
+			<a href="<?php echo add_query_arg( 'tab', 'export' ); ?>#export-attribute"><?php _e( 'Export Attributes', 'woo_ce' ); ?></a>
 			<span class="description">(<?php printf( __( 'available in %s', 'woo_ce' ), $woo_cd_link ); ?>)</span>
 		</li>
 -->

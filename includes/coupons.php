@@ -111,8 +111,10 @@ function woo_ce_get_coupon_fields( $format = 'full' ) {
 		case 'summary':
 			$output = array();
 			$size = count( $fields );
-			for( $i = 0; $i < $size; $i++ )
-				$output[$fields[$i]['name']] = 'on';
+			for( $i = 0; $i < $size; $i++ ) {
+				if( isset( $fields[$i] ) )
+					$output[$fields[$i]['name']] = 'on';
+			}
 			return $output;
 			break;
 
@@ -148,7 +150,6 @@ function woo_ce_get_coupons( $args = array() ) {
 		'offset' => $offset,
 		'posts_per_page' => $limit_volume,
 		'post_status' => woo_ce_post_statuses(),
-		'no_found_rows' => false,
 		'fields' => 'ids'
 	);
 	$coupons = array();

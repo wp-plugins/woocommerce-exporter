@@ -74,8 +74,12 @@ if( is_admin() ) {
 <p><label><input type="checkbox" id="orders-filters-user_role" /> <?php _e( 'Filter Orders by User Role', 'woo_ce' ); ?><span class="description"> - <?php printf( __( 'available in %s', 'woo_ce' ), $woo_cd_link ); ?></span></label></p>
 <div id="export-orders-filters-user_role" class="separator">
 	<ul>
-<?php foreach( $user_roles as $key => $user_role ) { ?>
+<?php if( $user_roles ) { ?>
+	<?php foreach( $user_roles as $key => $user_role ) { ?>
 		<li><label><input type="checkbox" name="order_filter_user_role[<?php echo $key; ?>]" value="<?php echo $key; ?>" disabled="disabled" /> <?php echo ucfirst( $user_role['name'] ); ?></label></li>
+	<?php } ?>
+<?php } else { ?>
+		<li><?php _e( 'No User Roles were found.', 'woo_ce' ); ?></li>
 <?php } ?>
 	</ul>
 	<p class="description"><?php _e( 'Select the User Roles you want to filter exported Orders by. Default is to include all User Role options.', 'woo_ce' ); ?></p>
@@ -207,11 +211,15 @@ if( is_admin() ) {
 <p><label><input type="checkbox" id="orders-filters-status" /> <?php _e( 'Filter Orders by Order Status', 'woo_ce' ); ?><span class="description"> - <?php printf( __( 'available in %s', 'woo_ce' ), $woo_cd_link ); ?></span></label></p>
 <div id="export-orders-filters-status" class="separator">
 	<ul>
-<?php foreach( $order_statuses as $order_status ) { ?>
+<?php if( $order_statuses ) { ?>
+	<?php foreach( $order_statuses as $order_status ) { ?>
 		<li>
-			<label><input type="checkbox" name="order_filter_status[<?php echo $order_status->name; ?>]" value="<?php echo $order_status->name; ?>" disabled="disabled" /> <?php echo ucfirst( $order_status->name ); ?></label>
+			<label><input type="checkbox" name="order_filter_status[<?php echo $order_status->slug; ?>]" value="<?php echo $order_status->slug; ?>" disabled="disabled" /> <?php echo ucfirst( $order_status->name ); ?></label>
 			<span class="description">(<?php echo $order_status->count; ?>)</span>
 		</li>
+	<?php } ?>
+<?php } else { ?>
+		<li><?php _e( 'No Order Status\'s were found.', 'woo_ce' ); ?></li>
 <?php } ?>
 	</ul>
 	<p class="description"><?php _e( 'Select the Order Status you want to filter exported Orders by. Default is to include all Order Status options.', 'woo_ce' ); ?></p>
@@ -237,10 +245,14 @@ if( is_admin() ) {
 <p><label><input type="checkbox" id="orders-filters-category" /> <?php _e( 'Filter Orders by Product Category', 'woo_ce' ); ?><span class="description"> - <?php printf( __( 'available in %s', 'woo_ce' ), $woo_cd_link ); ?></span></label></p>
 <div id="export-orders-filters-category" class="separator">
 	<ul>
-<?php foreach( $product_categories as $product_category ) { ?>
+<?php if( $product_categories ) { ?>
+	<?php foreach( $product_categories as $product_category ) { ?>
 		<li>
 			<label><input type="checkbox" name="order_filter_category[<?php echo $product_category->name; ?>]" value="<?php echo $product_category->term_id; ?>" title="<?php printf( __( 'Term ID: %d', 'woo_ce' ), $product_category->term_id ); ?>" disabled="disabled" /> <?php echo woo_ce_format_product_category_label( $product_category->name, $product_category->parent_name ); ?></label>
 		</li>
+	<?php } ?>
+<?php } else { ?>
+		<li><?php _e( 'No Product Categories were found.', 'woo_ce' ); ?></li>
 <?php } ?>
 	</ul>
 	<p class="description"><?php _e( 'Select the Product Categories you want to filter exported Orders by. Default is to include all Product Categories.', 'woo_ce' ); ?></p>
@@ -266,11 +278,15 @@ if( is_admin() ) {
 <p><label><input type="checkbox" id="orders-filters-tag" /> <?php _e( 'Filter Orders by Product Tag', 'woo_ce' ); ?><span class="description"> - <?php printf( __( 'available in %s', 'woo_ce' ), $woo_cd_link ); ?></span></label></p>
 <div id="export-orders-filters-tag" class="separator">
 	<ul>
-<?php foreach( $product_tags as $product_tag ) { ?>
+<?php if( $product_tags ) { ?>
+	<?php foreach( $product_tags as $product_tag ) { ?>
 		<li>
 			<label><input type="checkbox" name="order_filter_tag[<?php echo $product_tag->name; ?>]" value="<?php echo $product_tag->name; ?>" title="<?php printf( __( 'Term ID: %d', 'woo_ce' ), $product_tag->term_id ); ?>" disabled="disabled" /> <?php echo $product_tag->name; ?></label>
 			<span class="description">(<?php echo $product_tag->count; ?>)</span>
 		</li>
+	<?php } ?>
+<?php } else { ?>
+		<li><?php _e( 'No Product Tags have been found.', 'jigo_ce' ); ?></li>
 <?php } ?>
 	</ul>
 	<p class="description"><?php _e( 'Select the Product Tags you want to filter exported Orders by. Default is to include all Product Tags.', 'woo_ce' ); ?></p>
@@ -354,8 +370,10 @@ if( is_admin() ) {
 		<!-- .postbox -->
 
 	</div>
+	<!-- #poststuff -->
 	<input type="hidden" name="action" value="update" />
 </form>
+<!-- #export-orders-custom-fields -->
 <?php
 		ob_end_flush();
 
@@ -681,8 +699,10 @@ function woo_ce_get_order_fields( $format = 'full' ) {
 		case 'summary':
 			$output = array();
 			$size = count( $fields );
-			for( $i = 0; $i < $size; $i++ )
-				$output[$fields[$i]['name']] = 'on';
+			for( $i = 0; $i < $size; $i++ ) {
+				if( isset( $fields[$i] ) )
+					$output[$fields[$i]['name']] = 'on';
+			}
 			return $output;
 			break;
 
@@ -943,10 +963,18 @@ function woo_ce_extend_order_fields( $fields = array() ) {
 	if( class_exists( 'RGForms' ) && class_exists( 'woocommerce_gravityforms' ) ) {
 		// Check if there are any Products linked to Gravity Forms
 		if( $gf_fields = woo_ce_get_gravity_form_fields() ) {
+			$fields[] = array(
+				'name' => 'order_items_gf_form_id',
+				'label' => __( 'Order Items: Gravity Form ID', 'woo_ce' )
+			);
+			$fields[] = array(
+				'name' => 'order_items_gf_form_label',
+				'label' => __( 'Order Items: Gravity Form Label', 'woo_ce' )
+			);
 			foreach( $gf_fields as $key => $gf_field ) {
 				$fields[] = array(
 					'name' => sprintf( 'order_items_gf_%d_%s', $gf_field['formId'], $gf_field['id'] ),
-					'label' => sprintf( __( 'Order Items: %s' ), $gf_field['label'] )
+					'label' => sprintf( __( 'Order Items: %s', 'woo_ce' ), ucfirst( $gf_field['label'] ) )
 				);
 			}
 		}
@@ -960,6 +988,7 @@ function woo_ce_extend_order_fields( $fields = array() ) {
 		);
 	}
 
+	// Custom Order fields
 	$custom_orders = woo_ce_get_option( 'custom_orders', '' );
 	if( !empty( $custom_orders ) ) {
 		foreach( $custom_orders as $custom_order ) {
@@ -971,6 +1000,20 @@ function woo_ce_extend_order_fields( $fields = array() ) {
 			}
 		}
 		unset( $custom_orders, $custom_order );
+	}
+
+
+	// Custom Order Items fields
+	$custom_order_items = woo_ce_get_option( 'custom_order_items', '' );
+	if( !empty( $custom_order_items ) ) {
+		foreach( $custom_order_items as $custom_order_item ) {
+			if( !empty( $custom_order_item ) ) {
+				$fields[] = array(
+					'name' => sprintf( 'order_items_%s', $custom_order_item ),
+					'label' => sprintf( __( 'Order Items: %s', 'woo_ce' ), $custom_order_item )
+				);
+			}
+		}
 	}
 
 	return $fields;
@@ -1028,12 +1071,33 @@ function woo_ce_format_order_date( $date ) {
 // Returns a list of WooCommerce Order statuses
 function woo_ce_get_order_statuses() {
 
-	$args = array(
-		'hide_empty' => false
-	);
-	$terms = get_terms( 'shop_order_status', $args );
-	if( !empty( $terms ) && is_wp_error( $terms ) == false )
-		return $terms;
+	$terms = false;
+	// Check if this is a WooCommerce 2.2+ instance (new Post Status)
+	$woocommerce_version = woo_get_woo_version();
+	if( version_compare( $woocommerce_version, '2.2', '>=' ) ) {
+		// Convert Order Status array into our magic sauce
+		$order_statuses = ( function_exists( 'wc_get_order_statuses' ) ? wc_get_order_statuses() : false );
+		if( !empty( $order_statuses ) ) {
+			$terms = array();
+			$post_type = 'shop_order';
+			$posts_count = wp_count_posts( $post_type );
+			foreach( $order_statuses as $key => $order_status ) {
+				$terms[] = (object)array(
+					'name' => $order_status,
+					'slug' => $key,
+					'count' => ( isset( $posts_count->$key ) ? $posts_count->$key : 0 )
+				);
+			}
+		}
+	} else {
+		$args = array(
+			'hide_empty' => false
+		);
+		$terms = get_terms( 'shop_order_status', $args );
+		if( empty( $terms ) || ( is_wp_error( $terms ) == true ) )
+			$terms = false;
+	}
+	return $terms;
 
 }
 

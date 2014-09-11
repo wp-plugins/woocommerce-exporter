@@ -25,7 +25,7 @@ if( is_admin() ) {
 	</ul>
 	<p class="description"><?php _e( 'Select the Product Categories you want to filter exported Products by. Default is to include all Product Categories.', 'woo_ce' ); ?></p>
 <?php } else { ?>
-	<p><?php _e( 'No Product Categories have been found.', 'woo_ce' ); ?></p>
+	<p><?php _e( 'No Product Categories were found.', 'woo_ce' ); ?></p>
 <?php } ?>
 </div>
 <!-- #export-products-filters-categories -->
@@ -56,7 +56,7 @@ if( is_admin() ) {
 	</ul>
 	<p class="description"><?php _e( 'Select the Product Tags you want to filter exported Products by. Default is to include all Product Tags.', 'woo_ce' ); ?></p>
 <?php } else { ?>
-	<p><?php _e( 'No Product Tags have been found.', 'woo_ce' ); ?></p>
+	<p><?php _e( 'No Product Tags were found.', 'woo_ce' ); ?></p>
 <?php } ?>
 </div>
 <!-- #export-products-filters-tags -->
@@ -97,13 +97,37 @@ if( is_admin() ) {
 <p><label><input type="checkbox" id="products-filters-type" /> <?php _e( 'Filter Products by Product Type', 'woo_ce' ); ?></label></p>
 <div id="export-products-filters-type" class="separator">
 	<ul>
-<?php foreach( $product_types as $key => $product_type ) { ?>
+<?php if( $product_types ) { ?>
+	<?php foreach( $product_types as $key => $product_type ) { ?>
 		<li><label><input type="checkbox" name="product_filter_type[<?php echo $key; ?>]" value="<?php echo $key; ?>" /> <?php echo woo_ce_format_product_type( $product_type['name'] ); ?> (<?php echo $product_type['count']; ?>)</label></li>
+	<?php } ?>
 <?php } ?>
 	</ul>
 	<p class="description"><?php _e( 'Select the Product Type\'s you want to filter exported Products by. Default is to include all Product Types and Variations.', 'woo_ce' ); ?></p>
 </div>
 <!-- #export-products-filters-type -->
+<?php
+		ob_end_flush();
+
+	}
+
+	// HTML template for Filter Products by Product Type widget on Store Exporter screen
+	function woo_ce_products_filter_by_stock_status() {
+
+		// Store Exporter Deluxe
+		$woo_cd_url = 'http://www.visser.com.au/woocommerce/plugins/exporter-deluxe/';
+		$woo_cd_link = sprintf( '<a href="%s" target="_blank">' . __( 'Store Exporter Deluxe', 'woo_ce' ) . '</a>', $woo_cd_url );
+
+		ob_start(); ?>
+<p><label><input type="checkbox" id="products-filters-stock" /> <?php _e( 'Filter Products by Stock Status', 'woo_ce' ); ?></label></p>
+<div id="export-products-filters-stock" class="separator">
+	<ul>
+		<li value=""><label><input type="radio" name="product_filter_stock" value="" checked="checked" /><?php _e( 'Include both', 'woo_ce' ); ?></label></li>
+		<li value="instock"><label><input type="radio" name="product_filter_stock" value="instock" disabled="disabled" /><?php _e( 'In stock', 'woo_ce' ); ?><span class="description"> - <?php printf( __( 'available in %s', 'woo_ce' ), $woo_cd_link ); ?></span></label></li>
+		<li value="outofstock"><label><input type="radio" name="product_filter_stock" value="outofstock" disabled="disabled" /><?php _e( 'Out of stock', 'woo_ce' ); ?><span class="description"> - <?php printf( __( 'available in %s', 'woo_ce' ), $woo_cd_link ); ?></span></label></li>
+	</ul>
+</div>
+<!-- #export-products-filters-stock -->
 <?php
 		ob_end_flush();
 
@@ -224,7 +248,6 @@ function woo_ce_get_products( $args = array() ) {
 		'offset' => $offset,
 		'posts_per_page' => $limit_volume,
 		'post_status' => woo_ce_post_statuses(),
-		'no_found_rows' => false,
 		'fields' => 'ids'
 	);
 	if( $product_categories ) {
@@ -377,12 +400,16 @@ function woo_ce_get_product_data( $product_id = 0, $args = array() ) {
 				// Check for taxonomy-based attributes
 				foreach( $attributes as $attribute ) {
 					if( isset( $product->attributes['pa_' . $attribute->attribute_name] ) )
-						$product->{'attribute_' . $attribute->attribute_name} = woo_ce_get_product_assoc_attributes( $product->ID, $product->attributes['pa_' . $attribute->attribute_name] );
+						$product->{'attribute_' . $attribute->attribute_name} = woo_ce_get_product_assoc_attributes( $product->ID, $product->attributes['pa_' . $attribute->attribute_name], 'product' );
+					else
+						$product->{'attribute_' . $attribute->attribute_name} = woo_ce_get_product_assoc_attributes( $product->ID, $attribute, 'global' );
 				}
 				// Check for per-Product attributes (custom)
 				foreach( $product->attributes as $key => $attribute ) {
-					if( $attribute['is_taxonomy'] == 0 )
-						$product->{'attribute_' . $key} = $attribute['value'];
+					if( $attribute['is_taxonomy'] == 0 ) {
+						if( !isset( $product->{'attribute_' . $key} ) )
+							$product->{'attribute_' . $key} = $attribute['value'];
+					}
 				}
 			}
 		}
@@ -597,19 +624,24 @@ function woo_ce_get_product_assoc_crosssell_ids( $product_id = 0 ) {
 }
 
 // Returns Product Attributes associated to a specific Product
-function woo_ce_get_product_assoc_attributes( $product_id = 0, $attribute = array() ) {
+function woo_ce_get_product_assoc_attributes( $product_id = 0, $attribute = array(), $type = 'product' ) {
 
 	global $export;
 
 	$output = '';
 	if( $product_id ) {
 		$terms = array();
-		if( $attribute['is_taxonomy'] == 1 )
-			$terms = wp_get_object_terms( $product_id, $attribute['name'] );
+		if( $type == 'product' ) {
+			if( $attribute['is_taxonomy'] == 1 )
+				$term_taxonomy = $attribute['name'];
+		} else if( $type == 'global' ) {
+			$term_taxonomy = 'pa_' . $attribute->attribute_name;
+		}
+		$terms = wp_get_object_terms( $product_id, $term_taxonomy );
 		if( !empty( $terms ) && is_wp_error( $terms ) == false ) {
 			$size = count( $terms );
 			for( $i = 0; $i < $size; $i++ )
-				$output .= $terms[$i]->slug . $export->category_separator;
+				$output .= $terms[$i]->name . $export->category_separator;
 			unset( $terms );
 		}
 		$output = substr( $output, 0, -1 );
@@ -867,7 +899,7 @@ function woo_ce_get_product_fields( $format = 'full' ) {
 	// Allow Plugin/Theme authors to add support for additional Product columns
 	$fields = apply_filters( 'woo_ce_product_fields', $fields );
 
-	if( $remember = woo_ce_get_option( 'products_fields', array() ) ) {
+	if( $remember = woo_ce_get_option( 'product_fields', array() ) ) {
 		$remember = maybe_unserialize( $remember );
 		$size = count( $fields );
 		for( $i = 0; $i < $size; $i++ ) {
@@ -883,16 +915,20 @@ function woo_ce_get_product_fields( $format = 'full' ) {
 		case 'summary':
 			$output = array();
 			$size = count( $fields );
-			for( $i = 0; $i < $size; $i++ )
-				$output[$fields[$i]['name']] = 'on';
+			for( $i = 0; $i < $size; $i++ ) {
+				if( isset( $fields[$i] ) )
+					$output[$fields[$i]['name']] = 'on';
+			}
 			return $output;
 			break;
 
 		case 'full':
 		default:
+			$sorting = woo_ce_get_option( 'product_sorting', array() );
 			$size = count( $fields );
 			for( $i = 0; $i < $size; $i++ )
-				$fields[$i]['order'] = $i;
+				$fields[$i]['order'] = ( isset( $sorting[$fields[$i]['name']] ) ? $sorting[$fields[$i]['name']] : $i );
+			usort( $fields, 'woo_ce_sort_fields' );
 			return $fields;
 			break;
 
@@ -990,23 +1026,23 @@ function woo_ce_extend_product_fields( $fields ) {
 	if( function_exists( 'wpseo_admin_init' ) ) {
 		$fields[] = array(
 			'name' => 'wpseo_focuskw',
-			'label' => __( 'WordPress SEO - Focus Keyword', 'woo_pd' )
+			'label' => __( 'WordPress SEO - Focus Keyword', 'woo_ce' )
 		);
 		$fields[] = array(
 			'name' => 'wpseo_metadesc',
-			'label' => __( 'WordPress SEO - Meta Description', 'woo_pd' )
+			'label' => __( 'WordPress SEO - Meta Description', 'woo_ce' )
 		);
 		$fields[] = array(
 			'name' => 'wpseo_title',
-			'label' => __( 'WordPress SEO - SEO Title', 'woo_pd' )
+			'label' => __( 'WordPress SEO - SEO Title', 'woo_ce' )
 		);
 		$fields[] = array(
 			'name' => 'wpseo_googleplus_description',
-			'label' => __( 'WordPress SEO - Google+ Description', 'woo_pd' )
+			'label' => __( 'WordPress SEO - Google+ Description', 'woo_ce' )
 		);
 		$fields[] = array(
 			'name' => 'wpseo_opengraph_description',
-			'label' => __( 'WordPress SEO - Facebook Description', 'woo_pd' )
+			'label' => __( 'WordPress SEO - Facebook Description', 'woo_ce' )
 		);
 	}
 
@@ -1014,31 +1050,31 @@ function woo_ce_extend_product_fields( $fields ) {
 	if( function_exists( 'su_wp_incompat_notice' ) ) {
 		$fields[] = array(
 			'name' => 'useo_meta_title',
-			'label' => __( 'Ultimate SEO - Title Tag', 'woo_pd' )
+			'label' => __( 'Ultimate SEO - Title Tag', 'woo_ce' )
 		);
 		$fields[] = array(
 			'name' => 'useo_meta_description',
-			'label' => __( 'Ultimate SEO - Meta Description', 'woo_pd' )
+			'label' => __( 'Ultimate SEO - Meta Description', 'woo_ce' )
 		);
 		$fields[] = array(
 			'name' => 'useo_meta_keywords',
-			'label' => __( 'Ultimate SEO - Meta Keywords', 'woo_pd' )
+			'label' => __( 'Ultimate SEO - Meta Keywords', 'woo_ce' )
 		);
 		$fields[] = array(
 			'name' => 'useo_social_title',
-			'label' => __( 'Ultimate SEO - Social Title', 'woo_pd' )
+			'label' => __( 'Ultimate SEO - Social Title', 'woo_ce' )
 		);
 		$fields[] = array(
 			'name' => 'useo_social_description',
-			'label' => __( 'Ultimate SEO - Social Description', 'woo_pd' )
+			'label' => __( 'Ultimate SEO - Social Description', 'woo_ce' )
 		);
 		$fields[] = array(
 			'name' => 'useo_meta_noindex',
-			'label' => __( 'Ultimate SEO - NoIndex', 'woo_pd' )
+			'label' => __( 'Ultimate SEO - NoIndex', 'woo_ce' )
 		);
 		$fields[] = array(
 			'name' => 'useo_meta_noautolinks',
-			'label' => __( 'Ultimate SEO - Disable Autolinks', 'woo_pd' )
+			'label' => __( 'Ultimate SEO - Disable Autolinks', 'woo_ce' )
 		);
 	}
 
@@ -1109,6 +1145,20 @@ function woo_ce_extend_product_fields( $fields ) {
 
 }
 add_filter( 'woo_ce_product_fields', 'woo_ce_extend_product_fields' );
+
+function woo_ce_override_product_field_labels( $fields = array() ) {
+
+	$labels = woo_ce_get_option( 'product_labels', array() );
+	if( !empty( $labels ) ) {
+		foreach( $fields as $key => $field ) {
+			if( isset( $labels[$field['name']] ) )
+				$fields[$key]['label'] = $labels[$field['name']];
+		}
+	}
+	return $fields;
+
+}
+add_filter( 'woo_ce_product_fields', 'woo_ce_override_product_field_labels', 11 );
 
 // Returns the export column header label based on an export column slug
 function woo_ce_get_product_field( $name = null, $format = 'name' ) {

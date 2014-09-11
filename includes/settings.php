@@ -49,7 +49,9 @@ function woo_ce_export_settings_cron() {
 
 	// Scheduled exports
 	$order_statuses = woo_ce_get_order_statuses();
+	$product_types = woo_ce_get_product_types();
 	$auto_interval = 1440;
+	$auto_format = 'csv';
 
 	// CRON exports
 	$secret_key = '-';
@@ -103,14 +105,14 @@ function woo_ce_export_settings_cron() {
 	</th>
 	<td>
 		<select id="auto_type" name="auto_type">
-			<option value="products"><?php _e( 'Products', 'woo_ce' ); ?></option>
-			<option value="categories"><?php _e( 'Categories', 'woo_ce' ); ?></option>
-			<option value="tags"><?php _e( 'Tags', 'woo_ce' ); ?></option>
-			<option value="brands"><?php _e( 'Brands', 'woo_ce' ); ?></option>
-			<option value="orders"><?php _e( 'Orders', 'woo_ce' ); ?></option>
-			<option value="customers"><?php _e( 'Customers', 'woo_ce' ); ?></option>
-			<option value="coupons"><?php _e( 'Coupons', 'woo_ce' ); ?></option>
-			<!-- <option value="attributes"><?php _e( 'Attributes', 'woo_ce' ); ?></option> -->
+			<option value="product"><?php _e( 'Products', 'woo_ce' ); ?></option>
+			<option value="category"><?php _e( 'Categories', 'woo_ce' ); ?></option>
+			<option value="tag"><?php _e( 'Tags', 'woo_ce' ); ?></option>
+			<option value="brand"><?php _e( 'Brands', 'woo_ce' ); ?></option>
+			<option value="order"><?php _e( 'Orders', 'woo_ce' ); ?></option>
+			<option value="customer"><?php _e( 'Customers', 'woo_ce' ); ?></option>
+			<option value="coupon"><?php _e( 'Coupons', 'woo_ce' ); ?></option>
+			<!-- <option value="attribute"><?php _e( 'Attributes', 'woo_ce' ); ?></option> -->
 		</select>
 		<span class="description"> - <?php printf( __( 'available in %s', 'woo_ce' ), $woo_cd_link ); ?></span>
 		<p class="description"><?php _e( 'Select the data type you want to export.', 'woo_ce' ); ?></p>
@@ -122,12 +124,25 @@ function woo_ce_export_settings_cron() {
 	</th>
 	<td>
 		<ul>
+			<li class="export-options product-options">
+				<label><?php _e( 'Product Type', 'woo_ce' ); ?></label>
+<?php if( $product_types ) { ?>
+				<ul style="margin-top:0.2em;">
+	<?php foreach( $product_types as $key => $product_type ) { ?>
+					<li><label><input type="checkbox" name="product_filter_type[<?php echo $key; ?>]" value="<?php echo $key; ?>" disabled="disabled" /> <?php echo woo_ce_format_product_type( $product_type['name'] ); ?> (<?php echo $product_type['count']; ?>)<span class="description"> - <?php printf( __( 'available in %s', 'woo_ce' ), $woo_cd_link ); ?></span></label></li>
+	<?php } ?>
+				</ul>
+<?php } ?>
+				<p class="description"><?php _e( 'Select the Product Type\'s you want to filter exported Products by. Default is to include all Product Types and Variations.', 'woo_ce' ); ?></p>
+			</li>
 			<li class="export-options order-options">
 				<label><?php _e( 'Order Status', 'woo_ce' ); ?></label>
 				<select name="order_filter_status">
 					<option value="" selected="selected"><?php _e( 'All', 'woo_ce' ); ?></option>
-<?php foreach( $order_statuses as $order_status ) { ?>
+<?php if( $order_statuses ) { ?>
+	<?php foreach( $order_statuses as $order_status ) { ?>
 					<option value="<?php echo $order_status->name; ?>" disabled="disabled"><?php echo ucfirst( $order_status->name ); ?></option>
+	<?php } ?>
 <?php } ?>
 				</select>
 				<span class="description"> - <?php printf( __( 'available in %s', 'woo_ce' ), $woo_cd_link ); ?></span>
@@ -136,7 +151,7 @@ function woo_ce_export_settings_cron() {
 			<li class="export-options order-options">
 				<label><?php _e( 'Order Date', 'woo_ce' ); ?></label>
 				<input type="text" size="10" maxlength="10" class="text" disabled="disabled"> to <input type="text" size="10" maxlength="10" class="text" disabled="disabled"><span class="description"> - <?php printf( __( 'available in %s', 'woo_ce' ), $woo_cd_link ); ?></span>
-				<p class="description"><?php _e( 'Filter the dates of Orders to be included in the export. Default is the date of the first order to today.', 'woo_ce' ); ?></p>
+				<p class="description"><?php _e( 'Filter the dates of Orders to be included in the export. Default is empty.', 'woo_ce' ); ?></p>
 			</li>
 		</ul>
 	</td>
@@ -148,6 +163,17 @@ function woo_ce_export_settings_cron() {
 	<td>
 		<input name="auto_interval" type="text" id="auto_interval" value="<?php echo esc_attr( $auto_interval ); ?>" size="4" maxlength="4" class="text" disabled="disabled" /><span class="description"> - <?php printf( __( 'available in %s', 'woo_ce' ), $woo_cd_link ); ?></span>
 		<p class="description"><?php _e( 'Choose how often Store Exporter Deluxe generates new exports. Default is every 1440 minutes (once every 24 hours).', 'woo_ce' ); ?></p>
+	</td>
+</tr>
+<tr>
+	<th>
+		<label><?php _e( 'Export format', 'woo_ce' ); ?></label>
+	</th>
+	<td>
+		<label><input type="radio" name="auto_format" value="csv"<?php checked( $auto_format, 'csv' ); ?> disabled="disabled" /> <?php _e( 'CSV', 'woo_ce' ); ?> <span class="description"><?php _e( '(Comma separated values)', 'woo_ce' ); ?></span><span class="description"> - <?php printf( __( 'available in %s', 'woo_ce' ), $woo_cd_link ); ?></span></label><br />
+		<label><input type="radio" name="auto_format" value="xml"<?php checked( $auto_format, 'xml' ); ?> disabled="disabled" /> <?php _e( 'XML', 'woo_ce' ); ?> <span class="description"><?php _e( '(EXtensible Markup Language)', 'woo_ce' ); ?></span><span class="description"> - <?php printf( __( 'available in %s', 'woo_ce' ), $woo_cd_link ); ?></span></label><br />
+		<label><input type="radio" name="auto_format" value="xls"<?php checked( $auto_format, 'xls' ); ?> disabled="disabled" /> <?php _e( 'Excel (XLS)', 'woo_ce' ); ?> <span class="description"><?php _e( '(Microsoft Excel 2007)', 'woo_ce' ); ?></span><span class="description"> - <?php printf( __( 'available in %s', 'woo_ce' ), $woo_cd_link ); ?></span></label>
+		<p class="description"><?php _e( 'Adjust the export format to generate different export file formats. Default is CSV.', 'woo_ce' ); ?></p>
 	</td>
 </tr>
 <tr>

@@ -93,7 +93,7 @@ function woo_ce_get_user_fields( $format = 'full' ) {
 	// Allow Plugin/Theme authors to add support for additional User columns
 	$fields = apply_filters( 'woo_ce_user_fields', $fields );
 
-	if( $remember = woo_ce_get_option( 'users_fields', array() ) ) {
+	if( $remember = woo_ce_get_option( 'user_fields', array() ) ) {
 		$remember = maybe_unserialize( $remember );
 		$size = count( $fields );
 		for( $i = 0; $i < $size; $i++ ) {
@@ -109,16 +109,20 @@ function woo_ce_get_user_fields( $format = 'full' ) {
 		case 'summary':
 			$output = array();
 			$size = count( $fields );
-			for( $i = 0; $i < $size; $i++ )
-				$output[$fields[$i]['name']] = 'on';
+			for( $i = 0; $i < $size; $i++ ) {
+				if( isset( $fields[$i] ) )
+					$output[$fields[$i]['name']] = 'on';
+			}
 			return $output;
 			break;
 
 		case 'full':
 		default:
+			$sorting = woo_ce_get_option( 'user_sorting', array() );
 			$size = count( $fields );
 			for( $i = 0; $i < $size; $i++ )
-				$fields[$i]['order'] = $i;
+				$fields[$i]['order'] = ( isset( $sorting[$fields[$i]['name']] ) ? $sorting[$fields[$i]['name']] : $i );
+			usort( $fields, 'woo_ce_sort_fields' );
 			return $fields;
 			break;
 
@@ -176,6 +180,20 @@ function woo_ce_extend_user_fields( $fields = array() ) {
 }
 add_filter( 'woo_ce_user_fields', 'woo_ce_extend_user_fields' );
 
+function woo_ce_override_user_field_labels( $fields = array() ) {
+
+	$labels = woo_ce_get_option( 'user_labels', array() );
+	if( !empty( $labels ) ) {
+		foreach( $fields as $key => $field ) {
+			if( isset( $labels[$field['name']] ) )
+				$fields[$key]['label'] = $labels[$field['name']];
+		}
+	}
+	return $fields;
+
+}
+add_filter( 'woo_ce_user_fields', 'woo_ce_override_user_field_labels', 11 );
+
 // Returns a list of User IDs
 function woo_ce_get_users( $args = array() ) {
 
@@ -183,14 +201,22 @@ function woo_ce_get_users( $args = array() ) {
 
 	$limit_volume = 0;
 	$offset = 0;
+	$orderby = 'login';
+	$order = 'ASC';
 
 	if( $args ) {
 		$limit_volume = ( isset( $args['limit_volume'] ) ? $args['limit_volume'] : 0 );
-		$offset = $args['offset'];
+		if( $limit_volume == -1 )
+			$limit_volume = 0;
+		$offset = ( isset( $args['offset'] ) ? $args['offset'] : 0 );
+		$orderby = ( isset( $args['user_orderby'] ) ? $args['user_orderby'] : 'login' );
+		$order = ( isset( $args['user_order'] ) ? $args['user_order'] : 'ASC' );
 	}
 	$args = array(
 		'offset' => $offset,
 		'number' => $limit_volume,
+		'order' => $order,
+		'offset' => $offset,
 		'fields' => 'ids'
 	);
 	if( $user_ids = new WP_User_Query( $args ) ) {
@@ -214,19 +240,31 @@ function woo_ce_get_user_data( $user_id = 0, $args = array() ) {
 	$user_data = get_userdata( $user_id );
 
 	$user = new stdClass;
-	$user->ID = $user_data->ID;
-	$user->user_id = $user_data->ID;
-	$user->user_name = $user_data->user_login;
-	$user->user_role = $user_data->roles[0];
-	$user->first_name = $user_data->first_name;
-	$user->last_name = $user_data->last_name;
-	$user->full_name = sprintf( '%s %s', $user->first_name, $user->last_name );
-	$user->nick_name = $user_data->user_nicename;
-	$user->email = $user_data->user_email;
-	$user->url = $user_data->user_url;
-	$user->date_registered = $user_data->user_registered;
-
+	if( $user_data !== false ) {
+		$user->ID = $user_data->ID;
+		$user->user_id = $user_data->ID;
+		$user->user_name = $user_data->user_login;
+		$user->user_role = $user_data->roles[0];
+		$user->first_name = $user_data->first_name;
+		$user->last_name = $user_data->last_name;
+		$user->full_name = sprintf( '%s %s', $user->first_name, $user->last_name );
+		$user->nick_name = $user_data->user_nicename;
+		$user->email = $user_data->user_email;
+		$user->url = $user_data->user_url;
+		$user->date_registered = $user_data->user_registered;
+	}
 	return apply_filters( 'woo_ce_user', $user );
 	
 }
+
+// Returns a list of WordPress User Roles
+function woo_ce_get_user_roles() {
+
+	global $wp_roles;
+
+	$user_roles = $wp_roles->roles;
+	return $user_roles;
+
+}
+
 ?>

@@ -5,11 +5,11 @@ Donate link: http://www.visser.com.au/#donations
 Tags: e-commerce, woocommerce, shop, cart, ecommerce, export, csv, xml, xls, excel, customers, products, sales, orders, coupons, users, attributes, subscriptions
 Requires at least: 2.9.2
 Tested up to: 4.0
-Stable tag: 1.7.7
+Stable tag: 1.7.8
 
 == Description ==
 
-Export store details out of WooCommerce into simple formatted files (e.g. CSV, XML, XLS, etc.).
+Export store details out of WooCommerce into simple formatted files (e.g. CSV, XML, Excel 2007 XLS, etc.).
 
 Features include:
 
@@ -19,30 +19,49 @@ Features include:
 * Export Products by Type including Variations
 * Export Categories
 * Export Tags
-* Export Brands (**)
-* Export Orders (**)
-* Export Orders by Order Status (**)
-* Export Orders by Order Date (**)
-* Export Orders by Customers (**)
-* Export Orders by Coupon Code (**)
-* Export Customers (**)
-* Export Customers by Order Status (**)
+* Export Brands (*)
+* Export Orders (*)
+* Export Orders by Order Status (*)
+* Export Orders by Order Date (*)
+* Export Orders by Customers (*)
+* Export Orders by Coupon Code (*)
+* Export Customers (*)
+* Export Customers by Order Status (*)
 * Export Users
-* Export Coupons (**)
-* Export Subscriptions (**)
-* Export Attributes (**)
+* Export Coupons (*)
+* Export Subscriptions (*)
+* Export Attributes (*)
 * Toggle and save export fields
-* Field label editor (**)
+* Field label editor (*)
 * Works with WordPress Multisite
 * Export to CSV file
-* Export to XML file (**)
-* Export to Excel 2007 file (**)
-* Supports external CRON commands (**)
-* Supports scheduled exports (**)
+* Export to XML file (*)
+* Export to Excel 2007 (XLS) file (*)
+* Supports external CRON commands (*)
+* Supports scheduled exports (*)
 
-(*) Compatible with Product Importer Deluxe, All in One SEO Pack, Advanced Google Product Feed, Product Addons, Sequential Order Number Pro, WooCommerce Checkout Manager, Checkout Field Editor, Cost of Goods, Per-Product Shipping, Local Pickups Plus, WooCommerce Subscriptions, WooCommerce Checkout Add-ons and more.
+(*) Requires the Pro upgrade to enable additional store export functionality.
 
-(**) Requries the Pro upgrade to enable additional store export functionality.
+Just a few of the features unlocked in the Pro upgrade of Product Importer include:
+
+- Compatibility with Product Importer Deluxe
+- Export All in One SEO Pack
+- Export Advanced Google Product Feed
+- Export Product Addons
+- Export Sequential Order Number Pro
+- Export Checkout Manager
+- Export Checkout Manager Pro
+- Export Checkout Field Editor
+- Export Cost of Goods
+- Export Per-Product Shipping
+- Export Print Invoice & Delivery Note
+- Export Local Pickups Plus
+- Export WooCommerce Subscriptions
+- Export Checkout Field Manager
+- Export Currency Switcher
+- Export WooCommerce PDF Invoices & Packing Slips
+- Export WooCommerce Checkout Add-ons
+... and more free and Premium extensions for WooCommerce.
 
 For more information visit: http://www.visser.com.au/woocommerce/
 
@@ -80,6 +99,19 @@ http://www.visser.com.au/woocommerce/forums/
 7. Download achived copies of previous exports
 
 == Changelog ==
+
+= 1.7.8 =
+* Added: Gravity Form ID to Orders export
+* Added: Gravity Form Name to Orders export
+* Added: Support for changing the export format of scheduled exports
+* Fixed: Display of multiple queued Admin notices
+* Fixed: PHP warning on Subscriptions export
+* Fixed: Attributes showing Term Slug in Products export
+* Fixed: Attributes not including Taxonomy based Terms in Products export
+* Fixed: Empty export rows under certain environments in Products export
+* Added: Support for filtering Orders by Order Dates for scheduled exports
+* Fixed: Compatibility with WooCommerce 2.2+
+* Changed: Moved Brands sorting to brands.php
 
 = 1.7.7 =
 * Added: Support for WooCommerce Checkout Add-ons in Orders export

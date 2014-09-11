@@ -8,8 +8,14 @@ function woo_ce_admin_notice( $message = '', $priority = 'updated', $screen = ''
 		ob_start();
 		woo_ce_admin_notice_html( $message, $priority, $screen );
 		$output = ob_get_contents();
-		set_transient( WOO_CE_PREFIX . '_notice', base64_encode( $output ), MINUTE_IN_SECONDS );
 		ob_end_clean();
+		// Check if an existing notice is already in queue
+		$existing_notice = get_transient( WOO_CE_PREFIX . '_notice' );
+		if( $existing_notice !== false ) {
+			$existing_notice = base64_decode( $existing_notice );
+			$output = $existing_notice . $output;
+		}
+		set_transient( WOO_CE_PREFIX . '_notice', base64_encode( $output ), MINUTE_IN_SECONDS );
 		add_action( 'admin_notices', 'woo_ce_admin_notice_print' );
 	}
 
@@ -42,7 +48,8 @@ function woo_ce_admin_notice_html( $message = '', $priority = 'updated', $screen
 // Grabs the WordPress transient that holds the admin notice and prints it
 function woo_ce_admin_notice_print() {
 
-	if( $output = get_transient( WOO_CE_PREFIX . '_notice' ) ) {
+	$output = get_transient( WOO_CE_PREFIX . '_notice' );
+	if( $output !== false ) {
 		delete_transient( WOO_CE_PREFIX . '_notice' );
 		$output = base64_decode( $output );
 		echo $output;
@@ -77,9 +84,7 @@ function woo_ce_template_footer() { ?>
 // Add Export and Docs links to the Plugins screen
 function woo_ce_add_settings_link( $links, $file ) {
 
-	static $this_plugin;
-
-	if( !$this_plugin ) $this_plugin = plugin_basename( __FILE__ );
+	$this_plugin = plugin_basename( WOO_CE_RELPATH );
 	if( $file == $this_plugin ) {
 		$docs_url = 'http://www.visser.com.au/docs/';
 		$docs_link = sprintf( '<a href="%s" target="_blank">' . __( 'Docs', 'woo_ce' ) . '</a>', $docs_url );
@@ -166,18 +171,22 @@ function woo_ce_tab_template( $tab = '' ) {
 			break;
 
 		case 'export':
-			$export_type = ( isset( $_POST['dataset'] ) ? $_POST['dataset'] : woo_ce_get_option( 'last_export', 'products' ) );
+			$export_type = sanitize_text_field( ( isset( $_POST['dataset'] ) ? $_POST['dataset'] : woo_ce_get_option( 'last_export', 'product' ) ) );
+			$types = array_keys( woo_ce_return_export_types() );
+			// Check if the default export type exists
+			if( !in_array( $export_type, $types ) )
+				$export_type = 'product';
 
-			$products = woo_ce_return_count( 'products' );
-			$categories = woo_ce_return_count( 'categories' );
-			$tags = woo_ce_return_count( 'tags' );
-			$brands = woo_ce_return_count( 'brands' );
-			$orders = woo_ce_return_count( 'orders' );
-			$customers = woo_ce_return_count( 'customers' );
-			$users = woo_ce_return_count( 'users' );
-			$coupons = woo_ce_return_count( 'coupons' );
-			$attributes = woo_ce_return_count( 'attributes' );
-			$subscriptions = woo_ce_return_count( 'subscriptions' );
+			$products = woo_ce_return_count( 'product' );
+			$categories = woo_ce_return_count( 'category' );
+			$tags = woo_ce_return_count( 'tag' );
+			$brands = woo_ce_return_count( 'brand' );
+			$orders = woo_ce_return_count( 'order' );
+			$customers = woo_ce_return_count( 'customer' );
+			$users = woo_ce_return_count( 'user' );
+			$coupons = woo_ce_return_count( 'coupon' );
+			$attributes = woo_ce_return_count( 'attribute' );
+			$subscriptions = woo_ce_return_count( 'subscription' );
 
 			if( $product_fields = woo_ce_get_product_fields() ) {
 				foreach( $product_fields as $key => $product_field )
@@ -186,14 +195,10 @@ function woo_ce_tab_template( $tab = '' ) {
 			if( $category_fields = woo_ce_get_category_fields() ) {
 				foreach( $category_fields as $key => $category_field )
 					$category_fields[$key]['disabled'] = ( isset( $category_field['disabled'] ) ? $category_field['disabled'] : 0 );
-				$category_orderby = woo_ce_get_option( 'category_orderby', 'ID' );
-				$category_order = woo_ce_get_option( 'category_order', 'DESC' );
 			}
 			if( $tag_fields = woo_ce_get_tag_fields() ) {
 				foreach( $tag_fields as $key => $tag_field )
 					$tag_fields[$key]['disabled'] = ( isset( $tag_field['disabled'] ) ? $tag_field['disabled'] : 0 );
-				$tag_orderby = woo_ce_get_option( 'tag_orderby', 'ID' );
-				$tag_order = woo_ce_get_option( 'tag_order', 'DESC' );
 			}
 			if( $brand_fields = woo_ce_get_brand_fields() ) {
 				foreach( $brand_fields as $key => $brand_field )
@@ -214,6 +219,19 @@ function woo_ce_tab_template( $tab = '' ) {
 			$crosssell_formatting = woo_ce_get_option( 'crosssell_formatting', 1 );
 			$limit_volume = woo_ce_get_option( 'limit_volume' );
 			$offset = woo_ce_get_option( 'offset' );
+			break;
+
+		case 'fields':
+			$export_type = ( isset( $_GET['type'] ) ? sanitize_text_field( $_GET['type'] ) : '' );
+			$types = array_keys( woo_ce_return_export_types() );
+			$fields = array();
+			if( in_array( $export_type, $types ) ) {
+				if( has_filter( 'woo_ce_' . $export_type . '_fields', 'woo_ce_override_' . $export_type . '_field_labels' ) )
+					remove_filter( 'woo_ce_' . $export_type . '_fields', 'woo_ce_override_' . $export_type . '_field_labels', 11 );
+				if( function_exists( sprintf( 'woo_ce_get_%s_fields', $export_type ) ) )
+					$fields = call_user_func( 'woo_ce_get_' . $export_type . '_fields' );
+				$labels = woo_ce_get_option( $export_type . '_labels', array() );
+			}
 			break;
 
 		case 'archive':
@@ -237,6 +255,8 @@ function woo_ce_tab_template( $tab = '' ) {
 			$category_separator = woo_ce_get_option( 'category_separator', '|' );
 			$escape_formatting = woo_ce_get_option( 'escape_formatting', 'all' );
 			$date_format = woo_ce_get_option( 'date_format', 'd/m/Y' );
+			if( $date_format == 1 || $date_format == '' )
+				$date_format = 'd/m/Y';
 			$file_encodings = ( function_exists( 'mb_list_encodings' ) ? mb_list_encodings() : false );
 			break;
 
@@ -270,6 +290,7 @@ function woo_ce_tab_template( $tab = '' ) {
 			ob_end_flush();
 		}
 	}
+
 }
 
 // HTML template for header prompt on Store Exporter screen

@@ -16,8 +16,8 @@
 
 					<tr>
 						<th>
-							<input type="radio" id="products" name="dataset" value="products"<?php disabled( $products, 0 ); ?><?php checked( $export_type, 'products' ); ?> />
-							<label for="products"><?php _e( 'Products', 'woo_ce' ); ?></label>
+							<input type="radio" id="product" name="dataset" value="product"<?php disabled( $products, 0 ); ?><?php checked( $export_type, 'product' ); ?> />
+							<label for="product"><?php _e( 'Products', 'woo_ce' ); ?></label>
 						</th>
 						<td>
 							<span class="description">(<?php echo $products; ?>)</span>
@@ -26,8 +26,8 @@
 
 					<tr>
 						<th>
-							<input type="radio" id="categories" name="dataset" value="categories"<?php disabled( $categories, 0 ); ?><?php checked( $export_type, 'categories' ); ?> />
-							<label for="categories"><?php _e( 'Categories', 'woo_ce' ); ?></label>
+							<input type="radio" id="category" name="dataset" value="category"<?php disabled( $categories, 0 ); ?><?php checked( $export_type, 'category' ); ?> />
+							<label for="category"><?php _e( 'Categories', 'woo_ce' ); ?></label>
 						</th>
 						<td>
 							<span class="description">(<?php echo $categories; ?>)</span>
@@ -36,8 +36,8 @@
 
 					<tr>
 						<th>
-							<input type="radio" id="tags" name="dataset" value="tags"<?php disabled( $tags, 0 ); ?><?php checked( $export_type, 'tags' ); ?> />
-							<label for="tags"><?php _e( 'Tags', 'woo_ce' ); ?></label>
+							<input type="radio" id="tag" name="dataset" value="tag"<?php disabled( $tags, 0 ); ?><?php checked( $export_type, 'tag' ); ?> />
+							<label for="tag"><?php _e( 'Tags', 'woo_ce' ); ?></label>
 						</th>
 						<td>
 							<span class="description">(<?php echo $tags; ?>)</span>
@@ -46,8 +46,8 @@
 
 					<tr>
 						<th>
-							<input type="radio" id="brands" name="dataset" value="brands"<?php disabled( $brands, 0 ); ?><?php checked( $export_type, 'brands' ); ?> />
-							<label for="brands"><?php _e( 'Brands', 'woo_ce' ); ?></label>
+							<input type="radio" id="brand" name="dataset" value="brand"<?php disabled( $brands, 0 ); ?><?php checked( $export_type, 'brand' ); ?> />
+							<label for="brand"><?php _e( 'Brands', 'woo_ce' ); ?></label>
 						</th>
 						<td>
 							<span class="description">(<?php echo $brands; ?>)</span>
@@ -57,8 +57,8 @@
 
 					<tr>
 						<th>
-							<input type="radio" id="orders" name="dataset" value="orders"<?php disabled( $orders, 0 ); ?><?php checked( $export_type, 'orders' ); ?>/>
-							<label for="orders"><?php _e( 'Orders', 'woo_ce' ); ?></label>
+							<input type="radio" id="order" name="dataset" value="order"<?php disabled( $orders, 0 ); ?><?php checked( $export_type, 'order' ); ?>/>
+							<label for="order"><?php _e( 'Orders', 'woo_ce' ); ?></label>
 						</th>
 						<td>
 							<span class="description">(<?php echo $orders; ?>)</span>
@@ -68,8 +68,8 @@
 
 					<tr>
 						<th>
-							<input type="radio" id="customers" name="dataset" value="customers"<?php disabled( $customers, 0 ); ?><?php checked( $export_type, 'customers' ); ?>/>
-							<label for="customers"><?php _e( 'Customers', 'woo_ce' ); ?></label>
+							<input type="radio" id="customer" name="dataset" value="customer"<?php disabled( $customers, 0 ); ?><?php checked( $export_type, 'customer' ); ?>/>
+							<label for="customer"><?php _e( 'Customers', 'woo_ce' ); ?></label>
 						</th>
 						<td>
 							<span class="description">(<?php echo $customers; ?>)</span>
@@ -79,8 +79,8 @@
 
 					<tr>
 						<th>
-							<input type="radio" id="users" name="dataset" value="users"<?php disabled( $users, 0 ); ?><?php checked( $export_type, 'users' ); ?>/>
-							<label for="users"><?php _e( 'Users', 'woo_ce' ); ?></label>
+							<input type="radio" id="user" name="dataset" value="user"<?php disabled( $users, 0 ); ?><?php checked( $export_type, 'user' ); ?>/>
+							<label for="user"><?php _e( 'Users', 'woo_ce' ); ?></label>
 						</th>
 						<td>
 							<span class="description">(<?php echo $users; ?>)</span>
@@ -89,8 +89,8 @@
 
 					<tr>
 						<th>
-							<input type="radio" id="coupons" name="dataset" value="coupons"<?php disabled( $coupons, 0 ); ?><?php checked( $export_type, 'coupons' ); ?> />
-							<label for="coupons"><?php _e( 'Coupons', 'woo_ce' ); ?></label>
+							<input type="radio" id="coupon" name="dataset" value="coupon"<?php disabled( $coupons, 0 ); ?><?php checked( $export_type, 'coupon' ); ?> />
+							<label for="coupon"><?php _e( 'Coupons', 'woo_ce' ); ?></label>
 						</th>
 						<td>
 							<span class="description">(<?php echo $coupons; ?>)</span>
@@ -100,8 +100,8 @@
 
 					<tr>
 						<th>
-							<input type="radio" id="subscriptions" name="dataset" value="subscriptions"<?php disabled( $subscriptions, 0 ); ?><?php checked( $export_type, 'subscriptions' ); ?> />
-							<label for="subscriptions"><?php _e( 'Subscriptions', 'woo_ce' ); ?></label>
+							<input type="radio" id="subscription" name="dataset" value="subscription"<?php disabled( $subscriptions, 0 ); ?><?php checked( $export_type, 'subscription' ); ?> />
+							<label for="subscription"><?php _e( 'Subscriptions', 'woo_ce' ); ?></label>
 						</th>
 						<td>
 							<span class="description">(<?php echo $subscriptions; ?>)</span>
@@ -112,8 +112,8 @@
 <!--
 					<tr>
 						<th>
-							<input type="radio" id="attributes" name="dataset" value="attributes"<?php disabled( $attributes, 0 ); ?><?php checked( $export_type, 'attributes' ); ?> />
-							<label for="attributes"><?php _e( 'Attributes', 'woo_ce' ); ?></label>
+							<input type="radio" id="attribute" name="dataset" value="attribute"<?php disabled( $attributes, 0 ); ?><?php checked( $export_type, 'attribute' ); ?> />
+							<label for="attribute"><?php _e( 'Attributes', 'woo_ce' ); ?></label>
 						</th>
 						<td>
 							<span class="description">(<?php echo $attributes; ?>)</span>
@@ -122,20 +122,25 @@
 -->
 
 				</table>
+				<!-- .form-table -->
 			</div>
+			<!-- .inside -->
 		</div>
 		<!-- .postbox -->
 
 <?php if( $product_fields ) { ?>
-		<div id="export-products" class="export-types">
+		<div id="export-product" class="export-types">
 
 			<div class="postbox">
-				<h3 class="hndle"><?php _e( 'Product Fields', 'woo_ce' ); ?></h3>
+				<h3 class="hndle">
+					<?php _e( 'Product Fields', 'woo_ce' ); ?>
+					<a href="<?php echo add_query_arg( array( 'tab' => 'fields', 'type' => 'product' ) ); ?>" style="float:right;"><?php _e( 'Configure', 'woo_ce' ); ?></a>
+				</h3>
 				<div class="inside">
 	<?php if( $products ) { ?>
 					<p class="description"><?php _e( 'Select the Product fields you would like to export, your field selection is saved for future exports.', 'woo_ce' ); ?></p>
-					<p><a href="javascript:void(0)" id="products-checkall" class="checkall"><?php _e( 'Check All', 'woo_ce' ); ?></a> | <a href="javascript:void(0)" id="products-uncheckall" class="uncheckall"><?php _e( 'Uncheck All', 'woo_ce' ); ?></a></p>
-					<table class="ui-sortable">
+					<p><a href="javascript:void(0)" id="product-checkall" class="checkall"><?php _e( 'Check All', 'woo_ce' ); ?></a> | <a href="javascript:void(0)" id="product-uncheckall" class="uncheckall"><?php _e( 'Uncheck All', 'woo_ce' ); ?></a></p>
+					<table id="product-fields" class="ui-sortable">
 
 		<?php foreach( $product_fields as $key => $product_field ) { ?>
 						<tr>
@@ -152,11 +157,11 @@
 		<?php } ?>
 					</table>
 					<p class="submit">
-						<input type="submit" id="export_products" value="<?php _e( 'Export Products', 'woo_ce' ); ?> " class="button-primary" />
+						<input type="submit" id="export_product" value="<?php _e( 'Export Products', 'woo_ce' ); ?> " class="button-primary" />
 					</p>
 					<p class="description"><?php _e( 'Can\'t find a particular Product field in the above export list?', 'woo_ce' ); ?> <a href="<?php echo $troubleshooting_url; ?>" target="_blank"><?php _e( 'Get in touch', 'woo_ce' ); ?></a>.</p>
 	<?php } else { ?>
-					<p><?php _e( 'No Products have been found.', 'woo_ce' ); ?></p>
+					<p><?php _e( 'No Products were found.', 'woo_ce' ); ?></p>
 	<?php } ?>
 				</div>
 			</div>
@@ -181,32 +186,37 @@
 			<!-- .postbox -->
 
 		</div>
-		<!-- #export-products -->
+		<!-- #export-product -->
 
 <?php } ?>
-		<div id="export-categories" class="export-types">
+<?php if( $category_fields ) { ?>
+		<div id="export-category" class="export-types">
 
 			<div class="postbox">
-				<h3 class="hndle"><?php _e( 'Category Fields', 'woo_ce' ); ?></h3>
+				<h3 class="hndle">
+					<?php _e( 'Category Fields', 'woo_ce' ); ?>
+					<a href="<?php echo add_query_arg( array( 'tab' => 'fields', 'type' => 'category' ) ); ?>" style="float:right;"><?php _e( 'Configure', 'woo_ce' ); ?></a>
+				</h3>
 				<div class="inside">
 					<p class="description"><?php _e( 'Select the Category fields you would like to export.', 'woo_ce' ); ?></p>
-					<p><a href="javascript:void(0)" id="categories-checkall" class="checkall"><?php _e( 'Check All', 'woo_ce' ); ?></a> | <a href="javascript:void(0)" id="categories-uncheckall" class="uncheckall"><?php _e( 'Uncheck All', 'woo_ce' ); ?></a></p>
-					<table class="ui-sortable">
+					<p><a href="javascript:void(0)" id="category-checkall" class="checkall"><?php _e( 'Check All', 'woo_ce' ); ?></a> | <a href="javascript:void(0)" id="category-uncheckall" class="uncheckall"><?php _e( 'Uncheck All', 'woo_ce' ); ?></a></p>
+					<table id="category-fields" class="ui-sortable">
 
-<?php foreach( $category_fields as $category_field ) { ?>
+	<?php foreach( $category_fields as $category_field ) { ?>
 						<tr>
 							<td>
 								<label>
 									<input type="checkbox" name="category_fields[<?php echo $category_field['name']; ?>]" class="category_field"<?php ( isset( $category_field['default'] ) ? checked( $category_field['default'], 1 ) : '' ); ?><?php disabled( $category_field['disabled'], 1 ); ?> />
 									<?php echo $category_field['label']; ?>
+									<input type="hidden" name="category_fields_order[<?php echo $category_field['name']; ?>]" class="field_order" value="" />
 								</label>
 							</td>
 						</tr>
 
-<?php } ?>
+	<?php } ?>
 					</table>
 					<p class="submit">
-						<input type="submit" id="export_categories" value="<?php _e( 'Export Categories', 'woo_ce' ); ?> " class="button-primary" />
+						<input type="submit" id="export_category" value="<?php _e( 'Export Categories', 'woo_ce' ); ?> " class="button-primary" />
 					</p>
 					<p class="description"><?php _e( 'Can\'t find a particular Category field in the above export list?', 'woo_ce' ); ?> <a href="<?php echo $troubleshooting_url; ?>" target="_blank"><?php _e( 'Get in touch', 'woo_ce' ); ?></a>.</p>
 				</div>
@@ -218,18 +228,13 @@
 				<h3 class="hndle"><?php _e( 'Category Filters', 'woo_ce' ); ?></h3>
 				<div class="inside">
 
-					<p><label><?php _e( 'Category Sorting', 'woo_ce' ); ?></label></p>
-					<div>
-						<select name="category_orderby">
-							<option value="id"<?php selected( 'id', $category_orderby ); ?>><?php _e( 'Term ID', 'woo_ce' ); ?></option>
-							<option value="name"<?php selected( 'name', $category_orderby ); ?>><?php _e( 'Category Name', 'woo_ce' ); ?></option>
-						</select>
-						<select name="category_order">
-							<option value="ASC"<?php selected( 'ASC', $category_order ); ?>><?php _e( 'Ascending', 'woo_ce' ); ?></option>
-							<option value="DESC"<?php selected( 'DESC', $category_order ); ?>><?php _e( 'Descending', 'woo_ce' ); ?></option>
-						</select>
-						<p class="description"><?php _e( 'Select the sorting of Categories within the exported file. By default this is set to export Categories by Term ID in Desending order.', 'woo_ce' ); ?></p>
-					</div>
+					<?php do_action( 'woo_ce_export_category_options_before_table' ); ?>
+
+					<table class="form-table">
+						<?php do_action( 'woo_ce_export_category_options_table' ); ?>
+					</table>
+
+					<?php do_action( 'woo_ce_export_category_options_after_table' ); ?>
 
 				</div>
 				<!-- .inside -->
@@ -237,31 +242,36 @@
 			<!-- #export-categories-filters -->
 
 		</div>
-		<!-- #export-categories -->
-
-		<div id="export-tags" class="export-types">
+		<!-- #export-category -->
+<?php } ?>
+<?php if( $tag_fields ) { ?>
+		<div id="export-tag" class="export-types">
 
 			<div class="postbox">
-				<h3 class="hndle"><?php _e( 'Tag Fields', 'woo_ce' ); ?></h3>
+				<h3 class="hndle">
+					<?php _e( 'Tag Fields', 'woo_ce' ); ?>
+					<a href="<?php echo add_query_arg( array( 'tab' => 'fields', 'type' => 'tag' ) ); ?>" style="float:right;"><?php _e( 'Configure', 'woo_ce' ); ?></a>
+				</h3>
 				<div class="inside">
 					<p class="description"><?php _e( 'Select the Tag fields you would like to export.', 'woo_ce' ); ?></p>
-					<p><a href="javascript:void(0)" id="tags-checkall" class="checkall"><?php _e( 'Check All', 'woo_ce' ); ?></a> | <a href="javascript:void(0)" id="tags-uncheckall" class="uncheckall"><?php _e( 'Uncheck All', 'woo_ce' ); ?></a></p>
-					<table class="ui-sortable">
+					<p><a href="javascript:void(0)" id="tag-checkall" class="checkall"><?php _e( 'Check All', 'woo_ce' ); ?></a> | <a href="javascript:void(0)" id="tag-uncheckall" class="uncheckall"><?php _e( 'Uncheck All', 'woo_ce' ); ?></a></p>
+					<table id="tag-fields" class="ui-sortable">
 
-<?php foreach( $tag_fields as $tag_field ) { ?>
+	<?php foreach( $tag_fields as $tag_field ) { ?>
 						<tr>
 							<td>
 								<label>
 									<input type="checkbox" name="tag_fields[<?php echo $tag_field['name']; ?>]" class="tag_field"<?php ( isset( $tag_field['default'] ) ? checked( $tag_field['default'], 1 ) : '' ); ?><?php disabled( $tag_field['disabled'], 1 ); ?> />
 									<?php echo $tag_field['label']; ?>
+									<input type="hidden" name="tag_fields_order[<?php echo $tag_field['name']; ?>]" class="field_order" value="" />
 								</label>
 							</td>
 						</tr>
 
-<?php } ?>
+	<?php } ?>
 					</table>
 					<p class="submit">
-						<input type="submit" id="export_tags" value="<?php _e( 'Export Tags', 'woo_ce' ); ?> " class="button-primary" />
+						<input type="submit" id="export_tag" value="<?php _e( 'Export Tags', 'woo_ce' ); ?> " class="button-primary" />
 					</p>
 					<p class="description"><?php _e( 'Can\'t find a particular Tag field in the above export list?', 'woo_ce' ); ?> <a href="<?php echo $troubleshooting_url; ?>" target="_blank"><?php _e( 'Get in touch', 'woo_ce' ); ?></a>.</p>
 				</div>
@@ -273,18 +283,13 @@
 				<h3 class="hndle"><?php _e( 'Product Tag Filters', 'woo_ce' ); ?></h3>
 				<div class="inside">
 
-					<p><label><?php _e( 'Product Tag Sorting', 'woo_ce' ); ?></label></p>
-					<div>
-						<select name="tag_orderby">
-							<option value="id"<?php selected( 'id', $tag_orderby ); ?>><?php _e( 'Term ID', 'woo_ce' ); ?></option>
-							<option value="name"<?php selected( 'name', $tag_orderby ); ?>><?php _e( 'Tag Name', 'woo_ce' ); ?></option>
-						</select>
-						<select name="tag_order">
-							<option value="ASC"<?php selected( 'ASC', $tag_order ); ?>><?php _e( 'Ascending', 'woo_ce' ); ?></option>
-							<option value="DESC"<?php selected( 'DESC', $tag_order ); ?>><?php _e( 'Descending', 'woo_ce' ); ?></option>
-						</select>
-						<p class="description"><?php _e( 'Select the sorting of Product Tags within the exported file. By default this is set to export Product Tags by Term ID in Desending order.', 'woo_ce' ); ?></p>
-					</div>
+					<?php do_action( 'woo_ce_export_tag_options_before_table' ); ?>
+
+					<table class="form-table">
+						<?php do_action( 'woo_ce_export_tag_options_table' ); ?>
+					</table>
+
+					<?php do_action( 'woo_ce_export_tag_options_after_table' ); ?>
 
 				</div>
 				<!-- .inside -->
@@ -292,18 +297,21 @@
 			<!-- #export-tags-filters -->
 
 		</div>
-		<!-- #export-tags -->
+		<!-- #export-tag -->
+<?php } ?>
 
 <?php if( $brand_fields ) { ?>
-		<div id="export-brands" class="export-types">
+		<div id="export-brand" class="export-types">
 
 			<div class="postbox">
-				<h3 class="hndle"><?php _e( 'Brand Fields', 'woo_ce' ); ?></h3>
+				<h3 class="hndle">
+					<?php _e( 'Brand Fields', 'woo_ce' ); ?>
+				</h3>
 				<div class="inside">
 	<?php if( $brands ) { ?>
 					<p class="description"><?php _e( 'Select the Brand fields you would like to export.', 'woo_ce' ); ?></p>
 					<p><a href="javascript:void(0)" id="brands-checkall" class="checkall"><?php _e( 'Check All', 'woo_ce' ); ?></a> | <a href="javascript:void(0)" id="brands-uncheckall" class="uncheckall"><?php _e( 'Uncheck All', 'woo_ce' ); ?></a></p>
-					<table class="ui-sortable">
+					<table id="brand-fields" class="ui-sortable">
 
 		<?php foreach( $brand_fields as $brand_field ) { ?>
 						<tr>
@@ -322,7 +330,7 @@
 					</p>
 					<p class="description"><?php _e( 'Can\'t find a particular Brand field in the above export list?', 'woo_ce' ); ?> <a href="<?php echo $troubleshooting_url; ?>" target="_blank"><?php _e( 'Get in touch', 'woo_ce' ); ?></a>.</p>
 	<?php } else { ?>
-					<p><?php _e( 'No Brands have been found.', 'woo_ce' ); ?></p>
+					<p><?php _e( 'No Brands were found.', 'woo_ce' ); ?></p>
 	<?php } ?>
 				</div>
 				<!-- .inside -->
@@ -333,18 +341,13 @@
 				<h3 class="hndle"><?php _e( 'Brand Filters', 'woo_ce' ); ?></h3>
 				<div class="inside">
 
-					<p><label><?php _e( 'Brand Sorting', 'woo_ce' ); ?></label></p>
-					<div>
-						<select name="brand_orderby" disabled="disabled">
-							<option value="id"><?php _e( 'Term ID', 'woo_ce' ); ?></option>
-							<option value="name"><?php _e( 'Brand Name', 'woo_ce' ); ?></option>
-						</select>
-						<select name="brand_order" disabled="disabled">
-							<option value="ASC"><?php _e( 'Ascending', 'woo_ce' ); ?></option>
-							<option value="DESC"><?php _e( 'Descending', 'woo_ce' ); ?></option>
-						</select>
-						<p class="description"><?php _e( 'Select the sorting of Brands within the exported file. By default this is set to export Product Brands by Term ID in Desending order.', 'woo_ce' ); ?></p>
-					</div>
+					<?php do_action( 'woo_ce_export_brand_options_before_table' ); ?>
+
+					<table class="form-table">
+						<?php do_action( 'woo_ce_export_brand_options_table' ); ?>
+					</table>
+
+					<?php do_action( 'woo_ce_export_brand_options_after_table' ); ?>
 
 				</div>
 				<!-- .inside -->
@@ -352,11 +355,11 @@
 			<!-- .postbox -->
 
 		</div>
-		<!-- #export-brands -->
+		<!-- #export-brand -->
 
 <?php } ?>
 <?php if( $order_fields ) { ?>
-		<div id="export-orders" class="export-types">
+		<div id="export-order" class="export-types">
 
 			<div class="postbox">
 				<h3 class="hndle">
@@ -366,8 +369,8 @@
 
 	<?php if( $orders ) { ?>
 					<p class="description"><?php _e( 'Select the Order fields you would like to export.', 'woo_ce' ); ?></p>
-					<p><a href="javascript:void(0)" id="orders-checkall" class="checkall"><?php _e( 'Check All', 'woo_ce' ); ?></a> | <a href="javascript:void(0)" id="orders-uncheckall" class="uncheckall"><?php _e( 'Uncheck All', 'woo_ce' ); ?></a></p>
-					<table class="ui-sortable">
+					<p><a href="javascript:void(0)" id="order-checkall" class="checkall"><?php _e( 'Check All', 'woo_ce' ); ?></a> | <a href="javascript:void(0)" id="order-uncheckall" class="uncheckall"><?php _e( 'Uncheck All', 'woo_ce' ); ?></a></p>
+					<table id="order-fields" class="ui-sortable">
 
 		<?php foreach( $order_fields as $order_field ) { ?>
 						<tr>
@@ -386,7 +389,7 @@
 					</p>
 					<p class="description"><?php _e( 'Can\'t find a particular Order field in the above export list?', 'woo_ce' ); ?> <a href="<?php echo $troubleshooting_url; ?>" target="_blank"><?php _e( 'Get in touch', 'woo_ce' ); ?></a>.</p>
 	<?php } else { ?>
-					<p><?php _e( 'No Orders have been found.', 'woo_ce' ); ?></p>
+					<p><?php _e( 'No Orders were found.', 'woo_ce' ); ?></p>
 	<?php } ?>
 
 				</div>
@@ -411,19 +414,21 @@
 			<!-- .postbox -->
 
 		</div>
-		<!-- #export-orders -->
+		<!-- #export-order -->
 
 <?php } ?>
 <?php if( $customer_fields ) { ?>
-		<div id="export-customers" class="export-types">
+		<div id="export-customer" class="export-types">
 
 			<div class="postbox">
-				<h3 class="hndle"><?php _e( 'Customer Fields', 'woo_ce' ); ?></h3>
+				<h3 class="hndle">
+					<?php _e( 'Customer Fields', 'woo_ce' ); ?>
+				</h3>
 				<div class="inside">
 	<?php if( $customers ) { ?>
 					<p class="description"><?php _e( 'Select the Customer fields you would like to export.', 'woo_ce' ); ?></p>
-					<p><a href="javascript:void(0)" id="customers-checkall" class="checkall"><?php _e( 'Check All', 'woo_ce' ); ?></a> | <a href="javascript:void(0)" id="customers-uncheckall" class="uncheckall"><?php _e( 'Uncheck All', 'woo_ce' ); ?></a></p>
-					<table class="ui-sortable">
+					<p><a href="javascript:void(0)" id="customer-checkall" class="checkall"><?php _e( 'Check All', 'woo_ce' ); ?></a> | <a href="javascript:void(0)" id="customer-uncheckall" class="uncheckall"><?php _e( 'Uncheck All', 'woo_ce' ); ?></a></p>
+					<table id="customer-fields" class="ui-sortable">
 
 		<?php foreach( $customer_fields as $customer_field ) { ?>
 						<tr>
@@ -442,7 +447,7 @@
 					</p>
 					<p class="description"><?php _e( 'Can\'t find a particular Customer field in the above export list?', 'woo_ce' ); ?> <a href="<?php echo $troubleshooting_url; ?>" target="_blank"><?php _e( 'Get in touch', 'woo_ce' ); ?></a>.</p>
 	<?php } else { ?>
-					<p><?php _e( 'No Customers have been found.', 'woo_ce' ); ?></p>
+					<p><?php _e( 'No Customers were found.', 'woo_ce' ); ?></p>
 	<?php } ?>
 				</div>
 				<!-- .inside -->
@@ -467,19 +472,22 @@
 			<!-- .postbox -->
 
 		</div>
-		<!-- #export-customers -->
+		<!-- #export-customer -->
 
 <?php } ?>
 <?php if( $user_fields ) { ?>
-		<div id="export-users" class="export-types">
+		<div id="export-user" class="export-types">
 
 			<div class="postbox">
-				<h3 class="hndle"><?php _e( 'User Fields', 'woo_ce' ); ?></h3>
+				<h3 class="hndle">
+					<?php _e( 'User Fields', 'woo_ce' ); ?>
+					<a href="<?php echo add_query_arg( array( 'tab' => 'fields', 'type' => 'user' ) ); ?>" style="float:right;"><?php _e( 'Configure', 'woo_ce' ); ?></a>
+				</h3>
 				<div class="inside">
 	<?php if( $users ) { ?>
 					<p class="description"><?php _e( 'Select the User fields you would like to export.', 'woo_ce' ); ?></p>
-					<p><a href="javascript:void(0)" id="users-checkall" class="checkall"><?php _e( 'Check All', 'woo_ce' ); ?></a> | <a href="javascript:void(0)" id="users-uncheckall" class="uncheckall"><?php _e( 'Uncheck All', 'woo_ce' ); ?></a></p>
-					<table class="ui-sortable">
+					<p><a href="javascript:void(0)" id="user-checkall" class="checkall"><?php _e( 'Check All', 'woo_ce' ); ?></a> | <a href="javascript:void(0)" id="user-uncheckall" class="uncheckall"><?php _e( 'Uncheck All', 'woo_ce' ); ?></a></p>
+					<table id="user-fields" class="ui-sortable">
 
 		<?php foreach( $user_fields as $user_field ) { ?>
 						<tr>
@@ -488,6 +496,7 @@
 									<input type="checkbox" name="user_fields[<?php echo $user_field['name']; ?>]" class="user_field"<?php ( isset( $user_field['default'] ) ? checked( $user_field['default'], 1 ) : '' ); ?><?php disabled( $user_field['disabled'], 1 ); ?> />
 									<?php echo $user_field['label']; ?>
 									<?php if( $user_field['disabled'] ) { ?><span class="description"> - <?php printf( __( 'available in %s', 'woo_ce' ), $woo_cd_link ); ?></span><?php } ?>
+									<input type="hidden" name="user_fields_order[<?php echo $user_field['name']; ?>]" class="field_order" value="" />
 								</label>
 							</td>
 						</tr>
@@ -495,11 +504,11 @@
 		<?php } ?>
 					</table>
 					<p class="submit">
-						<input type="submit" id="export_users" class="button-primary" value="<?php _e( 'Export Users', 'woo_ce' ); ?>" />
+						<input type="submit" id="export_user" class="button-primary" value="<?php _e( 'Export Users', 'woo_ce' ); ?>" />
 					</p>
 					<p class="description"><?php _e( 'Can\'t find a particular User field in the above export list?', 'woo_ce' ); ?> <a href="<?php echo $troubleshooting_url; ?>" target="_blank"><?php _e( 'Get in touch', 'woo_ce' ); ?></a>.</p>
 	<?php } else { ?>
-					<p><?php _e( 'No Users have been found.', 'woo_ce' ); ?></p>
+					<p><?php _e( 'No Users were found.', 'woo_ce' ); ?></p>
 	<?php } ?>
 				</div>
 				<!-- .inside -->
@@ -524,19 +533,21 @@
 			<!-- .postbox -->
 
 		</div>
-		<!-- #export-users -->
+		<!-- #export-user -->
 
 <?php } ?>
 <?php if( $coupon_fields ) { ?>
-		<div id="export-coupons" class="export-types">
+		<div id="export-coupon" class="export-types">
 
 			<div class="postbox">
-				<h3 class="hndle"><?php _e( 'Coupon Fields', 'woo_ce' ); ?></h3>
+				<h3 class="hndle">
+					<?php _e( 'Coupon Fields', 'woo_ce' ); ?>
+				</h3>
 				<div class="inside">
 	<?php if( $coupons ) { ?>
 					<p class="description"><?php _e( 'Select the Coupon fields you would like to export.', 'woo_ce' ); ?></p>
-					<p><a href="javascript:void(0)" id="coupons-checkall" class="checkall"><?php _e( 'Check All', 'woo_ce' ); ?></a> | <a href="javascript:void(0)" id="coupons-uncheckall" class="uncheckall"><?php _e( 'Uncheck All', 'woo_ce' ); ?></a></p>
-					<table class="ui-sortable">
+					<p><a href="javascript:void(0)" id="coupon-checkall" class="checkall"><?php _e( 'Check All', 'woo_ce' ); ?></a> | <a href="javascript:void(0)" id="coupon-uncheckall" class="uncheckall"><?php _e( 'Uncheck All', 'woo_ce' ); ?></a></p>
+					<table id="coupon-fields" class="ui-sortable">
 
 		<?php foreach( $coupon_fields as $coupon_field ) { ?>
 						<tr>
@@ -555,7 +566,7 @@
 					</p>
 					<p class="description"><?php _e( 'Can\'t find a particular Coupon field in the above export list?', 'woo_ce' ); ?> <a href="<?php echo $troubleshooting_url; ?>" target="_blank"><?php _e( 'Get in touch', 'woo_ce' ); ?></a>.</p>
 	<?php } else { ?>
-					<p><?php _e( 'No Coupons have been found.', 'woo_ce' ); ?></p>
+					<p><?php _e( 'No Coupons were found.', 'woo_ce' ); ?></p>
 	<?php } ?>
 				</div>
 				<!-- .inside -->
@@ -580,19 +591,21 @@
 			<!-- .postbox -->
 
 		</div>
-		<!-- #export-coupons -->
+		<!-- #export-coupon -->
 
 <?php } ?>
 <?php if( $subscription_fields ) { ?>
-		<div id="export-subscriptions" class="export-types">
+		<div id="export-subscription" class="export-types">
 
 			<div class="postbox">
-				<h3 class="hndle"><?php _e( 'Subscription Fields', 'woo_ce' ); ?></h3>
+				<h3 class="hndle">
+					<?php _e( 'Subscription Fields', 'woo_ce' ); ?>
+				</h3>
 				<div class="inside">
 	<?php if( $subscriptions ) { ?>
 					<p class="description"><?php _e( 'Select the Subscription fields you would like to export.', 'woo_ce' ); ?></p>
 					<p><a href="javascript:void(0)" id="subscriptions-checkall" class="checkall"><?php _e( 'Check All', 'woo_ce' ); ?></a> | <a href="javascript:void(0)" id="subscriptions-uncheckall" class="uncheckall"><?php _e( 'Uncheck All', 'woo_ce' ); ?></a></p>
-					<table class="ui-sortable">
+					<table id="subscription-fields" class="ui-sortable">
 
 		<?php foreach( $subscription_fields as $subscription_field ) { ?>
 						<tr>
@@ -611,14 +624,14 @@
 					</p>
 					<p class="description"><?php _e( 'Can\'t find a particular Subscription field in the above export list?', 'woo_ce' ); ?> <a href="<?php echo $troubleshooting_url; ?>" target="_blank"><?php _e( 'Get in touch', 'woo_ce' ); ?></a>.</p>
 	<?php } else { ?>
-					<p><?php _e( 'No Subscriptions have been found.', 'woo_ce' ); ?></p>
+					<p><?php _e( 'No Subscriptions were found.', 'woo_ce' ); ?></p>
 	<?php } ?>
 				</div>
 				<!-- .inside -->
 			</div>
 			<!-- .postbox -->
 		</div>
-		<!-- #export-subscriptions -->
+		<!-- #export-subscription -->
 <?php } ?>
 		<div class="postbox" id="export-options">
 			<h3 class="hndle"><?php _e( 'Export Options', 'woo_ce' ); ?></h3>

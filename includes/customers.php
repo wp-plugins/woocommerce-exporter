@@ -15,8 +15,12 @@ if( is_admin() ) {
 <p><label><input type="checkbox" id="customers-filters-status" /> <?php _e( 'Filter Customers by Order Status', 'woo_ce' ); ?><span class="description"> - <?php printf( __( 'available in %s', 'woo_ce' ), $woo_cd_link ); ?></span></label></p>
 <div id="export-customers-filters-status" class="separator">
 	<ul>
-<?php foreach( $order_statuses as $order_status ) { ?>
+<?php if( $order_statuses ) { ?>
+	<?php foreach( $order_statuses as $order_status ) { ?>
 		<li><label><input type="checkbox" name="customer_filter_status[<?php echo $order_status->name; ?>]" value="<?php echo $order_status->name; ?>" disabled="disabled" /> <?php echo ucfirst( $order_status->name ); ?></label></li>
+	<?php } ?>
+<?php } else { ?>
+		<li><?php _e( 'No Order Status\'s were found.', 'jigo_ce' ); ?></li>
 <?php } ?>
 	</ul>
 	<p class="description"><?php _e( 'Select the Order Status you want to filter exported Customers by. Default is to include all Order Status options.', 'woo_ce' ); ?></p>
@@ -167,8 +171,10 @@ function woo_ce_get_customer_fields( $format = 'full' ) {
 		case 'summary':
 			$output = array();
 			$size = count( $fields );
-			for( $i = 0; $i < $size; $i++ )
-				$output[$fields[$i]['name']] = 'on';
+			for( $i = 0; $i < $size; $i++ ) {
+				if( isset( $fields[$i] ) )
+					$output[$fields[$i]['name']] = 'on';
+			}
 			return $output;
 			break;
 
