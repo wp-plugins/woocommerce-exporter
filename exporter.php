@@ -68,6 +68,7 @@ if( is_admin() ) {
 		add_action( 'woo_ce_export_category_options_after_table', 'woo_ce_category_order_sorting' );
 		add_action( 'woo_ce_export_tag_options_after_table', 'woo_ce_tag_order_sorting' );
 		add_action( 'woo_ce_export_user_options_after_table', 'woo_ce_users_user_sorting' );
+		add_action( 'woo_ce_export_after_form', 'woo_ce_products_custom_fields' );
 
 		// Add Store Exporter Deluxe widgets to Export screen
 		add_action( 'woo_ce_export_brand_options_before_table', 'woo_ce_brands_brand_sorting' );
@@ -81,10 +82,11 @@ if( is_admin() ) {
 		add_action( 'woo_ce_export_order_options_after_table', 'woo_ce_orders_order_sorting' );
 		add_action( 'woo_ce_export_customer_options_before_table', 'woo_ce_customers_filter_by_status' );
 		add_action( 'woo_ce_export_coupon_options_before_table', 'woo_ce_coupons_coupon_sorting' );
+		add_action( 'woo_ce_export_options', 'woo_ce_products_upsells_formatting' );
+		add_action( 'woo_ce_export_options', 'woo_ce_products_crosssells_formatting' );
 		add_action( 'woo_ce_export_options', 'woo_ce_orders_items_formatting' );
 		add_action( 'woo_ce_export_options', 'woo_ce_orders_max_order_items' );
 		add_action( 'woo_ce_export_options', 'woo_ce_orders_items_types' );
-		add_action( 'woo_ce_export_after_form', 'woo_ce_products_custom_fields' );
 		add_action( 'woo_ce_export_after_form', 'woo_ce_orders_custom_fields' );
 		add_action( 'woo_ce_export_options', 'woo_ce_export_options_export_format' );
 		add_action( 'woo_ce_export_options', 'woo_ce_export_options_gallery_format' );
@@ -152,6 +154,7 @@ if( is_admin() ) {
 
 				// Set default values for all export options to be later passed onto the export process
 				$export->fields = false;
+				$export->fields_order = false;
 				$export->export_format = 'csv';
 
 				// Product sorting
@@ -379,7 +382,7 @@ if( is_admin() ) {
 				if( $_POST['date_format'] == 'custom' && !empty( $_POST['date_format_custom'] ) )
 					woo_ce_update_option( 'date_format', sanitize_text_field( (string)$_POST['date_format_custom'] ) );
 				else
-				woo_ce_update_option( 'date_format', sanitize_text_field( (string)$_POST['date_format'] ) );
+					woo_ce_update_option( 'date_format', sanitize_text_field( (string)$_POST['date_format'] ) );
 
 				$message = __( 'Changes have been saved.', 'woo_ce' );
 				woo_ce_admin_notice( $message );

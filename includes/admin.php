@@ -64,7 +64,7 @@ function woo_ce_template_header( $title = '', $icon = 'woocommerce' ) {
 		$output = $title;
 	else
 		$output = __( 'Store Export', 'woo_ce' ); ?>
-<div class="wrap">
+<div id="woo-ce" class="wrap">
 	<div id="icon-<?php echo $icon; ?>" class="icon32 icon32-woocommerce-importer"><br /></div>
 	<h2>
 		<?php echo $output; ?>
@@ -79,12 +79,15 @@ function woo_ce_template_footer() { ?>
 </div>
 <!-- .wrap -->
 <?php
+
 }
 
 // Add Export and Docs links to the Plugins screen
 function woo_ce_add_settings_link( $links, $file ) {
 
-	$this_plugin = plugin_basename( WOO_CE_RELPATH );
+	// Manually force slug
+	$this_plugin = WOO_CE_RELPATH;
+
 	if( $file == $this_plugin ) {
 		$docs_url = 'http://www.visser.com.au/docs/';
 		$docs_link = sprintf( '<a href="%s" target="_blank">' . __( 'Docs', 'woo_ce' ) . '</a>', $docs_url );
@@ -97,41 +100,56 @@ function woo_ce_add_settings_link( $links, $file ) {
 }
 add_filter( 'plugin_action_links', 'woo_ce_add_settings_link', 10, 2 );
 
+// Add Store Export page to WooCommerce screen IDs
+function woo_ce_wc_screen_ids( $screen_ids = array() ) {
+
+	$screen_ids[] = 'woocommerce_page_woo_ce';
+	return $screen_ids;
+
+}
+add_filter( 'woocommerce_screen_ids', 'woo_ce_wc_screen_ids', 10, 1 );
+
+// Add Store Export to WordPress Administration menu
+function woo_ce_admin_menu() {
+
+	$page = add_submenu_page( 'woocommerce', __( 'Store Exporter', 'woo_ce' ), __( 'Store Export', 'woo_ce' ), 'view_woocommerce_reports', 'woo_ce', 'woo_ce_html_page' );
+	add_action( 'admin_print_styles-' . $page, 'woo_ce_enqueue_scripts' );
+
+}
+add_action( 'admin_menu', 'woo_ce_admin_menu', 11 );
+
 // Load CSS and jQuery scripts for Store Exporter screen
 function woo_ce_enqueue_scripts( $hook ) {
 
-	$page = 'woocommerce_page_woo_ce';
-	if( $page == $hook ) {
-		// Simple check that WooCommerce is activated
-		if( class_exists( 'WooCommerce' ) ) {
+	// Simple check that WooCommerce is activated
+	if( class_exists( 'WooCommerce' ) ) {
 
-			global $woocommerce;
+		global $woocommerce;
 
-			// Load WooCommerce default Admin styling
-			wp_enqueue_style( 'woocommerce_admin_styles', $woocommerce->plugin_url() . '/assets/css/admin.css' );
+		// Load WooCommerce default Admin styling
+		wp_enqueue_style( 'woocommerce_admin_styles', $woocommerce->plugin_url() . '/assets/css/admin.css' );
 
-		}
+	}
 
-		// Date Picker
-		wp_enqueue_script( 'jquery-ui-datepicker' );
-		wp_enqueue_style( 'jquery-ui-datepicker', plugins_url( '/templates/admin/jquery-ui-datepicker.css', WOO_CE_RELPATH ) );
+	// Date Picker
+	wp_enqueue_script( 'jquery-ui-datepicker' );
+	wp_enqueue_style( 'jquery-ui-datepicker', plugins_url( '/templates/admin/jquery-ui-datepicker.css', WOO_CE_RELPATH ) );
 
-		// Chosen
-		wp_enqueue_style( 'jquery-chosen', plugins_url( '/templates/admin/chosen.css', WOO_CE_RELPATH ) );
-		wp_enqueue_script( 'jquery-chosen', plugins_url( '/js/jquery.chosen.js', WOO_CE_RELPATH ), array( 'jquery' ) );
+	// Chosen
+	wp_enqueue_style( 'jquery-chosen', plugins_url( '/templates/admin/chosen.css', WOO_CE_RELPATH ) );
+	wp_enqueue_script( 'jquery-chosen', plugins_url( '/js/jquery.chosen.js', WOO_CE_RELPATH ), array( 'jquery' ) );
 
-		// Common
-		wp_enqueue_style( 'woo_ce_styles', plugins_url( '/templates/admin/export.css', WOO_CE_RELPATH ) );
-		wp_enqueue_script( 'woo_ce_scripts', plugins_url( '/templates/admin/export.js', WOO_CE_RELPATH ), array( 'jquery', 'jquery-ui-sortable' ) );
+	// Common
+	wp_enqueue_style( 'woo_ce_styles', plugins_url( '/templates/admin/export.css', WOO_CE_RELPATH ) );
+	wp_enqueue_script( 'woo_ce_scripts', plugins_url( '/templates/admin/export.js', WOO_CE_RELPATH ), array( 'jquery', 'jquery-ui-sortable' ) );
+	wp_enqueue_style( 'dashicons' );
 
-		if( WOO_CE_DEBUG ) {
-			wp_enqueue_style( 'jquery-csvToTable', plugins_url( '/templates/admin/jquery-csvtable.css', WOO_CE_RELPATH ) );
-			wp_enqueue_script( 'jquery-csvToTable', plugins_url( '/js/jquery.csvToTable.js', WOO_CE_RELPATH ), array( 'jquery' ) );
-		}
+	if( WOO_CE_DEBUG ) {
+		wp_enqueue_style( 'jquery-csvToTable', plugins_url( '/templates/admin/jquery-csvtable.css', WOO_CE_RELPATH ) );
+		wp_enqueue_script( 'jquery-csvToTable', plugins_url( '/js/jquery.csvToTable.js', WOO_CE_RELPATH ), array( 'jquery' ) );
 	}
 
 }
-add_action( 'admin_enqueue_scripts', 'woo_ce_enqueue_scripts' );
 
 // HTML active class for the currently selected tab on the Store Exporter screen
 function woo_ce_admin_active_tab( $tab_name = null, $tab = null ) {
@@ -180,13 +198,14 @@ function woo_ce_tab_template( $tab = '' ) {
 			$products = woo_ce_return_count( 'product' );
 			$categories = woo_ce_return_count( 'category' );
 			$tags = woo_ce_return_count( 'tag' );
-			$brands = woo_ce_return_count( 'brand' );
-			$orders = woo_ce_return_count( 'order' );
-			$customers = woo_ce_return_count( 'customer' );
+			$brands = '999';
+			$orders = '999';
+			$customers = '999';
 			$users = woo_ce_return_count( 'user' );
-			$coupons = woo_ce_return_count( 'coupon' );
-			$attributes = woo_ce_return_count( 'attribute' );
-			$subscriptions = woo_ce_return_count( 'subscription' );
+			$coupons = '999';
+			$attributes = '999';
+			$subscriptions = '999';
+			$product_vendors = '999';
 
 			if( $product_fields = woo_ce_get_product_fields() ) {
 				foreach( $product_fields as $key => $product_field )
@@ -212,11 +231,10 @@ function woo_ce_tab_template( $tab = '' ) {
 			}
 			$coupon_fields = woo_ce_get_coupon_fields();
 			$subscription_fields = woo_ce_get_subscription_fields();
+			$product_vendor_fields = woo_ce_get_product_vendor_fields();
 			$attribute_fields = false;
 
 			// Export options
-			$upsell_formatting = woo_ce_get_option( 'upsell_formatting', 1 );
-			$crosssell_formatting = woo_ce_get_option( 'crosssell_formatting', 1 );
 			$limit_volume = woo_ce_get_option( 'limit_volume' );
 			$offset = woo_ce_get_option( 'offset' );
 			break;
@@ -246,7 +264,10 @@ function woo_ce_tab_template( $tab = '' ) {
 			break;
 
 		case 'settings':
-			$export_filename = woo_ce_get_option( 'export_filename', 'woo-export_%dataset%-%date%.csv' );
+			$export_filename = woo_ce_get_option( 'export_filename', '' );
+			// Default export filename
+			if( empty( $export_filename ) )
+				$export_filename = 'woo-export_%dataset%-%date%.csv';
 			$delete_file = woo_ce_get_option( 'delete_file', 0 );
 			$timeout = woo_ce_get_option( 'timeout', 0 );
 			$encoding = woo_ce_get_option( 'encoding', 'UTF-8' );
@@ -262,12 +283,19 @@ function woo_ce_tab_template( $tab = '' ) {
 
 		case 'tools':
 			// Product Importer Deluxe
+			$woo_pd_url = 'http://www.visser.com.au/woocommerce/plugins/product-importer-deluxe/';
+			$woo_pd_target = ' target="_blank"';
 			if( function_exists( 'woo_pd_init' ) ) {
-				$woo_pd_url = add_query_arg( 'page', 'woo_pd' );
+				$woo_pd_url = add_query_arg( array( 'page' => 'woo_pd', 'tab' => null ) );
 				$woo_pd_target = false;
-			} else {
-				$woo_pd_url = 'http://www.visser.com.au/woocommerce/plugins/product-importer-deluxe/';
-				$woo_pd_target = ' target="_blank"';
+			}
+
+			// Store Toolkit
+			$woo_st_url = 'http://www.visser.com.au/woocommerce/plugins/store-toolkit/';
+			$woo_st_target = ' target="_blank"';
+			if( function_exists( 'woo_st_admin_init' ) ) {
+				$woo_st_url = add_query_arg( array( 'page' => 'woo_st', 'tab' => null ) );
+				$woo_st_target = false;
 			}
 			break;
 

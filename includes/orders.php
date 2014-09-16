@@ -386,6 +386,8 @@ if( is_admin() ) {
 // Returns a list of Order export columns
 function woo_ce_get_order_fields( $format = 'full' ) {
 
+	$export_type = 'order';
+
 	$fields = array();
 	$fields[] = array(
 		'name' => 'purchase_id',
@@ -691,8 +693,8 @@ function woo_ce_get_order_fields( $format = 'full' ) {
 	);
 */
 
-	// Allow Plugin/Theme authors to add support for additional Order columns
-	$fields = apply_filters( 'woo_ce_order_fields', $fields );
+	// Allow Plugin/Theme authors to add support for additional columns
+	$fields = apply_filters( 'woo_ce_' . $export_type . '_fields', $fields, $export_type );
 
 	switch( $format ) {
 
@@ -708,12 +710,31 @@ function woo_ce_get_order_fields( $format = 'full' ) {
 
 		case 'full':
 		default:
+			$sorting = woo_ce_get_option( $export_type . '_sorting', array() );
+			$size = count( $fields );
+			for( $i = 0; $i < $size; $i++ )
+				$fields[$i]['order'] = ( isset( $sorting[$fields[$i]['name']] ) ? $sorting[$fields[$i]['name']] : $i );
+			usort( $fields, woo_ce_sort_fields( 'order' ) );
 			return $fields;
 			break;
 
 	}
 
 }
+
+function woo_ce_override_order_field_labels( $fields = array() ) {
+
+	$labels = woo_ce_get_option( 'order_labels', array() );
+	if( !empty( $labels ) ) {
+		foreach( $fields as $key => $field ) {
+			if( isset( $labels[$field['name']] ) )
+				$fields[$key]['label'] = $labels[$field['name']];
+		}
+	}
+	return $fields;
+
+}
+add_filter( 'woo_ce_order_fields', 'woo_ce_override_order_field_labels', 11 );
 
 // Adds custom Order and Order Item columns to the Order fields list
 function woo_ce_extend_order_fields( $fields = array() ) {
@@ -936,6 +957,14 @@ function woo_ce_extend_order_fields( $fields = array() ) {
 		$fields[] = array(
 			'name' => 'order_items_brand',
 			'label' => __( 'Order Items: Brand', 'woo_ce' )
+		);
+	}
+
+	// Product Vendors - http://www.woothemes.com/products/product-vendors/
+	if( class_exists( 'WooCommerce_Product_Vendors' ) ) {
+		$fields[] = array(
+			'name' => 'order_items_vendor',
+			'label' => __( 'Order Items: Product Vendor', 'woo_ce' )
 		);
 	}
 

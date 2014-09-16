@@ -5,7 +5,7 @@ Donate link: http://www.visser.com.au/#donations
 Tags: e-commerce, woocommerce, shop, cart, ecommerce, export, csv, xml, xls, excel, customers, products, sales, orders, coupons, users, attributes, subscriptions
 Requires at least: 2.9.2
 Tested up to: 4.0
-Stable tag: 1.7.8
+Stable tag: 1.7.9
 
 == Description ==
 
@@ -37,6 +37,10 @@ Features include:
 * Export to CSV file
 * Export to XML file (*)
 * Export to Excel 2007 (XLS) file (*)
+* Export to WordPress Media
+* Export to e-mail addresses (*)
+* Export to remote POST (*)
+* Export to remote FTP (*)
 * Supports external CRON commands (*)
 * Supports scheduled exports (*)
 
@@ -61,6 +65,8 @@ Just a few of the features unlocked in the Pro upgrade of Product Importer inclu
 - Export Currency Switcher
 - Export WooCommerce PDF Invoices & Packing Slips
 - Export WooCommerce Checkout Add-ons
+- Export Product Vendors
+
 ... and more free and Premium extensions for WooCommerce.
 
 For more information visit: http://www.visser.com.au/woocommerce/
@@ -99,6 +105,10 @@ http://www.visser.com.au/woocommerce/forums/
 7. Download achived copies of previous exports
 
 == Changelog ==
+
+= 1.7.9 =
+* Changed: Moved Up-sells formatting option to products.php
+* Changed: Moved Cross-sells formatting option to products.php
 
 = 1.7.8 =
 * Added: Gravity Form ID to Orders export

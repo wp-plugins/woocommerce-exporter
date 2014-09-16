@@ -41,6 +41,8 @@ if( is_admin() ) {
 // Returns a list of User export columns
 function woo_ce_get_user_fields( $format = 'full' ) {
 
+	$export_type = 'user';
+
 	$fields = array();
 	$fields[] = array(
 		'name' => 'user_id',
@@ -90,10 +92,10 @@ function woo_ce_get_user_fields( $format = 'full' ) {
 	);
 */
 
-	// Allow Plugin/Theme authors to add support for additional User columns
-	$fields = apply_filters( 'woo_ce_user_fields', $fields );
+	// Allow Plugin/Theme authors to add support for additional columns
+	$fields = apply_filters( 'woo_ce_' . $export_type . '_fields', $fields, $export_type );
 
-	if( $remember = woo_ce_get_option( 'user_fields', array() ) ) {
+	if( $remember = woo_ce_get_option( $export_type . '_fields', array() ) ) {
 		$remember = maybe_unserialize( $remember );
 		$size = count( $fields );
 		for( $i = 0; $i < $size; $i++ ) {
@@ -118,17 +120,31 @@ function woo_ce_get_user_fields( $format = 'full' ) {
 
 		case 'full':
 		default:
-			$sorting = woo_ce_get_option( 'user_sorting', array() );
+			$sorting = woo_ce_get_option( $export_type . '_sorting', array() );
 			$size = count( $fields );
 			for( $i = 0; $i < $size; $i++ )
 				$fields[$i]['order'] = ( isset( $sorting[$fields[$i]['name']] ) ? $sorting[$fields[$i]['name']] : $i );
-			usort( $fields, 'woo_ce_sort_fields' );
+			usort( $fields, woo_ce_sort_fields( 'order' ) );
 			return $fields;
 			break;
 
 	}
 
 }
+
+function woo_ce_override_user_field_labels( $fields = array() ) {
+
+	$labels = woo_ce_get_option( 'user_labels', array() );
+	if( !empty( $labels ) ) {
+		foreach( $fields as $key => $field ) {
+			if( isset( $labels[$field['name']] ) )
+				$fields[$key]['label'] = $labels[$field['name']];
+		}
+	}
+	return $fields;
+
+}
+add_filter( 'woo_ce_user_fields', 'woo_ce_override_user_field_labels', 11 );
 
 // Returns the export column header label based on an export column slug
 function woo_ce_get_user_field( $name = null, $format = 'name' ) {
@@ -180,20 +196,6 @@ function woo_ce_extend_user_fields( $fields = array() ) {
 }
 add_filter( 'woo_ce_user_fields', 'woo_ce_extend_user_fields' );
 
-function woo_ce_override_user_field_labels( $fields = array() ) {
-
-	$labels = woo_ce_get_option( 'user_labels', array() );
-	if( !empty( $labels ) ) {
-		foreach( $fields as $key => $field ) {
-			if( isset( $labels[$field['name']] ) )
-				$fields[$key]['label'] = $labels[$field['name']];
-		}
-	}
-	return $fields;
-
-}
-add_filter( 'woo_ce_user_fields', 'woo_ce_override_user_field_labels', 11 );
-
 // Returns a list of User IDs
 function woo_ce_get_users( $args = array() ) {
 
@@ -230,8 +232,6 @@ function woo_ce_get_users( $args = array() ) {
 }
 
 function woo_ce_get_user_data( $user_id = 0, $args = array() ) {
-
-	global $export;
 
 	$defaults = array();
 	$args = wp_parse_args( $args, $defaults );

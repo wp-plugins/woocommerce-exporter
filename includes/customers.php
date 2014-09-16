@@ -38,6 +38,8 @@ if( is_admin() ) {
 // Returns a list of Customer export columns
 function woo_ce_get_customer_fields( $format = 'full' ) {
 
+	$export_type = 'customer';
+
 	$fields = array();
 	$fields[] = array(
 		'name' => 'user_id',
@@ -163,8 +165,8 @@ function woo_ce_get_customer_fields( $format = 'full' ) {
 	);
 */
 
-	// Allow Plugin/Theme authors to add support for additional Customer columns
-	$fields = apply_filters( 'woo_ce_customer_fields', $fields );
+	// Allow Plugin/Theme authors to add support for additional columns
+	$fields = apply_filters( 'woo_ce_' . $export_type . '_fields', $fields, $export_type );
 
 	switch( $format ) {
 
@@ -180,10 +182,29 @@ function woo_ce_get_customer_fields( $format = 'full' ) {
 
 		case 'full':
 		default:
+			$sorting = woo_ce_get_option( $export_type . '_sorting', array() );
+			$size = count( $fields );
+			for( $i = 0; $i < $size; $i++ )
+				$fields[$i]['order'] = ( isset( $sorting[$fields[$i]['name']] ) ? $sorting[$fields[$i]['name']] : $i );
+			usort( $fields, woo_ce_sort_fields( 'order' ) );
 			return $fields;
 			break;
 
 	}
 
 }
+
+function woo_ce_override_customer_field_labels( $fields = array() ) {
+
+	$labels = woo_ce_get_option( 'customer_labels', array() );
+	if( !empty( $labels ) ) {
+		foreach( $fields as $key => $field ) {
+			if( isset( $labels[$field['name']] ) )
+				$fields[$key]['label'] = $labels[$field['name']];
+		}
+	}
+	return $fields;
+
+}
+add_filter( 'woo_ce_customer_fields', 'woo_ce_override_customer_field_labels', 11 );
 ?>
