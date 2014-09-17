@@ -10,6 +10,8 @@ include_once( WOO_CE_PATH . 'includes/coupons.php' );
 include_once( WOO_CE_PATH . 'includes/subscriptions.php' );
 include_once( WOO_CE_PATH . 'includes/product_vendors.php' );
 
+if( version_compare( phpversion(), '5.3', '>=' ) )
+	include_once( WOO_CE_PATH . 'includes/legacy.php' );
 include_once( WOO_CE_PATH . 'includes/formatting.php' );
 
 include_once( WOO_CE_PATH . 'includes/export-csv.php' );
@@ -39,6 +41,7 @@ if( is_admin() ) {
 	function woo_ce_fail_notices() {
 
 		woo_ce_memory_prompt();
+
 		$troubleshooting_url = 'http://www.visser.com.au/documentation/store-exporter-deluxe/usage/';
 		if( isset( $_GET['failed'] ) ) {
 			$message = '';
@@ -58,18 +61,23 @@ if( is_admin() ) {
 
 	}
 
-	// Displays a HTML notice where the memory allocated to WordPress falls below 64MB
 	function woo_ce_memory_prompt() {
 
-		if( !woo_ce_get_option( 'dismiss_memory_prompt', 0 ) ) {
-			$memory_limit = (int)( ini_get( 'memory_limit' ) );
-			$minimum_memory_limit = 64;
-			if( $memory_limit < $minimum_memory_limit ) {
-				$memory_url = add_query_arg( 'action', 'dismiss_memory_prompt' );
-				$troubleshooting_url = 'http://www.visser.com.au/documentation/store-exporter-deluxe/usage/';
-				$message = sprintf( __( 'We recommend setting memory to at least %dMB, your site has only %dMB allocated to it. See: <a href="%s" target="_blank">Increasing memory allocated to PHP</a>', 'woo_ce' ), $minimum_memory_limit, $memory_limit, $troubleshooting_url ) . '<span style="float:right;"><a href="' . $memory_url . '">' . __( 'Dismiss', 'woo_ce' ) . '</a></span>';
-				woo_ce_admin_notice_html( $message, 'error' );
-			}
+		$troubleshooting_url = 'http://www.visser.com.au/documentation/store-exporter-deluxe/usage/';
+
+		// Displays a HTML notice where the memory allocated to WordPress falls below 64MB
+		$memory_limit = (int)( ini_get( 'memory_limit' ) );
+		$minimum_memory_limit = 64;
+		if( ( $memory_limit < $minimum_memory_limit ) && !woo_ce_get_option( 'dismiss_memory_prompt', 0 ) ) {
+			$dismiss_url = add_query_arg( 'action', 'dismiss_memory_prompt' );
+			$message = sprintf( __( 'We recommend setting memory to at least %dMB, your site has only %dMB allocated to it. See: <a href="%s" target="_blank">Increasing memory allocated to PHP</a>', 'woo_ce' ), $minimum_memory_limit, $memory_limit, $troubleshooting_url ) . '<span style="float:right;"><a href="' . $dismiss_url . '">' . __( 'Dismiss', 'woo_ce' ) . '</a></span>';
+			woo_ce_admin_notice_html( $message, 'error' );
+		}
+
+		if( version_compare( phpversion(), '5.3', '<' ) && !woo_ce_get_option( 'dismiss_php_legacy', 0 ) ) {
+			$dismiss_url = add_query_arg( 'action', 'dismiss_php_legacy' );
+			$message = sprintf( __( 'Your PHP version (%s) is not supported and is very much out of date, since 2010 all users are strongly encouraged to upgrade to PHP 5.3+ and above. Contact your hosting provider to make this happen. See: <a href="%s" target="_blank">Migrating from PHP 5.2 to 5.3</a>', 'woo_ce' ), phpversion(), $troubleshooting_url ) . '<span style="float:right;"><a href="' . $dismiss_url . '">' . __( 'Dismiss', 'woo_ce' ) . '</a></span>';
+			woo_ce_admin_notice_html( $message, 'error' );
 		}
 
 	}
@@ -153,7 +161,7 @@ if( is_admin() ) {
 				break;
 
 			case 'brand':
-				$term_taxonomy = 'product_brand';
+				$term_taxonomy = apply_filters( 'woo_ce_return_count_brand', 'product_brand' );
 				$count = wp_count_terms( $term_taxonomy );
 				break;
 
@@ -809,13 +817,14 @@ function woo_ce_add_missing_mime_type( $mime_types = array() ) {
 }
 add_filter( 'upload_mimes', 'woo_ce_add_missing_mime_type', 10, 1 );
 
-function woo_ce_sort_fields( $key ) {
-	
-	return function( $a, $b ) use ( $key ) {
-		return strnatcmp( $a[$key], $b[$key] );
-	};
+if( !function_exists( 'woo_ce_sort_fields' ) ) {
+	function woo_ce_sort_fields( $key ) {
 
+		return $key;
+
+	}
 }
+
 
 // Add Store Export to filter types on the WordPress Media screen
 function woo_ce_add_post_mime_type( $post_mime_types = array() ) {

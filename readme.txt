@@ -5,7 +5,7 @@ Donate link: http://www.visser.com.au/#donations
 Tags: e-commerce, woocommerce, shop, cart, ecommerce, export, csv, xml, xls, excel, customers, products, sales, orders, coupons, users, attributes, subscriptions
 Requires at least: 2.9.2
 Tested up to: 4.0
-Stable tag: 1.7.9
+Stable tag: 1.8
 
 == Description ==
 
@@ -102,9 +102,17 @@ http://www.visser.com.au/woocommerce/forums/
 4. A range of export options can be adjusted to suit different languages and file formatting requirements.
 5. Export a list of WooCommerce Product Categories into a CSV file.
 6. Export a list of WooCommerce Product Tags into a CSV file.
-7. Download achived copies of previous exports
+7. Download archived copies of previous exports
+8. Use the Field Editor to relabel export fields to your preferred names
+9. Drag-and-drop export fields to your preferred ordering, sorting is saved between screen refreshes.
 
 == Changelog ==
+
+= 1.8 =
+* Fixed: Up-sells formatting not saving between screen refreshes
+* Fixed: Cross-sells formatting not saving between screen refreshes
+* Fixed: PHP 5.2 compatibility for anonymous functions
+* Added: Admin notice for PHP 5.2 users to update to supported releases of PHP
 
 = 1.7.9 =
 * Changed: Moved Up-sells formatting option to products.php

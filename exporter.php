@@ -3,7 +3,7 @@
 Plugin Name: WooCommerce - Store Exporter
 Plugin URI: http://www.visser.com.au/woocommerce/plugins/exporter/
 Description: Export store details out of WooCommerce into simple formatted files (e.g. CSV, XML, Excel 2007 XLS, etc.).
-Version: 1.7.9
+Version: 1.8
 Author: Visser Labs
 Author URI: http://www.visser.com.au/about/
 License: GPL2
@@ -68,6 +68,8 @@ if( is_admin() ) {
 		add_action( 'woo_ce_export_category_options_after_table', 'woo_ce_category_order_sorting' );
 		add_action( 'woo_ce_export_tag_options_after_table', 'woo_ce_tag_order_sorting' );
 		add_action( 'woo_ce_export_user_options_after_table', 'woo_ce_users_user_sorting' );
+		add_action( 'woo_ce_export_options', 'woo_ce_products_upsells_formatting' );
+		add_action( 'woo_ce_export_options', 'woo_ce_products_crosssells_formatting' );
 		add_action( 'woo_ce_export_after_form', 'woo_ce_products_custom_fields' );
 
 		// Add Store Exporter Deluxe widgets to Export screen
@@ -82,8 +84,6 @@ if( is_admin() ) {
 		add_action( 'woo_ce_export_order_options_after_table', 'woo_ce_orders_order_sorting' );
 		add_action( 'woo_ce_export_customer_options_before_table', 'woo_ce_customers_filter_by_status' );
 		add_action( 'woo_ce_export_coupon_options_before_table', 'woo_ce_coupons_coupon_sorting' );
-		add_action( 'woo_ce_export_options', 'woo_ce_products_upsells_formatting' );
-		add_action( 'woo_ce_export_options', 'woo_ce_products_crosssells_formatting' );
 		add_action( 'woo_ce_export_options', 'woo_ce_orders_items_formatting' );
 		add_action( 'woo_ce_export_options', 'woo_ce_orders_max_order_items' );
 		add_action( 'woo_ce_export_options', 'woo_ce_orders_items_types' );
@@ -102,6 +102,14 @@ if( is_admin() ) {
 			// Prompt on Export screen when insufficient memory (less than 64M is allocated)
 			case 'dismiss_memory_prompt':
 				woo_ce_update_option( 'dismiss_memory_prompt', 1 );
+				$url = add_query_arg( 'action', null );
+				wp_redirect( $url );
+				exit();
+				break;
+
+			// Prompt on Export screen when insufficient memory (less than 64M is allocated)
+			case 'dismiss_php_legacy':
+				woo_ce_update_option( 'dismiss_php_legacy', 1 );
 				$url = add_query_arg( 'action', null );
 				wp_redirect( $url );
 				exit();
