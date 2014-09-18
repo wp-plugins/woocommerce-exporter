@@ -4,10 +4,37 @@
 	font-size: 16px;
 	margin-right:0;
 }
-
 #woo-ce h2.nav-tab-wrapper {
 	padding-left:7px;
 }
+
+/* Overview */
+
+#woo-ce .overview-left {
+	float:left;
+	width:73%;
+}
+#woo-ce .overview-right {
+	float:left;
+	width:24%;
+}
+	#woo-ce .overview-right h3 {
+		font-size:16px;
+	}
+		#woo-ce .overview-right h3 span {
+			float:right;
+			font-size:11px;
+			font-weight:normal;
+		}
+	#woo-ce .overview-right p {
+		font-size:12px;
+		color:#333;
+		line-height:1.6em;
+	}
+	#woo-ce .overview-right ul {
+		font-size:12px;
+		line-height:1.2em;
+	}
 
 /* Export */
 
@@ -36,32 +63,20 @@
 #woo-ce .separator {
 	border-bottom:1px solid #dfdfdf;
 }
+#woo-ce .woo_vm_version_table .export_module {
+	background-color:#fff;
+	padding:0.2em 0 0 0.5em;
+}
+#woo-ce .woo_vm_version_table .dashicons {
+	color:#666;
+}
+#woo-ce .woo_vm_version_table .status {
+	width:80px;
+}
 
-#woo-ce .overview-left {
-	float:left;
-	width:73%;
-}
-#woo-ce .overview-right {
-	float:left;
-	width:24%;
-}
-	#woo-ce .overview-right h3 {
-		font-size:16px;
-	}
-		#woo-ce .overview-right h3 span {
-			float:right;
-			font-size:11px;
-			font-weight:normal;
-		}
-	#woo-ce .overview-right p {
-		font-size:12px;
-		color:#333;
-		line-height:1.6em;
-	}
-	#woo-ce .overview-right ul {
-		font-size:12px;
-		line-height:1.2em;
-	}
+
+/* Settings */
+
 #woo-ce .auto_method_options li.ftp-options label {
 	display:inline-block;
 	width:120px;

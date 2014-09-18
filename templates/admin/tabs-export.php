@@ -1,14 +1,17 @@
 <ul class="subsubsub">
 	<li><a href="#export-type"><?php _e( 'Export Type', 'woo_ce' ); ?></a> |</li>
 	<li><a href="#export-options"><?php _e( 'Export Options', 'woo_ce' ); ?></a></li>
+	<li>| <a href="#export-modules"><?php _e( 'Export Modules', 'woo_ce' ); ?></a></li>
 	<?php do_action( 'woo_ce_export_quicklinks' ); ?>
 </ul>
+<!-- .subsubsub -->
 <br class="clear" />
-<p><?php _e( 'Select an export type from the list below to export entries. Once you have selected an export type you may select the fields you would like to export and optional filters available for each export type. When you click the export button below, Store Exporter will create an export file for you to save to your computer.', 'woo_ce' ); ?></p>
-<form method="post" action="<?php echo add_query_arg( array( 'failed' => null, 'empty' => null, 'message' => null ) ); ?>" id="postform">
-	<div id="poststuff">
 
-		<div class="postbox" id="export-type">
+<p><?php _e( 'Select an export type from the list below to export entries. Once you have selected an export type you may select the fields you would like to export and optional filters available for each export type. When you click the export button below, Store Exporter will create an export file for you to save to your computer.', 'woo_ce' ); ?></p>
+<div id="poststuff">
+	<form method="post" action="<?php echo add_query_arg( array( 'failed' => null, 'empty' => null, 'message' => null ) ); ?>" id="postform">
+
+		<div id="export-type" class="postbox">
 			<h3 class="hndle"><?php _e( 'Export Type', 'woo_ce' ); ?></h3>
 			<div class="inside">
 				<p class="description"><?php _e( 'Select the data type you want to export.', 'woo_ce' ); ?></p>
@@ -686,6 +689,8 @@
 		<!-- #export-product_vendor -->
 
 <?php } ?>
+		<?php do_action( 'woo_ce_before_options' ); ?>
+
 		<div class="postbox" id="export-options">
 			<h3 class="hndle"><?php _e( 'Export Options', 'woo_ce' ); ?></h3>
 			<div class="inside">
@@ -717,9 +722,56 @@
 		</div>
 		<!-- .postbox -->
 
-	</div>
-	<!-- #poststuff -->
-	<input type="hidden" name="action" value="export" />
-</form>
+		<?php do_action( 'woo_ce_after_options' ); ?>
 
-<?php do_action( 'woo_ce_export_after_form' ); ?>
+		<input type="hidden" name="action" value="export" />
+	</form>
+
+	<?php do_action( 'woo_ce_export_after_form' ); ?>
+
+	<?php do_action( 'woo_ce_before_modules' ); ?>
+
+	<div id="export-modules" class="postbox">
+		<h3 class="hndle"><?php _e( 'Export Modules', 'woo_ce' ); ?></h3>
+		<div class="inside">
+			<p><?php _e( 'Export store details from other WooCommerce and WordPress Plugins, simply install and activate one of the below Plugins to enable those additional export options.', 'woo_ce' ); ?></p>
+<?php if( $modules ) { ?>
+			<div class="table table_content">
+				<table class="woo_vm_version_table">
+	<?php foreach( $modules as $module ) { ?>
+					<tr>
+						<td class="export_module">
+		<?php if( $module['description'] ) { ?>
+							<strong><?php echo $module['title']; ?></strong>: <span class="description"><?php echo $module['description']; ?></span>
+		<?php } else { ?>
+							<strong><?php echo $module['title']; ?></strong>
+		<?php } ?>
+						</td>
+						<td class="status">
+							<div class="<?php woo_ce_modules_status_class( $module['status'] ); ?>">
+		<?php if( $module['status'] == 'active' ) { ?>
+								<div class="dashicons dashicons-yes" style="color:#008000;"></div><?php woo_ce_modules_status_label( $module['status'] ); ?>
+		<?php } else { ?>
+			<?php if( $module['url'] ) { ?>
+								<?php if( isset( $module['slug'] ) ) { echo '<div class="dashicons dashicons-download" style="color:#0074a2;"></div>'; } else { echo '<div class="dashicons dashicons-admin-links"></div>'; } ?>&nbsp;<a href="<?php echo $module['url']; ?>" target="_blank"<?php if( isset( $module['slug'] ) ) { echo ' title="' . __( 'Install via WordPress Plugin Directory', 'woo_ce' ) . '"'; } else { echo ' title="' . __( 'Visit the Plugin website', 'woo_ce' ) . '"'; } ?>><?php woo_ce_modules_status_label( $module['status'] ); ?></a>
+			<?php } ?>
+		<?php } ?>
+							</div>
+						</td>
+					</tr>
+	<?php } ?>
+				</table>
+			</div>
+			<!-- .table -->
+<?php } else { ?>
+			<p><?php _e( 'No export modules are available at this time.', 'woo_ce' ); ?></p>
+<?php } ?>
+		</div>
+		<!-- .inside -->
+	</div>
+	<!-- .postbox -->
+
+	<?php do_action( 'woo_ce_after_modules' ); ?>
+
+</div>
+<!-- #poststuff -->

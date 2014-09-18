@@ -5,7 +5,7 @@ Donate link: http://www.visser.com.au/#donations
 Tags: e-commerce, woocommerce, shop, cart, ecommerce, export, csv, xml, xls, excel, customers, products, sales, orders, coupons, users, attributes, subscriptions
 Requires at least: 2.9.2
 Tested up to: 4.0
-Stable tag: 1.8
+Stable tag: 1.8.1
 
 == Description ==
 
@@ -30,6 +30,7 @@ Features include:
 * Export Users
 * Export Coupons (*)
 * Export Subscriptions (*)
+* Export Product Vendors (*)
 * Export Attributes (*)
 * Toggle and save export fields
 * Field label editor (*)
@@ -107,6 +108,9 @@ http://www.visser.com.au/woocommerce/forums/
 9. Drag-and-drop export fields to your preferred ordering, sorting is saved between screen refreshes.
 
 == Changelog ==
+
+= 1.8.1 =
+* Adeded: Export modules to the Export screen
 
 = 1.8 =
 * Fixed: Up-sells formatting not saving between screen refreshes

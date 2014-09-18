@@ -233,7 +233,7 @@ function woo_ce_export_settings_cron() {
 					<option value="active" disabled="disabled"><?php _e( 'Active', 'woo_ce' ); ?></option>
 					<option value="passive" disabled="disabled"><?php _e( 'Passive', 'woo_ce' ); ?></option>
 				</select><br />
-				<label for="ftp_method_timeout"><?php _e( 'Timeout', 'woo_ce' ); ?>:</label> <input type="text" id="ftp_method_timeout" name="ftp_method_timeout" size="5" class="small-text code" value="<?php echo sanitize_text_field( $ftp_method_timeout ); ?>" /><br />
+				<label for="ftp_method_timeout"><?php _e( 'Timeout', 'woo_ce' ); ?>:</label> <input type="text" id="ftp_method_timeout" name="ftp_method_timeout" size="5" class="short-text code" value="<?php echo sanitize_text_field( $ftp_method_timeout ); ?>" /><br />
 				<p class="description"><?php _e( 'Enter the FTP host, login details and path of where to save the export file, do not provide the filename, the export filename can be set on General Settings above. For file path example: <code>wp-content/uploads/exports/</code>', 'woo_ce' ); ?></p>
 			</li>
 			<li class="export-options archive-options email-options post-options">
@@ -247,7 +247,7 @@ function woo_ce_export_settings_cron() {
 	<td colspan="2" style="padding:0;">
 		<hr />
 		<h3><div class="dashicons dashicons-clock"></div>&nbsp;<?php _e( 'CRON Exports', 'woo_ce' ); ?></h3>
-		<p class="description"><?php printf( __( 'Store Exporter Deluxe supports exporting via a command line request, to do this you need to prepare a specific URL and pass it the following required inline parameters. For sample CRON requests and supported arguments consult our <a href="%s" target="_blank">online documentation</a>.', 'woo_ce' ), $troubleshooting_url ); ?></p>
+		<p class="description"><?php printf( __( 'Store Exporter Deluxe supports exporting via a command line request. For sample CRON requests and supported arguments consult our <a href="%s" target="_blank">online documentation</a>.', 'woo_ce' ), $troubleshooting_url ); ?></p>
 	</td>
 </tr>
 <tr>

@@ -148,6 +148,7 @@ function woo_ce_enqueue_scripts( $hook ) {
 		wp_enqueue_style( 'jquery-csvToTable', plugins_url( '/templates/admin/jquery-csvtable.css', WOO_CE_RELPATH ) );
 		wp_enqueue_script( 'jquery-csvToTable', plugins_url( '/js/jquery.csvToTable.js', WOO_CE_RELPATH ), array( 'jquery' ) );
 	}
+	wp_enqueue_style( 'woo_vm_styles', plugins_url( '/templates/admin/woocommerce-admin_dashboard_vm-plugins.css', WOO_CE_RELPATH ) );
 
 }
 
@@ -233,6 +234,9 @@ function woo_ce_tab_template( $tab = '' ) {
 			$subscription_fields = woo_ce_get_subscription_fields();
 			$product_vendor_fields = woo_ce_get_product_vendor_fields();
 			$attribute_fields = false;
+
+			// Export modules
+			$modules = woo_ce_modules_list();
 
 			// Export options
 			$limit_volume = woo_ce_get_option( 'limit_volume' );
@@ -321,6 +325,270 @@ function woo_ce_tab_template( $tab = '' ) {
 
 }
 
+// List of WordPress Plugins that Product Importer Deluxe integrates with
+function woo_ce_modules_list( $modules = array() ) {
+
+	$modules[] = array(
+		'name' => 'aioseop',
+		'title' => __( 'All in One SEO Pack', 'woo_ce' ),
+		'description' => __( 'Optimize your WooCommerce Products for Search Engines. Requires Store Toolkit for All in One SEO Pack integration.', 'woo_ce' ),
+		'url' => 'http://wordpress.org/extend/plugins/all-in-one-seo-pack/',
+		'slug' => 'all-in-one-seo-pack',
+		'function' => 'aioseop_activate'
+	);
+	$modules[] = array(
+		'name' => 'store_toolkit',
+		'title' => __( 'Store Toolkit', 'woo_ce' ),
+		'description' => __( 'Store Toolkit includes a growing set of commonly-used WooCommerce administration tools aimed at web developers and store maintainers.', 'woo_ce' ),
+		'url' => 'http://wordpress.org/extend/plugins/woocommerce-store-toolkit/',
+		'slug' => 'woocommerce-store-toolkit',
+		'function' => 'woo_st_admin_init'
+	);
+	$modules[] = array(
+		'name' => 'ultimate_seo',
+		'title' => __( 'SEO Ultimate', 'woo_ce' ),
+		'description' => __( 'This all-in-one SEO plugin gives you control over Product details.', 'woo_ce' ),
+		'url' => 'http://wordpress.org/extend/plugins/seo-ultimate/',
+		'slug' => 'seo-ultimate',
+		'function' => 'su_wp_incompat_notice'
+	);
+	$modules[] = array(
+		'name' => 'gpf',
+		'title' => __( 'Advanced Google Product Feed', 'woo_ce' ),
+		'description' => __( 'Easily configure data to be added to your Google Merchant Centre feed.', 'woo_ce' ),
+		'url' => 'http://www.leewillis.co.uk/wordpress-plugins/',
+		'function' => 'woocommerce_gpf_install'
+	);
+	$modules[] = array(
+		'name' => 'wpseo',
+		'title' => __( 'WordPress SEO by Yoast', 'woo_ce' ),
+		'description' => __( 'The first true all-in-one SEO solution for WordPress.', 'woo_ce' ),
+		'url' => 'http://yoast.com/wordpress/seo/#utm_source=wpadmin&utm_medium=plugin&utm_campaign=wpseoplugin',
+		'slug' => 'wordpress-seo',
+		'function' => 'wpseo_admin_init'
+	);
+	$modules[] = array(
+		'name' => 'msrp',
+		'title' => __( 'WooCommerce MSRP Pricing', 'woo_ce' ),
+		'description' => __( 'Define and display MSRP prices (Manufacturer\'s suggested retail price) to your customers.', 'woo_ce' ),
+		'url' => 'http://www.woothemes.com/products/msrp-pricing/',
+		'function' => 'woocommerce_msrp_activate'
+	);
+	$modules[] = array(
+		'name' => 'wc_brands',
+		'title' => __( 'WooCommerce Brands Addon', 'woo_ce' ),
+		'description' => __( 'Create, assign and list brands for products, and allow customers to filter by brand.', 'woo_ce' ),
+		'url' => 'http://www.woothemes.com/products/brands/',
+		'class' => 'WC_Brands'
+	);
+	$modules[] = array(
+		'name' => 'wc_cog',
+		'title' => __( 'Cost of Goods', 'woo_ce' ),
+		'description' => __( 'Easily track total profit and cost of goods by adding a Cost of Good field to simple and variable products.', 'woo_ce' ),
+		'url' => 'http://www.skyverge.com/product/woocommerce-cost-of-goods-tracking/',
+		'class' => 'WC_COG'
+	);
+	$modules[] = array(
+		'name' => 'per_product_shipping',
+		'title' => __( 'Per-Product Shipping', 'woo_ce' ),
+		'description' => __( 'Define separate shipping costs per product which are combined at checkout to provide a total shipping cost.', 'woo_ce' ),
+		'url' => 'http://www.woothemes.com/products/per-product-shipping/',
+		'function' => 'woocommerce_per_product_shipping_init'
+	);
+	$modules[] = array(
+		'name' => 'vendors',
+		'title' => __( 'Product Vendors', 'woo_ce' ),
+		'description' => __( 'Turn your store into a multi-vendor marketplace (such as Etsy or Creative Market).', 'woo_ce' ),
+		'url' => 'http://www.woothemes.com/products/product-vendors/',
+		'class' => 'WooCommerce_Product_Vendors'
+	);
+	$modules[] = array(
+		'name' => 'acf',
+		'title' => __( 'Advanced Custom Fields', 'woo_ce' ),
+		'description' => __( 'Powerful fields for WordPress developers.', 'woo_ce' ),
+		'url' => 'http://www.advancedcustomfields.com',
+		'class' => 'acf'
+	);
+	$modules[] = array(
+		'name' => 'product_addons',
+		'title' => __( 'Product Add-ons', 'woo_ce' ),
+		'description' => __( 'Allow your customers to customise your products by adding input boxes, dropdowns or a field set of checkboxes.', 'woo_ce' ),
+		'url' => 'http://www.woothemes.com/products/product-add-ons/',
+		'class' => 'Product_Addon_Admin'
+	);
+	$modules[] = array(
+		'name' => 'seq',
+		'title' => __( 'WooCommerce Sequential Order Numbers', 'woo_ce' ),
+		'description' => __( 'This plugin extends the WooCommerce e-commerce plugin by setting sequential order numbers for new orders.', 'woo_ce' ),
+		'url' => 'https://wordpress.org/plugins/woocommerce-sequential-order-numbers/',
+		'slug' => 'woocommerce-sequential-order-numbers',
+		'class' => 'WC_Seq_Order_Number'
+	);
+	$modules[] = array(
+		'name' => 'seq_pro',
+		'title' => __( 'WooCommerce Sequential Order Numbers Pro', 'woo_ce' ),
+		'description' => __( 'Tame your WooCommerce Order Numbers.', 'woo_ce' ),
+		'url' => 'http://www.woothemes.com/products/sequential-order-numbers-pro/',
+		'class' => 'WC_Seq_Order_Number'
+	);
+	$modules[] = array(
+		'name' => 'print_invoice_delivery_note',
+		'title' => __( 'WooCommerce Print Invoice & Delivery Note', 'woo_ce' ),
+		'description' => __( 'Print invoices and delivery notes for WooCommerce orders.', 'woo_ce' ),
+		'url' => 'http://wordpress.org/plugins/woocommerce-delivery-notes/',
+		'slug' => 'woocommerce-delivery-notes',
+		'class' => 'WooCommerce_Delivery_Notes'
+	);
+	$modules[] = array(
+		'name' => 'pdf_invoices_packing_slips',
+		'title' => __( 'WooCommerce PDF Invoices & Packing Slips', 'woo_ce' ),
+		'description' => __( 'Create, print & automatically email PDF invoices & packing slips for WooCommerce orders.', 'woo_ce' ),
+		'url' => 'https://wordpress.org/plugins/woocommerce-pdf-invoices-packing-slips/',
+		'slug' => 'woocommerce-pdf-invoices-packing-slips',
+		'class' => 'WooCommerce_PDF_Invoices'
+	);
+	$modules[] = array(
+		'name' => 'checkout_manager',
+		'title' => __( 'WooCommerce Checkout Manager', 'woo_ce' ),
+		'description' => __( 'Manages WooCommerce Checkout.', 'woo_ce' ),
+		'url' => 'http://wordpress.org/plugins/woocommerce-checkout-manager/',
+		'slug' => 'woocommerce-checkout-manager',
+		'function' => 'wccs_install'
+	);
+	$modules[] = array(
+		'name' => 'checkout_manager_pro',
+		'title' => __( 'WooCommerce Checkout Manager Pro', 'woo_ce' ),
+		'description' => __( 'Manages the WooCommerce Checkout page and WooCommerce Checkout processes.', 'woo_ce' ),
+		'url' => 'http://www.trottyzone.com/product/woocommerce-checkout-manager-pro',
+		'function' => 'wccs_install'
+	);
+	$modules[] = array(
+		'name' => 'pgsk',
+		'title' => __( 'Poor Guys Swiss Knife', 'woo_ce' ),
+		'description' => __( 'A Swiss Knife for WooCommerce.', 'woo_ce' ),
+		'url' => 'http://wordpress.org/plugins/woocommerce-poor-guys-swiss-knife/',
+		'slug' => 'woocommerce-poor-guys-swiss-knife',
+		'function' => 'wcpgsk_init'
+	);
+	$modules[] = array(
+		'name' => 'checkout_field_editor',
+		'title' => __( 'Checkout Field Editor', 'woo_ce' ),
+		'description' => __( 'Add, edit and remove fields shown on your WooCommerce checkout page.', 'woo_ce' ),
+		'url' => 'http://www.woothemes.com/products/woocommerce-checkout-field-editor/',
+		'function' => 'woocommerce_init_checkout_field_editor'
+	);
+	$modules[] = array(
+		'name' => 'checkout_field_manager',
+		'title' => __( 'Checkout Field Manager', 'woo_ce' ),
+		'description' => __( 'Quickly and effortlessly add, remove and re-orders fields in the checkout process.', 'woo_ce' ),
+		'url' => 'http://61extensions.com/shop/woocommerce-checkout-field-manager/',
+		'function' => 'sod_woocommerce_checkout_manager_settings'
+	);
+	$modules[] = array(
+		'name' => 'checkout_addons',
+		'title' => __( 'WooCommerce Checkout Add-Ons', 'woo_ce' ),
+		'description' => __( 'Add fields at checkout for add-on products and services while optionally setting a cost for each add-on.', 'woo_ce' ),
+		'url' => 'http://www.skyverge.com/product/woocommerce-checkout-add-ons/',
+		'function' => 'init_woocommerce_checkout_add_ons'
+	);
+	$modules[] = array(
+		'name' => 'local_pickup_plus',
+		'title' => __( 'Local Pickup Plus', 'woo_ce' ),
+		'description' => __( 'Let customers pick up products from specific locations.', 'woo_ce' ),
+		'url' => 'http://www.woothemes.com/products/local-pickup-plus/',
+		'class' => 'WC_Local_Pickup_Plus'
+	);
+	$modules[] = array(
+		'name' => 'gravity_forms',
+		'title' => __( 'Gravity Forms', 'woo_ce' ),
+		'description' => __( 'Gravity Forms is hands down the best contact form plugin for WordPress powered websites.', 'woo_ce' ),
+		'url' => 'http://woothemes.com/woocommerce',
+		'class' => 'RGForms'
+	);
+	$modules[] = array(
+		'name' => 'currency_switcher',
+		'title' => __( 'WooCommerce Currency Switcher', 'woo_ce' ),
+		'description' => __( 'Currency Switcher for WooCommerce allows your shop to display prices and accept payments in multiple currencies.', 'woo_ce' ),
+		'url' => 'http://aelia.co/shop/currency-switcher-woocommerce/',
+		'class' => 'WC_Aelia_CurrencySwitcher'
+	);
+	$modules[] = array(
+		'name' => 'subscriptions',
+		'title' => __( 'WooCommerce Subscriptions', 'woo_ce' ),
+		'description' => __( 'WC Subscriptions makes it easy to create and manage products with recurring payments.', 'woo_ce' ),
+		'url' => 'http://www.woothemes.com/products/woocommerce-subscriptions/',
+		'class' => 'WC_Subscriptions_Manager'
+	);
+
+/*
+	$modules[] = array(
+		'name' => '',
+		'title' => __( '', 'woo_ce' ),
+		'description' => __( '', 'woo_ce' ),
+		'url' => '',
+		'slug' => '', // Define this if the Plugin is hosted on the WordPress repo
+		'function' => ''
+	);
+*/
+
+	$modules = apply_filters( 'woo_ce_modules_addons', $modules );
+
+	if( !empty( $modules ) ) {
+		foreach( $modules as $key => $module ) {
+			$modules[$key]['status'] = 'inactive';
+			// Check if each module is activated
+			if( isset( $module['function'] ) ) {
+				if( function_exists( $module['function'] ) )
+					$modules[$key]['status'] = 'active';
+			} else if( isset( $module['class'] ) ) {
+				if( class_exists( $module['class'] ) )
+					$modules[$key]['status'] = 'active';
+			}
+			// Check if the Plugin has a slug and if current user can install Plugins
+			if( current_user_can( 'install_plugins' ) && isset( $module['slug'] ) )
+				$modules[$key]['url'] = admin_url( sprintf( 'plugin-install.php?tab=search&type=tag&s=%s', $module['slug'] ) );
+		}
+	}
+	return $modules;
+
+}
+
+function woo_ce_modules_status_class( $status = 'inactive' ) {
+
+	$output = '';
+	switch( $status ) {
+
+		case 'active':
+			$output = 'green';
+			break;
+
+		case 'inactive':
+			$output = 'yellow';
+			break;
+
+	}
+	echo $output;
+
+}
+
+function woo_ce_modules_status_label( $status = 'inactive' ) {
+
+	$output = '';
+	switch( $status ) {
+
+		case 'active':
+			$output = __( 'OK', 'woo_ce' );
+			break;
+
+		case 'inactive':
+			$output = __( 'Install', 'woo_ce' );
+			break;
+
+	}
+	echo $output;
+
+}
+
 // HTML template for header prompt on Store Exporter screen
 function woo_ce_support_donate() {
 
@@ -331,7 +599,7 @@ function woo_ce_support_donate() {
 			$show = false;
 	}
 	if( $show ) {
-		$donate_url = 'http://www.visser.com.au/#donations';
+		$donate_url = 'http://www.visser.com.au/donate/';
 		$rate_url = 'http://wordpress.org/support/view/plugin-reviews/' . WOO_CE_DIRNAME;
 		$output = '
 <div id="support-donate_rate" class="support-donate_rate">
