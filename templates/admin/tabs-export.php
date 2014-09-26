@@ -123,6 +123,17 @@
 						</td>
 					</tr>
 
+					<tr>
+						<th>
+							<input type="radio" id="shipping_class" name="dataset" value="shipping_class"<?php disabled( $shipping_classes, 0 ); ?><?php checked( $export_type, 'shipping_class' ); ?> />
+							<label for="shipping_class"><?php _e( 'Shipping Classes', 'woo_ce' ); ?></label>
+						</th>
+						<td>
+							<span class="description">(<?php echo $shipping_classes; ?>)</span>
+							<span class="description"> - <?php printf( __( 'available in %s', 'woo_ce' ), $woo_cd_link ); ?></span>
+						</td>
+					</tr>
+
 <!--
 					<tr>
 						<th>
@@ -667,7 +678,6 @@
 								<label>
 									<input type="checkbox" name="product_vendor_fields[<?php echo $product_vendor_field['name']; ?>]" class="product_vendor_field"<?php ( isset( $product_vendor_field['default'] ) ? checked( $product_vendor_field['default'], 1 ) : '' ); ?> disabled="disabled" />
 									<?php echo $product_vendor_field['label']; ?>
-									<input type="hidden" name="product_vendor_fields_order[<?php echo $product_vendor_field['name']; ?>]" class="field_order" value="" />
 								</label>
 							</td>
 						</tr>
@@ -685,8 +695,67 @@
 				<!-- .inside -->
 			</div>
 			<!-- .postbox -->
+
 		</div>
 		<!-- #export-product_vendor -->
+
+<?php } ?>
+<?php if( $shipping_class_fields ) { ?>
+		<div id="export-shipping_class" class="export-types">
+
+			<div class="postbox">
+				<h3 class="hndle">
+					<?php _e( 'Shipping Class Fields', 'woo_ce' ); ?>
+				</h3>
+				<div class="inside">
+	<?php if( $shipping_classes ) { ?>
+					<p class="description"><?php _e( 'Select the Shipping Class fields you would like to export.', 'woo_ce' ); ?></p>
+					<p><a href="javascript:void(0)" id="shipping_class-checkall" class="checkall"><?php _e( 'Check All', 'woo_ce' ); ?></a> | <a href="javascript:void(0)" id="shipping_class-uncheckall" class="uncheckall"><?php _e( 'Uncheck All', 'woo_ce' ); ?></a></p>
+					<table id="shipping_class-fields" class="ui-sortable">
+
+		<?php foreach( $shipping_class_fields as $shipping_class_field ) { ?>
+						<tr>
+							<td>
+								<label>
+									<input type="checkbox" name="shipping_class_fields[<?php echo $shipping_class_field['name']; ?>]" class="shipping_class_field"<?php ( isset( $shipping_class_field['default'] ) ? checked( $shipping_class_field['default'], 1 ) : '' ); ?> disabled="disabled" />
+									<?php echo $shipping_class_field['label']; ?>
+								</label>
+							</td>
+						</tr>
+
+		<?php } ?>
+					</table>
+					<p class="submit">
+						<input type="button" class="button button-disabled" value="<?php _e( 'Export Shipping Classes', 'woo_ce' ); ?>" />
+					</p>
+					<p class="description"><?php _e( 'Can\'t find a particular Shipping Class field in the above export list?', 'woo_ce' ); ?> <a href="<?php echo $troubleshooting_url; ?>" target="_blank"><?php _e( 'Get in touch', 'woo_ce' ); ?></a>.</p>
+	<?php } else { ?>
+					<p><?php _e( 'No Shipping Classes were found.', 'woo_ce' ); ?></p>
+	<?php } ?>
+				</div>
+				<!-- .inside -->
+			</div>
+			<!-- .postbox -->
+
+			<div id="export-shipping-classes-filters" class="postbox">
+				<h3 class="hndle"><?php _e( 'Shipping Class Filters', 'woo_ce' ); ?></h3>
+				<div class="inside">
+
+					<?php do_action( 'woo_ce_export_shipping_class_options_before_table' ); ?>
+
+					<table class="form-table">
+						<?php do_action( 'woo_ce_export_shipping_class_options_table' ); ?>
+					</table>
+
+					<?php do_action( 'woo_ce_export_shipping_class_options_after_table' ); ?>
+
+				</div>
+				<!-- .inside -->
+			</div>
+			<!-- .postbox -->
+
+		</div>
+		<!-- #export-shipping_class -->
 
 <?php } ?>
 		<?php do_action( 'woo_ce_before_options' ); ?>

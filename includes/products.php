@@ -372,6 +372,7 @@ function woo_ce_get_product_data( $product_id = 0, $args = array() ) {
 	$product->sku = get_post_meta( $product->ID, '_sku', true );
 	$product->name = get_the_title( $product->ID );
 	$product->permalink = get_permalink( $product->ID );
+	$product->product_url = get_permalink( $product->ID );
 	$product->slug = $product->post_name;
 	$product->description = $product->post_content;
 	$product->excerpt = $product->post_excerpt;
@@ -420,7 +421,7 @@ function woo_ce_get_product_data( $product_id = 0, $args = array() ) {
 	$product->image = woo_ce_get_product_assoc_featured_image( $product->ID );
 	$product->tax_status = woo_ce_format_tax_status( get_post_meta( $product->ID, '_tax_status', true ) );
 	$product->tax_class = woo_ce_format_tax_class( get_post_meta( $product->ID, '_tax_class', true ) );
-	$product->product_url = get_post_meta( $product->ID, '_product_url', true );
+	$product->external_url = get_post_meta( $product->ID, '_product_url', true );
 	$product->button_text = get_post_meta( $product->ID, '_button_text', true );
 	$product->file_download = woo_ce_get_product_assoc_file_downloads( $product->ID );
 	$product->download_limit = get_post_meta( $product->ID, '_download_limit', true );
@@ -471,7 +472,7 @@ function woo_ce_get_product_data( $product_id = 0, $args = array() ) {
 
 	// Advanced Google Product Feed - http://plugins.leewillis.co.uk/downloads/wp-e-commerce-product-feeds/
 	if( function_exists( 'woocommerce_gpf_install' ) ) {
-		$product->gpf_data = get_post_meta( $product->ID, '_wpec_gpf_data', true );
+		$product->gpf_data = get_post_meta( $product->ID, '_woocommerce_gpf_data', true );
 		$product->gpf_availability = ( isset( $product->gpf_data['availability'] ) ? woo_ce_format_gpf_availability( $product->gpf_data['availability'] ) : '' );
 		$product->gpf_condition = ( isset( $product->gpf_data['condition'] ) ? woo_ce_format_gpf_condition( $product->gpf_data['condition'] ) : '' );
 		$product->gpf_brand = ( isset( $product->gpf_data['brand'] ) ? $product->gpf_data['brand'] : '' );
@@ -768,6 +769,10 @@ function woo_ce_get_product_fields( $format = 'full' ) {
 		'label' => __( 'Permalink', 'woo_ce' )
 	);
 	$fields[] = array(
+		'name' => 'product_url',
+		'label' => __( 'Product URL', 'woo_ce' )
+	);
+	$fields[] = array(
 		'name' => 'description',
 		'label' => __( 'Description', 'woo_ce' )
 	);
@@ -913,6 +918,11 @@ function woo_ce_get_product_fields( $format = 'full' ) {
 		'label' => __( 'Sold Individually', 'woo_ce' )
 	);
 	$fields[] = array(
+		'name' => 'total_sales',
+		'label' => __( 'Total Sales', 'woo_ce' ),
+		'disabled' => 1
+	);
+	$fields[] = array(
 		'name' => 'upsell_ids',
 		'label' => __( 'Up-Sells', 'woo_ce' )
 	);
@@ -921,8 +931,8 @@ function woo_ce_get_product_fields( $format = 'full' ) {
 		'label' => __( 'Cross-Sells', 'woo_ce' )
 	);
 	$fields[] = array(
-		'name' => 'product_url',
-		'label' => __( 'Product URL', 'woo_ce' )
+		'name' => 'external_url',
+		'label' => __( 'External URL', 'woo_ce' )
 	);
 	$fields[] = array(
 		'name' => 'button_text',

@@ -207,6 +207,7 @@ function woo_ce_tab_template( $tab = '' ) {
 			$attributes = '999';
 			$subscriptions = '999';
 			$product_vendors = '999';
+			$shipping_classes = '999';
 
 			if( $product_fields = woo_ce_get_product_fields() ) {
 				foreach( $product_fields as $key => $product_field )
@@ -233,6 +234,7 @@ function woo_ce_tab_template( $tab = '' ) {
 			$coupon_fields = woo_ce_get_coupon_fields();
 			$subscription_fields = woo_ce_get_subscription_fields();
 			$product_vendor_fields = woo_ce_get_product_vendor_fields();
+			$shipping_class_fields = woo_ce_get_shipping_class_fields();
 			$attribute_fields = false;
 
 			// Export modules
@@ -518,6 +520,13 @@ function woo_ce_modules_list( $modules = array() ) {
 		'description' => __( 'WC Subscriptions makes it easy to create and manage products with recurring payments.', 'woo_ce' ),
 		'url' => 'http://www.woothemes.com/products/woocommerce-subscriptions/',
 		'class' => 'WC_Subscriptions_Manager'
+	);
+	$modules[] = array(
+		'name' => 'extra_product_options',
+		'title' => __( 'Extra Product Options', 'woo_ce' ),
+		'description' => __( 'Create extra price fields globally or per-Product', 'woo_ce' ),
+		'url' => 'http://codecanyon.net/item/woocommerce-extra-product-options/7908619',
+		'class' => 'TM_Extra_Product_Options'
 	);
 
 /*

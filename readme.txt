@@ -31,6 +31,7 @@ Features include:
 * Export Coupons (*)
 * Export Subscriptions (*)
 * Export Product Vendors (*)
+* Export Shipping Classes (*)
 * Export Attributes (*)
 * Toggle and save export fields
 * Field label editor (*)
@@ -108,6 +109,19 @@ http://www.visser.com.au/woocommerce/forums/
 9. Drag-and-drop export fields to your preferred ordering, sorting is saved between screen refreshes.
 
 == Changelog ==
+
+= 1.8.2 =
+* Added: Order support for Extra Product Options
+* Fixed: Detect corrupted Date Format
+* Added: Detection of corrupted WordPress options at export time
+* Added: Total Sales to Products export
+* Fixed: Advanced Google Product Feed not being included in Products export
+* Added: Custom User meta to Customers export
+* Added: Support for exporting Shipping Classes
+* Changed: Product URL is now External URL
+* Added: Product URL is the absolute URL to the Product
+* Added: Support for custom User fields
+* Fixed: Admin notice not showing for saving custom fields
 
 = 1.8.1 =
 * Adeded: Export modules to the Export screen

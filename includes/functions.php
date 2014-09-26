@@ -9,8 +9,9 @@ include_once( WOO_CE_PATH . 'includes/users.php' );
 include_once( WOO_CE_PATH . 'includes/coupons.php' );
 include_once( WOO_CE_PATH . 'includes/subscriptions.php' );
 include_once( WOO_CE_PATH . 'includes/product_vendors.php' );
+include_once( WOO_CE_PATH . 'includes/shipping_classes.php' );
 
-if( version_compare( phpversion(), '5.3', '>=' ) )
+if( version_compare( phpversion(), '5.3' ) >= 0 )
 	include_once( WOO_CE_PATH . 'includes/legacy.php' );
 include_once( WOO_CE_PATH . 'includes/formatting.php' );
 
@@ -188,7 +189,7 @@ if( is_admin() ) {
 					);
 					// Check if this is a WooCommerce 2.2+ instance (new Post Status)
 					$woocommerce_version = woo_get_woo_version();
-					if( version_compare( $woocommerce_version, '2.2', '>=' ) ) {
+					if( version_compare( $woocommerce_version, '2.2' ) >= 0 ) {
 						$args['post_status'] = apply_filters( 'woo_ce_customer_post_status', array( 'wc-pending', 'wc-on-hold', 'wc-processing', 'wc-completed' ) );
 					} else {
 						$args['post_status'] = apply_filters( 'woo_ce_customer_post_status', woo_ce_post_statuses() );
@@ -277,8 +278,13 @@ if( is_admin() ) {
 				}
 				break;
 
-			case 'product_vendors':
+			case 'product_vendor':
 				$term_taxonomy = 'shop_vendor';
+				$count = wp_count_terms( $term_taxonomy );
+				break;
+
+			case 'shipping_class':
+				$term_taxonomy = 'product_shipping_class';
 				$count = wp_count_terms( $term_taxonomy );
 				break;
 

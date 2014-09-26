@@ -138,6 +138,7 @@ $j(function() {
 	$j('#export-coupon').hide();
 	$j('#export-subscription').hide();
 	$j('#export-product_vendor').hide();
+	$j('#export-shipping_class').hide();
 	$j('#export-attribute').hide();
 
 	$j('#products-filters-categories').click(function(){
@@ -253,6 +254,13 @@ $j(function() {
 		$j('.export-options').hide();
 		$j('.product_vendor-options').show();
 	});
+	$j('#shipping_class').click(function(){
+		$j('.export-types').hide();
+		$j('#export-shipping_class').show();
+
+		$j('.export-options').hide();
+		$j('.shipping_class-options').show();
+	});
 	$j('#attribute').click(function(){
 		$j('.export-types').hide();
 		$j('#export-attribute').show();
@@ -292,8 +300,11 @@ $j(function() {
 	$j('#export_product_vendor').click(function(){
 		$j('input:radio[name=dataset]:nth(9)').attr('checked',true);
 	});
-	$j('#export_attribute').click(function(){
+	$j('#export_shipping_class').click(function(){
 		$j('input:radio[name=dataset]:nth(10)').attr('checked',true);
+	});
+	$j('#export_attribute').click(function(){
+		$j('input:radio[name=dataset]:nth(11)').attr('checked',true);
 	});
 
 	$j("#auto_type").change(function () {

@@ -15,9 +15,9 @@ function woo_ce_export_settings_additional() {
 	$woo_cd_url = 'http://www.visser.com.au/woocommerce/plugins/exporter-deluxe/';
 	$woo_cd_link = sprintf( '<a href="%s" target="_blank">' . __( 'Store Exporter Deluxe', 'woo_ce' ) . '</a>', $woo_cd_url );
 
-	$email_to = '-';
+	$email_to = get_option( 'admin_email', '' );
 	$email_subject = __( '[%store_name%] Export: %export_type% (%export_filename%)', 'woo_ce' );
-	$post_to = '-';
+	$post_to = 'http://www.domain.com/sample-form/';
 	ob_start(); ?>
 <tr>
 	<th>
@@ -58,7 +58,20 @@ function woo_ce_export_settings_cron() {
 	$woo_cd_link = sprintf( '<a href="%s" target="_blank">' . __( 'Store Exporter Deluxe', 'woo_ce' ) . '</a>', $woo_cd_url );
 
 	// Scheduled exports
-	$export_types = woo_ce_return_export_types();
+	// Override to enable the Export Type to include all export types
+	$export_types = array(
+		'product' => __( 'Products', 'woo_ce' ),
+		'category' => __( 'Categories', 'woo_ce' ),
+		'tag' => __( 'Tags', 'woo_ce' ),
+		'brand' => __( 'Brands', 'woo_ce' ),
+		'order' => __( 'Orders', 'woo_ce' ),
+		'customer' => __( 'Customers', 'woo_ce' ),
+		'user' => __( 'Users', 'woo_ce' ),
+		'coupon' => __( 'Coupons', 'woo_ce' ),
+		'subscription' => __( 'Subscriptions', 'woo_ce' ),
+		'product_vendor' => __( 'Product Vendors', 'woo_ce' ),
+		'shipping_class' => __( 'Shipping Classes', 'woo_ce' )
+	);
 	$order_statuses = woo_ce_get_order_statuses();
 	$product_types = woo_ce_get_product_types();
 	$auto_interval = 1440;
@@ -70,9 +83,11 @@ function woo_ce_export_settings_cron() {
 	$ftp_method_path = 'wp-content/uploads/export/';
 	$ftp_method_passive = 'auto';
 	$ftp_method_timeout = '';
+	$scheduled_fields = 'all';
 
 	// CRON exports
 	$secret_key = '-';
+	$cron_fields = 'all';
 
 	$troubleshooting_url = 'http://www.visser.com.au/documentation/store-exporter-deluxe/usage/';
 	ob_start(); ?>
@@ -194,9 +209,11 @@ function woo_ce_export_settings_cron() {
 		<label><?php _e( 'Export format', 'woo_ce' ); ?></label>
 	</th>
 	<td>
-		<label><input type="radio" name="auto_format" value="csv"<?php checked( $auto_format, 'csv' ); ?> disabled="disabled" /> <?php _e( 'CSV', 'woo_ce' ); ?> <span class="description"><?php _e( '(Comma separated values)', 'woo_ce' ); ?></span><span class="description"> - <?php printf( __( 'available in %s', 'woo_ce' ), $woo_cd_link ); ?></span></label><br />
-		<label><input type="radio" name="auto_format" value="xml"<?php checked( $auto_format, 'xml' ); ?> disabled="disabled" /> <?php _e( 'XML', 'woo_ce' ); ?> <span class="description"><?php _e( '(EXtensible Markup Language)', 'woo_ce' ); ?></span><span class="description"> - <?php printf( __( 'available in %s', 'woo_ce' ), $woo_cd_link ); ?></span></label><br />
-		<label><input type="radio" name="auto_format" value="xls"<?php checked( $auto_format, 'xls' ); ?> disabled="disabled" /> <?php _e( 'Excel (XLS)', 'woo_ce' ); ?> <span class="description"><?php _e( '(Microsoft Excel 2007)', 'woo_ce' ); ?></span><span class="description"> - <?php printf( __( 'available in %s', 'woo_ce' ), $woo_cd_link ); ?></span></label>
+		<ul style="margin-top:0.2em;">
+			<li><label><input type="radio" name="auto_format" value="csv"<?php checked( $auto_format, 'csv' ); ?> disabled="disabled" /> <?php _e( 'CSV', 'woo_ce' ); ?> <span class="description"><?php _e( '(Comma separated values)', 'woo_ce' ); ?></span><span class="description"> - <?php printf( __( 'available in %s', 'woo_ce' ), $woo_cd_link ); ?></span></label></li>
+			<li><label><input type="radio" name="auto_format" value="xml"<?php checked( $auto_format, 'xml' ); ?> disabled="disabled" /> <?php _e( 'XML', 'woo_ce' ); ?> <span class="description"><?php _e( '(EXtensible Markup Language)', 'woo_ce' ); ?></span><span class="description"> - <?php printf( __( 'available in %s', 'woo_ce' ), $woo_cd_link ); ?></span></label></li>
+			<li><label><input type="radio" name="auto_format" value="xls"<?php checked( $auto_format, 'xls' ); ?> disabled="disabled" /> <?php _e( 'Excel (XLS)', 'woo_ce' ); ?> <span class="description"><?php _e( '(Microsoft Excel 2007)', 'woo_ce' ); ?></span><span class="description"> - <?php printf( __( 'available in %s', 'woo_ce' ), $woo_cd_link ); ?></span></label></li>
+		</ul>
 		<p class="description"><?php _e( 'Adjust the export format to generate different export file formats. Default is CSV.', 'woo_ce' ); ?></p>
 	</td>
 </tr>
@@ -242,6 +259,18 @@ function woo_ce_export_settings_cron() {
 		</ul>
 	</td>
 </tr>
+<tr>
+	<th>
+		<label for="scheduled_fields"><?php _e( 'Export Fields', 'woo_ce' ); ?></label>
+	</th>
+	<td>
+		<ul style="margin-top:0.2em;">
+			<li><label><input type="radio" id="scheduled_fields" name="scheduled_fields" value="all"<?php checked( $scheduled_fields, 'all' ); ?> /> <?php _e( 'Include all Export Fields for the requested Export Type', 'woo_ce' ); ?><span class="description"> - <?php printf( __( 'available in %s', 'woo_ce' ), $woo_cd_link ); ?></span></label></li>
+			<li><label><input type="radio" name="scheduled_fields" value="saved"<?php checked( $scheduled_fields, 'saved' ); ?> disabled="disabled" /> <?php _e( 'Use the saved Export Fields preference set on the Export screen for the requested Export Type', 'woo_ce' ); ?><span class="description"> - <?php printf( __( 'available in %s', 'woo_ce' ), $woo_cd_link ); ?></span></label></li>
+		</ul>
+		<p class="description"><?php _e( 'Control whether all known export fields are included or only checked fields from the Export Fields section on the Export screen for each Export Type. Default is to include all export fields.', 'woo_ce' ); ?></p>
+	</td>
+</tr>
 
 <tr id="cron-exports">
 	<td colspan="2" style="padding:0;">
@@ -269,6 +298,18 @@ function woo_ce_export_settings_cron() {
 	<td>
 		<input name="secret_key" type="text" id="secret_key" value="<?php echo esc_attr( $secret_key ); ?>" class="large-text code" disabled="disabled" /><span class="description"> - <?php printf( __( 'available in %s', 'woo_ce' ), $woo_cd_link ); ?></span>
 		<p class="description"><?php _e( 'This secret key (can be left empty to allow unrestricted access) limits access to authorised developers who provide a matching key when working with Store Exporter Deluxe.', 'woo_ce' ); ?></p>
+	</td>
+</tr>
+<tr>
+	<th>
+		<label for="cron_fields"><?php _e( 'Export Fields', 'woo_ce' ); ?></label>
+	</th>
+	<td>
+		<ul style="margin-top:0.2em;">
+			<li><label><input type="radio" id="cron_fields" name="cron_fields" value="all"<?php checked( $cron_fields, 'all' ); ?> /> <?php _e( 'Include all Export Fields for the requested Export Type', 'woo_ce' ); ?><span class="description"> - <?php printf( __( 'available in %s', 'woo_ce' ), $woo_cd_link ); ?></span></label></li>
+			<li><label><input type="radio" name="cron_fields" value="saved"<?php checked( $cron_fields, 'saved' ); ?> disabled="disabled" /> <?php _e( 'Use the saved Export Fields preference set on the Export screen for the requested Export Type', 'woo_ce' ); ?><span class="description"> - <?php printf( __( 'available in %s', 'woo_ce' ), $woo_cd_link ); ?></span></label></li>
+		</ul>
+		<p class="description"><?php _e( 'Control whether all known export fields are included or only checked fields from the Export Fields section on the Export screen for each Export Type. Default is to include all export fields.', 'woo_ce' ); ?></p>
 	</td>
 </tr>
 <?php
